@@ -3,9 +3,12 @@ package space.kscience.soroutines
 import com.google.protobuf.ByteString
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.grpc.Server
+import io.grpc.ServerBuilder
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import space.kscience.soroutines.transport.grpc.LibServiceGrpcKt
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.executeRequest
@@ -100,5 +103,34 @@ class LibServiceGrpcImpl(
                 }
             }
         })
+    }
+}
+
+abstract class SoLib
+
+class DefinitionsBuilder {
+    val definitions = mutableMapOf<FunctionName, Definition>()
+
+    inline infix fun <reified A, reified R> String.def(noinline f: (A) -> R) {
+        definitions[FunctionName(this)] = Definition1(serializer(), serializer(), f)
+    }
+}
+
+class LibService(port: Int, builder: DefinitionsBuilder.() -> Unit) {
+    val service: Server = ServerBuilder
+        .forPort(port)
+        .addService(
+            LibServiceGrpcImpl(
+                defs = DefinitionsBuilder().apply(builder).definitions
+            )
+        )
+        .build()
+
+    fun start() {
+        service.start()
+    }
+
+    fun awaitTermination() {
+        service.awaitTermination()
     }
 }

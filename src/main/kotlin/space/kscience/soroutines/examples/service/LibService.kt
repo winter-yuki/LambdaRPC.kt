@@ -1,20 +1,12 @@
 package space.kscience.soroutines.examples.service
 
-import io.grpc.ServerBuilder
-import kotlinx.serialization.serializer
-import space.kscience.soroutines.Definition1
-import space.kscience.soroutines.FunctionName
-import space.kscience.soroutines.LibServiceGrpcImpl
+import space.kscience.soroutines.LibService
 
 fun main() {
-    val service = ServerBuilder
-        .forPort(8088)
-        .addService(LibServiceGrpcImpl(mapOf(
-            FunctionName("square") to Definition1<Int, Int>(
-                serializer(), serializer()
-            ) { it * it }
-        )))
-        .build()
-    service.start()
-    service.awaitTermination()
+    LibService(port = 8088) {
+        "square" def ::square
+    }.apply {
+        start()
+        awaitTermination()
+    }
 }
