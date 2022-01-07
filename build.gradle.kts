@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.6.10"
     id("com.google.protobuf") version "0.8.18"
+    kotlin("plugin.serialization") version "1.6.10"
     application
 }
 
@@ -43,6 +44,7 @@ dependencies {
     api("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobufVersion"]}")
     api("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     testImplementation(kotlin("test"))
 }
 
@@ -58,6 +60,18 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.register<JavaExec>("exampleService") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("space.kscience.soroutines.examples.service.LibServiceKt")
+}
+
+tasks.register<JavaExec>("exampleClient") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("space.kscience.soroutines.examples.client.LibClientKt")
 }
 
 protobuf {

@@ -1,23 +1,18 @@
 package space.kscience.soroutines.examples.client
 
-import io.grpc.ManagedChannelBuilder
-import kotlinx.coroutines.flow.flowOf
-import space.kscience.soroutines.transport.grpc.LibServiceGrpcKt
-import space.kscience.soroutines.transport.grpc.executeRequest
-import space.kscience.soroutines.transport.grpc.message
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.serializer
+import space.kscience.soroutines.*
 
 fun main() {
-    val channel = ManagedChannelBuilder
-        .forAddress("localhost", 8088)
-        .usePlaintext()
-        .build()
-    val stub = LibServiceGrpcKt.LibServiceCoroutineStub(channel)
-    val request = message {
-        request = executeRequest {
-            functionName = "kek"
-        }
+    val endpoint = Endpoint.of("localhost", 8088)
+    val channel = endpoint.channel
+    val so = Soroutine1<Int, Int>(
+        FunctionName("square"), channel.stub,
+        serializer(), serializer()
+    )
+    runBlocking {
+        println("so = ${so(4)}")
     }
-    val res = stub.execute(flowOf(request))
-    println(res)
     channel.shutdownNow()
 }
