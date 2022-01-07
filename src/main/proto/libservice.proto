@@ -1,8 +1,8 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "space.kscience.communicator";
-package space.kscience.communicator;
+option java_package = "space.kscience.soroutines.transport.grpc";
+package space.kscience.soroutines.transport.grpc;
 
 // TODO serializers
 message Payload {
