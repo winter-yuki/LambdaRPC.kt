@@ -4,9 +4,8 @@ option java_multiple_files = true;
 option java_package = "space.kscience.soroutines.transport.grpc";
 package space.kscience.soroutines.transport.grpc;
 
-message Payload {
-  bytes payload = 1;
-}
+import "Payload.proto";
+import "ExecuteError.proto";
 
 message ExecuteRequest {
   string accessName = 1;
@@ -14,11 +13,8 @@ message ExecuteRequest {
 }
 
 message ExecuteResult {
-  Payload result = 1;
-}
-
-message ExecuteError {
-  string message = 1;
+  string accessName = 1;
+  Payload result = 2;
 }
 
 message Message {

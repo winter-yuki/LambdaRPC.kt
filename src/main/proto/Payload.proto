@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "space.kscience.soroutines.transport.grpc";
+package space.kscience.soroutines.transport.grpc;
+
+enum CallbackType {
+  REPLY = 0;
+  FRONTEND = 1;
+}
+
+message Callback {
+  CallbackType type = 1;
+  string accessName = 2;
+}
+
+message Payload {
+  oneof payload {
+    bytes data = 1;
+    string callbackAccessName = 2;
+  }
+}

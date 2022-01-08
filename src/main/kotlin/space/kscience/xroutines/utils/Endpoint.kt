@@ -1,4 +1,4 @@
-package space.kscience.soroutines.utils
+package space.kscience.xroutines.utils
 
 @JvmInline
 value class Address(val a: String)

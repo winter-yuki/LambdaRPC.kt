@@ -1,4 +1,4 @@
-package space.kscience.soroutines.utils
+package space.kscience.xroutines.utils
 
 import io.grpc.ManagedChannel
 import space.kscience.soroutines.transport.grpc.LibServiceGrpcKt

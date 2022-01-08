@@ -1,4 +1,4 @@
-package space.kscience.soroutines.examples.service
+package space.kscience.soroutines0.examples.service
 
 import kotlinx.serialization.Serializable
 import kotlin.math.sqrt
@@ -13,3 +13,5 @@ fun distance(a: Point, b: Point): Double {
     val dy = a.y - b.y
     return sqrt(dx * dx + dy * dy)
 }
+
+fun filter(xs: List<Int>, p: (Int) -> Boolean) = xs.filter(p)

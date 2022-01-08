@@ -1,4 +1,4 @@
-package space.kscience.soroutines.utils
+package space.kscience.xroutines.utils
 
 val unreachable: Nothing
     get() = error("Unreachable code reached")

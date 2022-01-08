@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "space.kscience.soroutines.transport.grpc";
+package space.kscience.soroutines.transport.grpc;
+
+enum ErrorType {
+  FUNCTION_ERROR = 0;
+  SERIALIZATION_ERROR = 1;
+  INTERNAL_ERROR = 2;
+}
+
+message ExecuteError {
+  ErrorType type = 1;
+  string message = 2;
+}

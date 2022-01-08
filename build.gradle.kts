@@ -46,6 +46,7 @@ dependencies {
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     testImplementation(kotlin("test"))
+    implementation(kotlin("reflect"))
 }
 
 tasks.withType<KotlinCompile>().all {
@@ -65,13 +66,13 @@ tasks.withType<KotlinCompile> {
 tasks.register<JavaExec>("exampleService") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("space.kscience.soroutines.examples.service.LibServiceKt")
+    mainClass.set("space.kscience.xroutines.examples.service.LibServiceKt")
 }
 
 tasks.register<JavaExec>("exampleClient") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("space.kscience.soroutines.examples.client.LibClientKt")
+    mainClass.set("space.kscience.xroutines.examples.client.LibClientKt")
 }
 
 protobuf {
