@@ -1,6 +1,6 @@
 package space.kscience.soroutines.examples.service
 
-import space.kscience.soroutines.LibService
+import space.kscience.soroutines.backend.LibService
 
 fun main() {
     LibService(port = 8088) {

@@ -1,18 +1,11 @@
 package space.kscience.soroutines.examples.client
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.serializer
-import space.kscience.soroutines.*
+import space.kscience.soroutines.utils.Endpoint
 
 fun main() {
-    val endpoint = Endpoint.of("localhost", 8088)
-    val channel = endpoint.channel
-    val so = Soroutine1<Int, Int>(
-        FunctionName("square"), channel.stub,
-        serializer(), serializer()
-    )
+    conf.endpoint = Endpoint.of("localhost", 8088)
     runBlocking {
-        println("so = ${so(4)}")
+        println("square(4) = ${square(4)}")
     }
-    channel.shutdownNow()
 }
