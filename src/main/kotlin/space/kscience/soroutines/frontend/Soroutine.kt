@@ -19,7 +19,7 @@ class SoroutineExecutionError(message: String) : RuntimeException(message)
 abstract class Soroutine<R> {
     abstract val name: AccessName
     abstract val resSerializer: KSerializer<R>
-    abstract val stubEval: StubEval<R>
+    abstract val stubEval: UseStub<R>
 
     private fun message(vararg bss: ByteString): Message =
         message {
@@ -53,7 +53,7 @@ data class Soroutine1<A, R>(
     override val name: AccessName,
     val argSerializer: KSerializer<A>,
     override val resSerializer: KSerializer<R>,
-    override val stubEval: StubEval<R>
+    override val stubEval: UseStub<R>
 ) : Soroutine<R>(), suspend (A) -> R {
     override suspend fun invoke(arg: A): R = invoke(
         arg.encode(argSerializer)
@@ -65,7 +65,7 @@ data class Soroutine2<A1, A2, R>(
     val arg1Serializer: KSerializer<A1>,
     val arg2Serializer: KSerializer<A2>,
     override val resSerializer: KSerializer<R>,
-    override val stubEval: StubEval<R>
+    override val stubEval: UseStub<R>
 ) : Soroutine<R>(), suspend (A1, A2) -> R {
     override suspend fun invoke(arg1: A1, arg2: A2): R = invoke(
         arg1.encode(arg1Serializer),
@@ -79,7 +79,7 @@ data class Soroutine3<A1, A2, A3, R>(
     val arg2Serializer: KSerializer<A2>,
     val arg3Serializer: KSerializer<A3>,
     override val resSerializer: KSerializer<R>,
-    override val stubEval: StubEval<R>
+    override val stubEval: UseStub<R>
 ) : Soroutine<R>(), suspend (A1, A2, A3) -> R {
     override suspend fun invoke(arg1: A1, arg2: A2, arg3: A3): R = invoke(
         arg1.encode(arg1Serializer),
@@ -95,7 +95,7 @@ data class Soroutine4<A1, A2, A3, A4, R>(
     val arg3Serializer: KSerializer<A3>,
     val arg4Serializer: KSerializer<A4>,
     override val resSerializer: KSerializer<R>,
-    override val stubEval: StubEval<R>
+    override val stubEval: UseStub<R>
 ) : Soroutine<R>(), suspend (A1, A2, A3, A4) -> R {
     override suspend fun invoke(arg1: A1, arg2: A2, arg3: A3, arg4: A4): R = invoke(
         arg1.encode(arg1Serializer),

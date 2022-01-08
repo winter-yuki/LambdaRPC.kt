@@ -1,6 +1,6 @@
 package space.kscience.soroutines.frontend
 
 import space.kscience.soroutines.transport.grpc.LibServiceGrpcKt
+import space.kscience.soroutines.utils.Use
 
-typealias FromStub<T> = suspend (LibServiceGrpcKt.LibServiceCoroutineStub) -> T
-typealias StubEval<T> = suspend (FromStub<T>) -> T
+typealias UseStub<R> = Use<LibServiceGrpcKt.LibServiceCoroutineStub, R>

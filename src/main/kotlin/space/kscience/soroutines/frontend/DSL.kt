@@ -40,7 +40,7 @@ operator fun <A, R> Soroutine1<A, R>.get(channel: ActiveChannel): Soroutine1<A, 
 
 inline fun <T, reified S> MutableConfiguration.def(
     accessName: String?,
-    crossinline soroutineProvider: (AccessName, StubEval<T>) -> S
+    crossinline soroutineProvider: (AccessName, UseStub<T>) -> S
 ) = ReadOnlyProperty { _: Nothing?, property ->
     soroutineProvider(AccessName(accessName ?: property.name)) { block ->
         Channel(endpoint ?: error("No default endpoint specified")).use { channel ->
