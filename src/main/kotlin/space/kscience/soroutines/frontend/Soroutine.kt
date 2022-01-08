@@ -1,7 +1,6 @@
 package space.kscience.soroutines.frontend
 
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import kotlinx.serialization.KSerializer
@@ -12,7 +11,10 @@ import space.kscience.soroutines.transport.grpc.executeRequest
 import space.kscience.soroutines.transport.grpc.message
 import space.kscience.soroutines.transport.grpc.payload
 import space.kscience.soroutines.utils.encode
+import space.kscience.soroutines.utils.unreachable
 import java.nio.charset.Charset
+
+class SoroutineExecutionError(message: String) : RuntimeException(message)
 
 abstract class Soroutine<R> {
     abstract val name: AccessName
@@ -22,7 +24,7 @@ abstract class Soroutine<R> {
     private fun message(vararg bss: ByteString): Message =
         message {
             request = executeRequest {
-                functionName = name.n
+                accessName = name.n
                 args.apply {
                     bss.forEach { bs ->
                         add(payload { payload = bs })
@@ -31,15 +33,19 @@ abstract class Soroutine<R> {
             }
         }
 
-    private suspend fun <R> Flow<Message>.toRes(serializer: KSerializer<R>): R {
-        val string = last().result.result.payload.toString(Charset.defaultCharset())
-        return Json.decodeFromString(serializer, string)
-    }
-
     protected suspend fun invoke(vararg bss: ByteString): R = stubEval { stub ->
         val request = message(*bss)
         val bytes = stub.execute(flowOf(request))
-        bytes.toRes(resSerializer)
+        val msg = bytes.last()
+        when {
+            msg.hasRequest() -> throw SoroutineExecutionError("Request is not expected")
+            msg.hasResult() -> {
+                val string = msg.result.result.payload.toString(Charset.defaultCharset())
+                Json.decodeFromString(resSerializer, string)
+            }
+            msg.hasError() -> throw SoroutineExecutionError(msg.error.message)
+            else -> unreachable
+        }
     }
 }
 

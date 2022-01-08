@@ -4,13 +4,12 @@ option java_multiple_files = true;
 option java_package = "space.kscience.soroutines.transport.grpc";
 package space.kscience.soroutines.transport.grpc;
 
-// TODO serializers
 message Payload {
   bytes payload = 1;
 }
 
 message ExecuteRequest {
-  string functionName = 1;
+  string accessName = 1;
   repeated Payload args = 2;
 }
 
@@ -18,10 +17,15 @@ message ExecuteResult {
   Payload result = 1;
 }
 
+message ExecuteError {
+  string message = 1;
+}
+
 message Message {
   oneof payload {
     ExecuteRequest request = 1;
     ExecuteResult result = 2;
+    ExecuteError error = 3;
   }
 }
 
