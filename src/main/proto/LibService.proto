@@ -18,7 +18,7 @@ message ExecuteResult {
 }
 
 message Message {
-  oneof payload {
+  oneof content {
     ExecuteRequest request = 1;
     ExecuteResult result = 2;
     ExecuteError error = 3;

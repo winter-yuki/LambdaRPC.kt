@@ -1,10 +1,6 @@
-package space.kscience.xroutines.backend
+package space.kscience.xroutines.frontend
 
-import io.grpc.ManagedChannel
-import io.grpc.ManagedChannelBuilder
 import space.kscience.soroutines.AccessName
-import space.kscience.xroutines.frontend.FrontendFunction1
-import space.kscience.xroutines.frontend.UseStub
 import space.kscience.xroutines.serialization.Serializer
 import space.kscience.xroutines.utils.Endpoint
 import space.kscience.xroutines.utils.stub
@@ -24,27 +20,6 @@ class MutableConfiguration {
     }
 }
 
-class Channel(val address: String, val port: Int) {
-    val builder: ManagedChannelBuilder<*> = ManagedChannelBuilder
-        .forAddress(address, port)
-        .usePlaintext()
-
-    constructor(endpoint: Endpoint) : this(endpoint.address.a, endpoint.port.p)
-
-    fun build() = ActiveChannel(builder.build())
-
-    suspend fun <T> use(block: suspend (ActiveChannel) -> T): T {
-        val channel = build()
-        return try {
-            block(build())
-        } finally {
-            channel.channel.shutdownNow()
-        }
-    }
-}
-
-class ActiveChannel(val channel: ManagedChannel)
-
 operator fun <A, R> FrontendFunction1<A, R>.get(channel: ActiveChannel): FrontendFunction1<A, R> {
     val stub = channel.channel.stub
     return copy { block -> block(stub) }
@@ -52,14 +27,18 @@ operator fun <A, R> FrontendFunction1<A, R>.get(channel: ActiveChannel): Fronten
 
 inline fun <T, reified S> MutableConfiguration.def(
     accessName: String?,
-    crossinline soroutineProvider: (AccessName, UseStub<T>) -> S
+    crossinline functionProvider: (AccessName, UseStub<T>) -> S
 ) = ReadOnlyProperty { _: Nothing?, property ->
-    soroutineProvider(AccessName(accessName ?: property.name)) { block ->
+    functionProvider(AccessName(accessName ?: property.name)) { block ->
         use { channel -> block(channel.channel.stub) }
     }
 }
 
-inline fun <reified A, reified R> MutableConfiguration.def1(accessName: String? = null) =
+inline fun <reified A, reified R> MutableConfiguration.def(
+    s1: Serializer<A>,
+    s2: Serializer<R>,
+    accessName: String? = null
+) =
     def<R, FrontendFunction1<A, R>>(accessName) { name, block ->
-        FrontendFunction1(name, Serializer.of(), Serializer.of(), block)
+        FrontendFunction1(name, s1, s2, block)
     }

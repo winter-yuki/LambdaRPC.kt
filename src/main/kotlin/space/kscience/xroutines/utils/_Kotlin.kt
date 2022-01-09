@@ -5,3 +5,5 @@ val unreachable: Nothing
 
 typealias UseBlock<T, R> = suspend (T) -> R
 typealias Use<T, R> = suspend (UseBlock<T, R>) -> R
+
+inline fun <reified T> isFun() = T::class.java.methods.any { it.name == "invoke" }

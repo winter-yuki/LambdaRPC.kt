@@ -4,12 +4,17 @@ import io.grpc.Server
 import io.grpc.ServerBuilder
 import space.kscience.soroutines.AccessName
 import space.kscience.xroutines.serialization.Serializer
+import space.kscience.xroutines.serialization.s
 
 class LibServiceDSL {
     val fs = mutableMapOf<AccessName, BackendFunction>()
 
-    inline infix fun <reified A, reified R> String.def(noinline f: (A) -> R) {
-        fs[AccessName(this)] = BackendFunction1(f, Serializer.of(), Serializer.of())
+    inline fun <reified A, reified R> String.def(
+        noinline f: suspend (A) -> R,
+        s1: Serializer<A> = s(),
+        rs: Serializer<R> = s()
+    ) {
+        fs[AccessName(this)] = BackendFunction1(f, s1, rs)
     }
 }
 

@@ -5,6 +5,8 @@ import kotlinx.coroutines.channels.SendChannel
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.Payload
 import space.kscience.xroutines.serialization.DataSerializer
+import space.kscience.xroutines.serialization.FunctionSerializer
+import space.kscience.xroutines.serialization.SerializationContext
 import space.kscience.xroutines.serialization.Serializer
 
 /**
@@ -21,24 +23,30 @@ interface BackendFunction {
 
 class BackendFunction1<A, R>(
     private val f: suspend (A) -> R,
-    private val serializer: Serializer<A>,
-    private val resSerializer: Serializer<R>,
+    private val s1: Serializer<A>,
+    private val rs: Serializer<R>,
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Payload>,
         results: ReceiveChannel<Message>,
         requests: SendChannel<Message>
     ): Payload {
-        require(args.size == 1)
-        val (a1) = args
+        require(args.size == 1) { "${args.size} != 1"}
+        val (args1) = args
         val res = f(
-            when (serializer) {
-                is DataSerializer -> serializer.decode(a1)
-                else -> TODO()
+            when (s1) {
+                is DataSerializer -> {
+                    println("Data serializer")
+                    s1.decode(args1)
+                }
+                is FunctionSerializer -> {
+                    println("Function serializer")
+                    s1.decode(args1, results, requests)
+                }
             }
         )
-        return when (resSerializer) {
-            is DataSerializer -> resSerializer.encode(res)
+        return when (rs) {
+            is DataSerializer -> rs.encode(res)
             else -> TODO()
         }
     }

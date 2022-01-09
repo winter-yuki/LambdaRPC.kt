@@ -45,6 +45,7 @@ dependencies {
     api("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
     testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
 }

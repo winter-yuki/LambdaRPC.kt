@@ -5,7 +5,7 @@ option java_package = "space.kscience.soroutines.transport.grpc";
 package space.kscience.soroutines.transport.grpc;
 
 enum CallbackType {
-  REPLY = 0;
+  LANG = 0;
   FRONTEND = 1;
 }
 
@@ -17,6 +17,6 @@ message Callback {
 message Payload {
   oneof payload {
     bytes data = 1;
-    string callbackAccessName = 2;
+    Callback callback = 2;
   }
 }
