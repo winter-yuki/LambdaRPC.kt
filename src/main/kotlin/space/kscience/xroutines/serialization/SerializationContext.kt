@@ -15,7 +15,7 @@ class SerializationContext {
         get() = _callbacks
 
     suspend fun <R> apply(block: suspend SerializationContextDsl.() -> R) =
-        SerializationContextDsl(_callbacks).block().also { _callbacks.clear() }
+        SerializationContextDsl(_callbacks.also { it.clear() }).block()
 }
 
 class SerializationContextDsl(private val callbacks: MutableMap<AccessName, BackendFunction>) {
