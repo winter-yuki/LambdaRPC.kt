@@ -1,7 +1,9 @@
 package space.kscience.xroutines.frontend
 
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.withTimeout
 import space.kscience.lambdarpc.utils.AccessName
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.executeRequest
@@ -16,8 +18,7 @@ class LangFunction1<A, R>(
     private val name: AccessName,
     private val s1: Serializer<A>,
     private val rs: Serializer<R>,
-    private val results: ReceiveChannel<Message>,
-    private val requests: SendChannel<Message>,
+    private val channel: Channel<Message>
 ) : suspend (A) -> R {
     val context = SerializationContext()
 
@@ -34,8 +35,8 @@ class LangFunction1<A, R>(
                 )
             }
         }
-        requests.send(request)
-        val result = results.receive()
+        channel.send(request)
+        val result = channel.receive()
         when {
             result.hasResult() -> {
                 require(result.result.accessName == name.n)

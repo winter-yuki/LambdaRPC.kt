@@ -1,5 +1,6 @@
 package space.kscience.lambdarpc.functions
 
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import space.kscience.soroutines.transport.grpc.Message
@@ -13,11 +14,7 @@ import space.kscience.lambdarpc.serialization.Serializer
  * with HOF arguments.
  */
 interface BackendFunction {
-    suspend operator fun invoke(
-        args: List<Payload>,
-        results: ReceiveChannel<Message>,
-        requests: SendChannel<Message>
-    ): Payload
+    suspend operator fun invoke(args: List<Payload>, channel: Channel<Message>): Payload
 }
 
 class BackendFunction1<A, R>(
@@ -25,11 +22,7 @@ class BackendFunction1<A, R>(
     private val s1: Serializer<A>,
     private val rs: Serializer<R>,
 ) : BackendFunction {
-    override suspend fun invoke(
-        args: List<Payload>,
-        results: ReceiveChannel<Message>,
-        requests: SendChannel<Message>
-    ): Payload {
+    override suspend fun invoke(args: List<Payload>, channel: Channel<Message>): Payload {
         require(args.size == 1) { "${args.size} != 1"}
         val (args1) = args
         val res = f(
@@ -40,10 +33,11 @@ class BackendFunction1<A, R>(
                 }
                 is FunctionSerializer -> {
                     println("Function serializer")
-                    s1.decode(args1, results, requests)
+                    s1.decode(args1, channel)
                 }
             }
         )
+        channel.close()
         return when (rs) {
             is DataSerializer -> rs.encode(res)
             else -> TODO()

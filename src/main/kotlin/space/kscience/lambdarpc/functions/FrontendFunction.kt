@@ -1,15 +1,18 @@
 package space.kscience.lambdarpc.functions
 
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.reduce
 import space.kscience.lambdarpc.serialization.DataSerializer
 import space.kscience.lambdarpc.serialization.FunctionSerializer
 import space.kscience.lambdarpc.serialization.SerializationContext
 import space.kscience.lambdarpc.serialization.Serializer
 import space.kscience.lambdarpc.utils.AccessName
+import space.kscience.lambdarpc.utils.UseStub
+import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.executeRequest
+import space.kscience.soroutines.transport.grpc.executeResult
 import space.kscience.soroutines.transport.grpc.message
-import space.kscience.xroutines.frontend.UseStub
 
 data class FrontendFunction1<A, R>(
     private val name: AccessName,
@@ -32,13 +35,25 @@ data class FrontendFunction1<A, R>(
                     )
                 }
             }
-            val flow = stub.execute(flowOf(request))
-            var response = flow.last()
-            while (response.hasRequest()) {
-                val name = response.request.accessName
-                TODO()
-                response = flow.last()
+            val channel = Channel<Message>().apply { send(request) }
+            val flow = stub.execute(channel.consumeAsFlow())
+            val response = flow.reduce<Message?, Message> { acc, message ->
+                if (!message.hasResult()) {
+                    channel.close()
+                    return@reduce message
+                }
+                val name = message.request.accessName
+                val f = context.callbacks.getValue(AccessName(name))
+                val res = f(message.request.argsList, Channel()) // TODO channel
+                val response = message {
+                    result = executeResult {
+                        result = res
+                    }
+                }
+                channel.send(response)
+                null
             }
+            response ?: error("Messages after response")
             if (response.hasError()) {
                 error("AAAA " + response.error.message)
             } else {

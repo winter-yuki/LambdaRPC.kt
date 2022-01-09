@@ -46,6 +46,7 @@ dependencies {
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20")
     testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
 }
