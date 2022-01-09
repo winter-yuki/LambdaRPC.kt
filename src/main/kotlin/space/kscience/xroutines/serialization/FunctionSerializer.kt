@@ -42,6 +42,5 @@ class FunctionSerializer1<A, R>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun toBackendFunction(f: Any) =
-        BackendFunction1(f as suspend (A) -> R, s1, rs)
+    override fun toBackendFunction(f: Any) = BackendFunction1(f as suspend (A) -> R, s1, rs)
 }

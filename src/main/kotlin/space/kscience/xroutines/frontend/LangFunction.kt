@@ -22,6 +22,7 @@ class LangFunction1<A, R>(
     val context = SerializationContext()
 
     override suspend fun invoke(arg: A): R = context.apply {
+        println("Lang arg = $arg")
         val request = message {
             request = executeRequest {
                 accessName = name.n

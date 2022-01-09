@@ -1,10 +1,13 @@
 package space.kscience.xroutines.frontend
 
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
+import kotlinx.serialization.serializer
 import space.kscience.soroutines.AccessName
 import space.kscience.soroutines.transport.grpc.executeRequest
 import space.kscience.soroutines.transport.grpc.message
+import space.kscience.soroutines.transport.grpc.payload
 import space.kscience.xroutines.serialization.*
 
 data class FrontendFunction1<A, R>(
@@ -23,7 +26,17 @@ data class FrontendFunction1<A, R>(
                     args.add(
                         when (s1) {
                             is DataSerializer -> s1.encode(arg)
-                            is FunctionSerializer -> s1.encode(arg)
+                            is FunctionSerializer -> {
+                                val encoded = s1.encode(arg)
+                                val f = context.callbacks.getValue(AccessName(encoded.callback.accessName))
+                                val res = f(
+                                    listOf(DefaultDataSerializer<Int>(serializer()).encode(5)),
+                                    Channel(),
+                                    Channel()
+                                )
+                                println("decoded fun res = $res")
+                                encoded
+                            }
                         }
                     )
                 }
