@@ -1,15 +1,15 @@
-package space.kscience.xroutines.serialization
+package space.kscience.lambdarpc.serialization
 
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import space.kscience.soroutines.AccessName
+import space.kscience.lambdarpc.utils.AccessName
 import space.kscience.soroutines.transport.grpc.CallbackType
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.Payload
-import space.kscience.xroutines.backend.BackendFunction
-import space.kscience.xroutines.backend.BackendFunction1
+import space.kscience.lambdarpc.functions.BackendFunction
+import space.kscience.lambdarpc.functions.BackendFunction1
 import space.kscience.xroutines.frontend.LangFunction1
-import space.kscience.xroutines.utils.unreachable
+import space.kscience.lambdarpc.utils.unreachable
 
 interface FunctionSerializer<F> : Serializer<F> {
     fun decode(

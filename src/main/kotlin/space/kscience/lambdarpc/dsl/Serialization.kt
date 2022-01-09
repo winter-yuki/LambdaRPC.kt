@@ -1,4 +1,8 @@
-package space.kscience.xroutines.serialization
+package space.kscience.lambdarpc.dsl
+
+import space.kscience.lambdarpc.serialization.DefaultDataSerializer
+import space.kscience.lambdarpc.serialization.FunctionSerializer1
+import space.kscience.lambdarpc.serialization.Serializer
 
 inline fun <reified T> s(): DefaultDataSerializer<T> = DefaultDataSerializer.of()
 

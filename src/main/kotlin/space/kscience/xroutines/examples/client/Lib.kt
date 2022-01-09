@@ -1,9 +1,9 @@
 package space.kscience.xroutines.examples.client
 
-import space.kscience.xroutines.frontend.MutableConfiguration
-import space.kscience.xroutines.frontend.def
-import space.kscience.xroutines.serialization.f1
-import space.kscience.xroutines.serialization.s
+import space.kscience.lambdarpc.dsl.f1
+import space.kscience.lambdarpc.dsl.frontend.MutableConfiguration
+import space.kscience.lambdarpc.dsl.frontend.def
+import space.kscience.lambdarpc.dsl.s
 
 val conf = MutableConfiguration()
 

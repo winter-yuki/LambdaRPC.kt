@@ -1,11 +1,11 @@
-package space.kscience.xroutines.backend
+package space.kscience.lambdarpc.functions
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.selects.select
-import space.kscience.soroutines.AccessName
+import space.kscience.lambdarpc.utils.AccessName
 import space.kscience.soroutines.transport.grpc.*
 
 class LibServiceGrpcImpl(

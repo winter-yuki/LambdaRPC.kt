@@ -1,7 +1,7 @@
 package space.kscience.xroutines.examples.client
 
 import kotlinx.coroutines.runBlocking
-import space.kscience.xroutines.utils.Endpoint
+import space.kscience.lambdarpc.utils.Endpoint
 
 fun main() {
     conf.endpoint = Endpoint.of("localhost", 8088)

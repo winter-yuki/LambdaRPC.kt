@@ -1,10 +1,13 @@
-package space.kscience.xroutines.backend
+package space.kscience.lambdarpc.dsl.backend
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
-import space.kscience.soroutines.AccessName
-import space.kscience.xroutines.serialization.Serializer
-import space.kscience.xroutines.serialization.s
+import space.kscience.lambdarpc.utils.AccessName
+import space.kscience.lambdarpc.functions.BackendFunction
+import space.kscience.lambdarpc.functions.BackendFunction1
+import space.kscience.lambdarpc.serialization.Serializer
+import space.kscience.lambdarpc.dsl.s
+import space.kscience.lambdarpc.functions.LibServiceGrpcImpl
 
 class LibServiceDSL {
     val fs = mutableMapOf<AccessName, BackendFunction>()

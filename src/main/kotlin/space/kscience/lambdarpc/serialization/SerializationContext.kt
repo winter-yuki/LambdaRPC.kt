@@ -1,13 +1,12 @@
-package space.kscience.xroutines.serialization
+package space.kscience.lambdarpc.serialization
 
-import space.kscience.soroutines.AccessName
+import space.kscience.lambdarpc.utils.AccessName
 import space.kscience.soroutines.transport.grpc.CallbackType
 import space.kscience.soroutines.transport.grpc.Payload
 import space.kscience.soroutines.transport.grpc.callback
 import space.kscience.soroutines.transport.grpc.payload
-import space.kscience.xroutines.backend.BackendFunction
-import space.kscience.xroutines.backend.BackendFunction1
-import space.kscience.xroutines.frontend.FrontendFunction1
+import space.kscience.lambdarpc.functions.BackendFunction
+import space.kscience.lambdarpc.functions.FrontendFunction1
 
 class SerializationContext {
     private val _callbacks: MutableMap<AccessName, BackendFunction> = mutableMapOf()

@@ -1,8 +1,8 @@
-package space.kscience.xroutines.frontend
+package space.kscience.lambdarpc.dsl.frontend
 
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
-import space.kscience.xroutines.utils.Endpoint
+import space.kscience.lambdarpc.utils.Endpoint
 
 class Channel(val address: String, val port: Int) {
     val builder: ManagedChannelBuilder<*> = ManagedChannelBuilder

@@ -1,13 +1,12 @@
-package space.kscience.xroutines.backend
+package space.kscience.lambdarpc.functions
 
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.Payload
-import space.kscience.xroutines.serialization.DataSerializer
-import space.kscience.xroutines.serialization.FunctionSerializer
-import space.kscience.xroutines.serialization.SerializationContext
-import space.kscience.xroutines.serialization.Serializer
+import space.kscience.lambdarpc.serialization.DataSerializer
+import space.kscience.lambdarpc.serialization.FunctionSerializer
+import space.kscience.lambdarpc.serialization.Serializer
 
 /**
  * Holds local function and allows to execute it from the outside

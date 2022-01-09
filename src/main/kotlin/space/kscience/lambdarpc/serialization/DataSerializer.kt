@@ -1,4 +1,4 @@
-package space.kscience.xroutines.serialization
+package space.kscience.lambdarpc.serialization
 
 import com.google.protobuf.ByteString
 import kotlinx.serialization.KSerializer

@@ -1,9 +1,11 @@
-package space.kscience.xroutines.frontend
+package space.kscience.lambdarpc.dsl.frontend
 
-import space.kscience.soroutines.AccessName
-import space.kscience.xroutines.serialization.Serializer
-import space.kscience.xroutines.utils.Endpoint
-import space.kscience.xroutines.utils.stub
+import space.kscience.lambdarpc.functions.FrontendFunction1
+import space.kscience.lambdarpc.serialization.Serializer
+import space.kscience.lambdarpc.utils.AccessName
+import space.kscience.lambdarpc.utils.Endpoint
+import space.kscience.lambdarpc.utils.UseStub
+import space.kscience.lambdarpc.utils.stub
 import kotlin.properties.ReadOnlyProperty
 
 class MutableConfiguration {
@@ -38,7 +40,6 @@ inline fun <reified A, reified R> MutableConfiguration.def(
     s1: Serializer<A>,
     s2: Serializer<R>,
     accessName: String? = null
-) =
-    def<R, FrontendFunction1<A, R>>(accessName) { name, block ->
-        FrontendFunction1(name, s1, s2, block)
-    }
+) = def<R, FrontendFunction1<A, R>>(accessName) { name, block ->
+    FrontendFunction1(name, s1, s2, block)
+}

@@ -2,15 +2,15 @@ package space.kscience.xroutines.frontend
 
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import space.kscience.soroutines.AccessName
+import space.kscience.lambdarpc.utils.AccessName
 import space.kscience.soroutines.transport.grpc.Message
 import space.kscience.soroutines.transport.grpc.executeRequest
 import space.kscience.soroutines.transport.grpc.message
-import space.kscience.xroutines.serialization.DataSerializer
-import space.kscience.xroutines.serialization.FunctionSerializer
-import space.kscience.xroutines.serialization.SerializationContext
-import space.kscience.xroutines.serialization.Serializer
-import space.kscience.xroutines.utils.unreachable
+import space.kscience.lambdarpc.serialization.DataSerializer
+import space.kscience.lambdarpc.serialization.FunctionSerializer
+import space.kscience.lambdarpc.serialization.SerializationContext
+import space.kscience.lambdarpc.serialization.Serializer
+import space.kscience.lambdarpc.utils.unreachable
 
 class LangFunction1<A, R>(
     private val name: AccessName,
