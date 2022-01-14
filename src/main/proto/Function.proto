@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_generic_services = true; // For julia client
+option java_package = "lambdarpc.transport.grpc";
+package lambdarpc.transport.grpc;
+
+message ReplyFunction {
+  string accessName = 1;
+}
+
+message ClientFunction {
+  string accessName = 1;
+  string serviceURL = 2;
+  string serviceUUID = 3;
+}
+
+message Function {
+  oneof function {
+    ReplyFunction replyFunction = 1;
+    ClientFunction clientFunction = 2;
+  }
+}

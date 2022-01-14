@@ -1,16 +1,19 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "space.kscience.soroutines.transport.grpc";
-package space.kscience.soroutines.transport.grpc;
+option java_generic_services = true; // For julia client
+option java_package = "lambdarpc.transport.grpc";
+package lambdarpc.transport.grpc;
 
-enum ErrorType {
+enum ExecuteType {
   FUNCTION_ERROR = 0;
-  SERIALIZATION_ERROR = 1;
-  INTERNAL_ERROR = 2;
+  TIMEOUT_ERROR = 1;
+  WRONG_SERVICE_ERROR = 2;
+  SERIALIZATION_ERROR = 3;
+  INTERNAL_ERROR = 4;
 }
 
 message ExecuteError {
-  ErrorType type = 1;
+  ExecuteType type = 1;
   string message = 2;
 }

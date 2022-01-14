@@ -5,9 +5,11 @@ option java_generic_services = true; // For julia client
 option java_package = "lambdarpc.transport.grpc";
 package lambdarpc.transport.grpc;
 
-import "InMessage.proto";
-import "OutMessage.proto";
+import "Function.proto";
 
-service LibService {
-  rpc execute(stream InMessage) returns (stream OutMessage);
+message Entity {
+  oneof content {
+    bytes data = 1;
+    Function function = 2;
+  }
 }

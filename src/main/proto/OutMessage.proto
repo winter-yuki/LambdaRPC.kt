@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_generic_services = true; // For julia client
+option java_package = "lambdarpc.transport.grpc";
+package lambdarpc.transport.grpc;
+
+import "Entity.proto";
+import "ExecuteError.proto";
+import "Function.proto";
+
+message OutExecuteRequest {
+  string accessName = 1;
+  repeated Entity args = 2;
+}
+
+message OutExecuteResponse {
+  string accessName = 1;
+  oneof content {
+    Result result = 2;
+    ExecuteError error = 3;
+  }
+
+  // Function of the service itself
+  message SelfFunction {
+    string accessName = 1;
+  }
+
+  message Result {
+    oneof content {
+      bytes data = 1;
+      ClientFunction clientFunction = 2;
+      SelfFunction selfFunction = 3;
+    }
+  }
+}
+
+message OutMessage {
+  oneof content {
+    OutExecuteRequest executeRequest = 1;
+    OutExecuteResponse executeResponse = 2;
+  }
+}
