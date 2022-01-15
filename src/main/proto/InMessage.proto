@@ -24,6 +24,7 @@ message InExecuteResponse {
 
 message InMessage {
   oneof content {
+    // TODO request must not be only first
     InFirstRequest firstRequest = 1;
     InExecuteResponse executeResponse = 2;
   }
