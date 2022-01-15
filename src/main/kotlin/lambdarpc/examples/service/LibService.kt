@@ -1,6 +1,8 @@
 package lambdarpc.examples.service
 
 import lambdarpc.dsl.backend.LibService
+import lambdarpc.dsl.f1
+import lambdarpc.dsl.s
 import java.util.*
 
 fun main() {
@@ -9,7 +11,7 @@ fun main() {
         uuid = UUID.fromString("ebcbc4c1-8201-4b1a-9fc2-dc4cdeb09b97")
     ) {
         "square".def(::square)
-//        "eval".def(::eval, s1 = f1(), rs = s())
+        "eval".def(::eval, s1 = f1(), rs = s())
     }
     service.start()
     service.awaitTermination()

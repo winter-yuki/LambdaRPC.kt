@@ -17,14 +17,11 @@ import lambdarpc.utils.AccessName
 import lambdarpc.utils.emitOrThrow
 import mu.KLoggable
 import mu.KLogger
-import mu.KotlinLogging
 
 interface ClientFunction {
     val name: AccessName
     val connection: Connection
 }
-
-private val log = KotlinLogging.logger { println("Privet") }
 
 class ClientFunction1<A, R>(
     override val name: AccessName,
