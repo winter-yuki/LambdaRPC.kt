@@ -4,8 +4,8 @@ import lambdarpc.serialization.FunctionRegistry
 import lambdarpc.serialization.Serializer
 import lambdarpc.serialization.decode
 import lambdarpc.transport.grpc.Entity
-import lambdarpc.transport.grpc.InChannel
-import lambdarpc.transport.grpc.OutChannel
+import lambdarpc.utils.grpc.InChannel
+import lambdarpc.utils.grpc.OutChannel
 
 /**
  * Holds local function and allows to execute it from the outside
