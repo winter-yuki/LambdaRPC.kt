@@ -5,27 +5,18 @@ option java_generic_services = true; // For julia client
 option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
-import "Entity.proto";
-import "ExecuteError.proto";
+import "ExecuteRequest.proto";
+import "ExecuteResponse.proto";
 
-message InFirstRequest {
+message InitialRequest {
   string serviceUUID = 1;
-  string accessName = 2;
-  repeated Entity args = 3;
-}
-
-message InExecuteResponse {
-  string accessName = 1;
-  oneof content {
-    Entity result = 2;
-    ExecuteError error = 3;
-  }
+  ExecuteRequest executeRequest = 2;
 }
 
 message InMessage {
   oneof content {
-    // TODO request must not be only first
-    InFirstRequest firstRequest = 1;
-    InExecuteResponse executeResponse = 2;
+    InitialRequest initialRequest = 1;
+    ExecuteRequest executeRequest = 2;
+    ExecuteResponse executeResponse = 3;
   }
 }

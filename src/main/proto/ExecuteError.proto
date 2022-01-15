@@ -10,7 +10,8 @@ enum ExecuteType {
   TIMEOUT_ERROR = 1;
   WRONG_SERVICE_ERROR = 2;
   SERIALIZATION_ERROR = 3;
-  INTERNAL_ERROR = 4;
+  FUNCTION_NOT_FOUND_ERROR = 4;
+  INTERNAL_ERROR = 5;
 }
 
 message ExecuteError {

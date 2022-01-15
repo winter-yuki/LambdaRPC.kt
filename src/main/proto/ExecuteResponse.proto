@@ -5,13 +5,13 @@ option java_generic_services = true; // For julia client
 option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
-import "ExecuteRequest.proto";
-import "ExecuteResponse.proto";
+import "Entity.proto";
+import "ExecuteError.proto";
 
-message OutMessage {
+message ExecuteResponse {
+  string executionId = 1;
   oneof content {
-    ExecuteRequest executeRequest = 1;
-    ExecuteResponse executeResponse = 2;
-    ExecuteResponse finalResponse = 3;
+    Entity result = 2;
+    ExecuteError error = 3;
   }
 }
