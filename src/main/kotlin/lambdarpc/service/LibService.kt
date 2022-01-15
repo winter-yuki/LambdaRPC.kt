@@ -43,6 +43,7 @@ class LibService(
                                 request.argsList, resultFunctionsRegistry,
                                 inChannel, outChannel
                             )
+                            outChannel.close()
                             // TODO handle errors
                             responses.emitOrThrow(outMessage {
                                 executeResponse = outExecuteResponse {

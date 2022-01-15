@@ -34,7 +34,6 @@ class BackendFunction1<A, R>(
         require(args.size == 1) { "${args.size} != 1" }
         val (arg1) = args
         val result = f(s1.decode(arg1, inChannel, outChannel))
-        outChannel.close()
         rs.encode(result)
     }
 }
