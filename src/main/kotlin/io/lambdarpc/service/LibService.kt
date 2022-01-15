@@ -2,10 +2,9 @@ package io.lambdarpc.service
 
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.serialization.FunctionRegistry
+import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.OutExecuteResponseKt.result
 import io.lambdarpc.transport.grpc.OutExecuteResponseKt.selfFunction
-import io.lambdarpc.transport.grpc.outExecuteResponse
-import io.lambdarpc.transport.grpc.outMessage
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.emitOrThrow
 import kotlinx.coroutines.CoroutineScope
@@ -26,15 +25,15 @@ import java.util.concurrent.Executors
 class LibService(
     private val fs: Map<AccessName, BackendFunction>,
     private val serviceUUID: UUID
-) : io.lambdarpc.transport.grpc.LibServiceGrpcKt.LibServiceCoroutineImplBase(), KLoggable {
+) : LibServiceGrpcKt.LibServiceCoroutineImplBase(), KLoggable {
     override val logger: KLogger = logger()
     private val resultFunctionsRegistry = FunctionRegistry()
 
-    override fun execute(requests: Flow<io.lambdarpc.transport.grpc.InMessage>): Flow<io.lambdarpc.transport.grpc.OutMessage> {
+    override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
         logger.info { "service $serviceUUID function executed" }
-        val inChannel = Channel<io.lambdarpc.transport.grpc.InExecuteResponse>()
-        val outChannel = Channel<io.lambdarpc.transport.grpc.OutExecuteRequest>()
-        val responses = MutableSharedFlow<io.lambdarpc.transport.grpc.OutMessage>(1)
+        val inChannel = Channel<InExecuteResponse>()
+        val outChannel = Channel<OutExecuteRequest>()
+        val responses = MutableSharedFlow<OutMessage>(1)
         CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()).launch {
             requests.collect { inMessage ->
                 logger.info { "message received^ $inMessage" }

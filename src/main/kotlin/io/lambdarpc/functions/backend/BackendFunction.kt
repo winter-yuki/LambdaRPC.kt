@@ -3,6 +3,7 @@ package io.lambdarpc.functions.backend
 import io.lambdarpc.serialization.FunctionRegistry
 import io.lambdarpc.serialization.Serializer
 import io.lambdarpc.serialization.decode
+import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.utils.grpc.InChannel
 import io.lambdarpc.utils.grpc.OutChannel
 
@@ -12,11 +13,11 @@ import io.lambdarpc.utils.grpc.OutChannel
  */
 interface BackendFunction {
     suspend operator fun invoke(
-        args: List<io.lambdarpc.transport.grpc.Entity>,
+        args: List<Entity>,
         registry: FunctionRegistry,
         inChannel: InChannel,
         outChannel: OutChannel
-    ): io.lambdarpc.transport.grpc.Entity
+    ): Entity
 }
 
 class BackendFunction1<A, R>(
@@ -25,11 +26,11 @@ class BackendFunction1<A, R>(
     private val rs: Serializer<R>,
 ) : BackendFunction {
     override suspend fun invoke(
-        args: List<io.lambdarpc.transport.grpc.Entity>,
+        args: List<Entity>,
         registry: FunctionRegistry,
         inChannel: InChannel,
         outChannel: OutChannel
-    ): io.lambdarpc.transport.grpc.Entity = registry.apply {
+    ): Entity = registry.apply {
         require(args.size == 1) { "${args.size} != 1" }
         val (arg1) = args
         val result = f(s1.decode(arg1, inChannel, outChannel))

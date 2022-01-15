@@ -1,6 +1,7 @@
 package io.lambdarpc.serialization
 
 import io.lambdarpc.functions.backend.BackendFunction
+import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.grpc.InChannel
 import io.lambdarpc.utils.grpc.OutChannel
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
 sealed interface Serializer<T>
 
 fun <T> Serializer<T>.decode(
-    entity: io.lambdarpc.transport.grpc.Entity,
+    entity: Entity,
     inChannel: InChannel,
     outChannel: OutChannel
 ): T = when (this) {
@@ -46,7 +47,7 @@ class FunctionRegistry {
                 _functions[name] = f
             }
 
-        fun <T> Serializer<T>.encode(value: T): io.lambdarpc.transport.grpc.Entity =
+        fun <T> Serializer<T>.encode(value: T): Entity =
             when (this) {
                 is DataSerializer -> encode(value)
                 is FunctionSerializer -> encode(value, this@Builder)

@@ -7,6 +7,7 @@ import io.lambdarpc.functions.frontend.ClientFunction1
 import io.lambdarpc.functions.frontend.ReplyFunction1
 import io.lambdarpc.service.Connection
 import io.lambdarpc.service.LibServiceEndpoint
+import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.entity
 import io.lambdarpc.transport.grpc.function
 import io.lambdarpc.transport.grpc.replyFunction
@@ -22,17 +23,17 @@ interface FunctionSerializer<F> : Serializer<F> {
      * Encoding function is saving it to the registry and
      * providing its name for the remote caller.
      */
-    fun encode(f: F, registry: FunctionRegistry.Builder): io.lambdarpc.transport.grpc.Entity
+    fun encode(f: F, registry: FunctionRegistry.Builder): Entity
 
     /**
      * Decoded function is a callable object that serializes the data
      * and communicates with the origin function via channels.
      */
-    fun decode(entity: io.lambdarpc.transport.grpc.Entity, inChannel: InChannel, outChannel: OutChannel): F
+    fun decode(entity: Entity, inChannel: InChannel, outChannel: OutChannel): F
 }
 
 abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
-    override fun encode(f: F, registry: FunctionRegistry.Builder): io.lambdarpc.transport.grpc.Entity =
+    override fun encode(f: F, registry: FunctionRegistry.Builder): Entity =
         entity {
             function = function {
                 if (f is ClientFunction) {
@@ -52,7 +53,7 @@ class FunctionSerializer1<A, R>(
     val rs: Serializer<R>,
 ) : AbstractFunctionSerializer<suspend (A) -> R>() {
     override fun decode(
-        entity: io.lambdarpc.transport.grpc.Entity,
+        entity: Entity,
         inChannel: InChannel,
         outChannel: OutChannel
     ): suspend (A) -> R {

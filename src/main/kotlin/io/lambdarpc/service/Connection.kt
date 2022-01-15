@@ -2,6 +2,8 @@ package io.lambdarpc.service
 
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.lambdarpc.transport.grpc.InMessage
+import io.lambdarpc.transport.grpc.OutMessage
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.grpc.stub
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +16,7 @@ data class LibServiceEndpoint(
 )
 
 class Accessor(val channel: ManagedChannel) : Closeable {
-    fun execute(requests: Flow<io.lambdarpc.transport.grpc.InMessage>): Flow<io.lambdarpc.transport.grpc.OutMessage> =
+    fun execute(requests: Flow<InMessage>): Flow<OutMessage> =
         channel.stub.execute(requests)
 
     override fun close() {

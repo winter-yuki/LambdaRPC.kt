@@ -6,8 +6,8 @@ import io.lambdarpc.dsl.s
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.functions.backend.BackendFunction1
 import io.lambdarpc.serialization.Serializer
-import io.lambdarpc.utils.AccessName
 import io.lambdarpc.service.LibService
+import io.lambdarpc.utils.AccessName
 import java.util.*
 
 class LibServiceDSL {
