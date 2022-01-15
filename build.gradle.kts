@@ -13,7 +13,7 @@ plugins {
     application
 }
 
-group = "lambdarpc"
+group = "io.lambdarpc"
 version = "0.0.1"
 
 ext["grpcVersion"] = "1.39.0" // need to wait for grpc kotlin to move past this
@@ -58,13 +58,13 @@ tasks.withType<KotlinCompile> {
 tasks.register<JavaExec>("exampleService") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("lambdarpc.examples.service.LibServiceKt")
+    mainClass.set("io.lambdarpc.examples.service.LibServiceKt")
 }
 
 tasks.register<JavaExec>("exampleClient") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("lambdarpc.examples.client.LibClientKt")
+    mainClass.set("io.lambdarpc.examples.client.LibClientKt")
 }
 
 protobuf {

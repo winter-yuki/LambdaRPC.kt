@@ -2,8 +2,8 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_generic_services = true; // For julia client
-option java_package = "lambdarpc.transport.grpc";
-package lambdarpc.transport.grpc;
+option java_package = "io.lambdarpc.transport.grpc";
+package io.lambdarpc.transport.grpc;
 
 enum ExecuteType {
   FUNCTION_ERROR = 0;

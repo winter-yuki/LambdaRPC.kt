@@ -1,1 +1,1 @@
-rootProject.name = "lambdarpc"
+rootProject.name = "lambdarpc-kt"
