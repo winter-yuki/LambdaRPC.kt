@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.client
+package io.lambdarpc.examples.basic.client
 
 import io.lambdarpc.dsl.f1
 import io.lambdarpc.dsl.frontend.MutableConfiguration

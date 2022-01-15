@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.service
+package io.lambdarpc.examples.basic.service
 
 import kotlinx.serialization.Serializable
 import kotlin.math.sqrt

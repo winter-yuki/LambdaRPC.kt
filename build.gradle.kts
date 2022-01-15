@@ -58,13 +58,13 @@ tasks.withType<KotlinCompile> {
 tasks.register<JavaExec>("exampleService") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.service.LibServiceKt")
+    mainClass.set("io.lambdarpc.examples.basic.service.LibServiceKt")
 }
 
 tasks.register<JavaExec>("exampleClient") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.client.LibClientKt")
+    mainClass.set("io.lambdarpc.examples.basic.client.LibClientKt")
 }
 
 protobuf {
