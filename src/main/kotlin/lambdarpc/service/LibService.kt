@@ -36,7 +36,6 @@ class LibService(
         val outChannel = Channel<OutExecuteRequest>()
         val responses = MutableSharedFlow<OutMessage>(1)
         CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()).launch {
-            val outer = this
             requests.collect { inMessage ->
                 logger.info { "message received^ $inMessage" }
                 when {
@@ -79,7 +78,6 @@ class LibService(
                                 }
                             })
                             outChannel.close()
-                            outer.cancel()
                             cancel()
                         }
                         launch {
