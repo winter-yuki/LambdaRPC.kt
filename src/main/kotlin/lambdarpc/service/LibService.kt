@@ -2,6 +2,7 @@ package lambdarpc.service
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,8 @@ import lambdarpc.transport.grpc.OutExecuteResponseKt.result
 import lambdarpc.transport.grpc.OutExecuteResponseKt.selfFunction
 import lambdarpc.utils.AccessName
 import lambdarpc.utils.emitOrThrow
+import mu.KLoggable
+import mu.KLogger
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -23,15 +26,19 @@ import java.util.concurrent.Executors
 class LibService(
     private val fs: Map<AccessName, BackendFunction>,
     private val serviceUUID: UUID
-) : LibServiceGrpcKt.LibServiceCoroutineImplBase() {
+) : LibServiceGrpcKt.LibServiceCoroutineImplBase(), KLoggable {
+    override val logger: KLogger = logger()
     private val resultFunctionsRegistry = FunctionRegistry()
 
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
+        logger.info { "service $serviceUUID function executed" }
         val inChannel = Channel<InExecuteResponse>()
         val outChannel = Channel<OutExecuteRequest>()
         val responses = MutableSharedFlow<OutMessage>(1)
         CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()).launch {
+            val outer = this
             requests.collect { inMessage ->
+                logger.info { "message received^ $inMessage" }
                 when {
                     inMessage.hasFirstRequest() -> {
                         val request = inMessage.firstRequest
@@ -43,7 +50,8 @@ class LibService(
                                 request.argsList, resultFunctionsRegistry,
                                 inChannel, outChannel
                             )
-                            outChannel.close()
+
+                            logger.info { "result = $result" }
                             // TODO handle errors
                             responses.emitOrThrow(outMessage {
                                 executeResponse = outExecuteResponse {
@@ -70,6 +78,9 @@ class LibService(
                                     }
                                 }
                             })
+                            outChannel.close()
+                            outer.cancel()
+                            cancel()
                         }
                         launch {
                             outChannel.consumeEach { out ->

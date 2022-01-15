@@ -33,9 +33,10 @@ dependencies {
     api("com.google.protobuf:protobuf-java-util:${rootProject.ext["protobufVersion"]}")
     api("com.google.protobuf:protobuf-kotlin:${rootProject.ext["protobufVersion"]}")
     api("io.grpc:grpc-kotlin-stub:${rootProject.ext["grpcKotlinVersion"]}")
+    implementation("org.slf4j:slf4j-simple:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     testImplementation(kotlin("test"))
     implementation(kotlin("reflect"))
 }

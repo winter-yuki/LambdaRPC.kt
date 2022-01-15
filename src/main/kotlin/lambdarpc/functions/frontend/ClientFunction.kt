@@ -1,11 +1,12 @@
 package lambdarpc.functions.frontend
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.reduce
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import lambdarpc.exceptions.InternalError
 import lambdarpc.serialization.FunctionRegistry
 import lambdarpc.serialization.Serializer
@@ -14,19 +15,27 @@ import lambdarpc.service.Connection
 import lambdarpc.transport.grpc.*
 import lambdarpc.utils.AccessName
 import lambdarpc.utils.emitOrThrow
+import mu.KLoggable
+import mu.KLogger
+import mu.KotlinLogging
 
 interface ClientFunction {
     val name: AccessName
     val connection: Connection
 }
 
+private val log = KotlinLogging.logger { println("Privet") }
+
 class ClientFunction1<A, R>(
     override val name: AccessName,
     val s1: Serializer<A>,
     val rs: Serializer<R>,
     override val connection: Connection
-) : ClientFunction, suspend (A) -> R {
+) : ClientFunction, suspend (A) -> R, KLoggable {
+    override val logger: KLogger = logger()
+
     override suspend fun invoke(arg: A): R = connection.use { accessor ->
+        logger.info { "invoke called on $name" }
         FunctionRegistry().apply {
             val request = inMessage {
                 firstRequest = inFirstRequest {
@@ -40,8 +49,11 @@ class ClientFunction1<A, R>(
             }
             val responses = accessor.execute(requests)
             val response: OutExecuteResponse? = coroutineScope {
-                val outMessage: OutMessage = withContext(Dispatchers.Default) {
-                    responses.reduce { _, response ->
+                var outMessage: OutMessage? = null
+                launch {
+                    responses.onEach {
+                        logger.info { "got message $it" }
+                    }.collect { response ->
                         when {
                             response.hasExecuteRequest() -> {
                                 val executeRequest = response.executeRequest
@@ -55,13 +67,15 @@ class ClientFunction1<A, R>(
                                     }
                                 })
                             }
-                            response.hasExecuteResponse() -> {}
+                            response.hasExecuteResponse() -> {
+                                outMessage = response
+                                cancel()
+                            }
                             else -> throw InternalError("Unknown response type")
                         }
-                        response
                     }
-                }
-                outMessage.executeResponse
+                }.join()
+                outMessage?.executeResponse
             }
             response ?: throw InternalError("No response")
             when {
