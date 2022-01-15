@@ -4,7 +4,20 @@ import lambdarpc.exceptions.InternalError
 import lambdarpc.functions.backend.BackendFunction
 import lambdarpc.functions.backend.BackendFunction1
 import lambdarpc.functions.frontend.ClientFunction
-import lambdarpc.transport.grpc.*
+import lambdarpc.functions.frontend.ClientFunction1
+import lambdarpc.functions.frontend.ReplyFunction1
+import lambdarpc.service.Connection
+import lambdarpc.service.LibServiceEndpoint
+import lambdarpc.transport.grpc.Entity
+import lambdarpc.transport.grpc.entity
+import lambdarpc.transport.grpc.function
+import lambdarpc.transport.grpc.replyFunction
+import lambdarpc.utils.AccessName
+import lambdarpc.utils.Endpoint
+import lambdarpc.utils.grpc.InChannel
+import lambdarpc.utils.grpc.OutChannel
+import lambdarpc.utils.grpc.encode
+import java.util.*
 
 interface FunctionSerializer<F> : Serializer<F> {
     /**
@@ -48,8 +61,23 @@ class FunctionSerializer1<A, R>(
         require(entity.hasFunction()) { "Function required" }
         val function = entity.function
         return when {
-            function.hasReplyFunction() -> TODO()
-            function.hasClientFunction() -> TODO()
+            function.hasReplyFunction() -> {
+                ReplyFunction1(
+                    AccessName(function.replyFunction.accessName),
+                    s1, rs, inChannel, outChannel
+                )
+            }
+            function.hasClientFunction() -> {
+                val endpoint = Endpoint.of(function.clientFunction.serviceURL)
+                val serviceEndpoint = LibServiceEndpoint(
+                    endpoint,
+                    UUID.fromString(function.clientFunction.serviceUUID)
+                )
+                ClientFunction1(
+                    AccessName(function.clientFunction.accessName),
+                    s1, rs, Connection(serviceEndpoint)
+                )
+            }
             else -> throw InternalError("Function type is not supported")
         }
     }

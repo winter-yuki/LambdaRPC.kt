@@ -2,9 +2,9 @@ package lambdarpc.serialization
 
 import lambdarpc.functions.backend.BackendFunction
 import lambdarpc.transport.grpc.Entity
-import lambdarpc.transport.grpc.InChannel
-import lambdarpc.transport.grpc.OutChannel
 import lambdarpc.utils.AccessName
+import lambdarpc.utils.grpc.InChannel
+import lambdarpc.utils.grpc.OutChannel
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
