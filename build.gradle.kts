@@ -3,18 +3,7 @@ import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
-import org.gradle.kotlin.dsl.api
-import org.gradle.kotlin.dsl.application
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.ext
 import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.repositories
-import org.gradle.kotlin.dsl.runtimeOnly
-import org.gradle.kotlin.dsl.test
-import org.gradle.kotlin.dsl.testImplementation
-import org.gradle.kotlin.dsl.version
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -24,7 +13,7 @@ plugins {
     application
 }
 
-group = "soroutines"
+group = "lambdarpc"
 version = "0.0.1"
 
 ext["grpcVersion"] = "1.39.0" // need to wait for grpc kotlin to move past this
@@ -68,13 +57,13 @@ tasks.withType<KotlinCompile> {
 tasks.register<JavaExec>("exampleService") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("space.kscience.xroutines.examples.service.LibServiceKt")
+    mainClass.set("lambdarpc.examples.service.LibServiceKt")
 }
 
 tasks.register<JavaExec>("exampleClient") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("space.kscience.xroutines.examples.client.LibClientKt")
+    mainClass.set("lambdarpc.examples.client.LibClientKt")
 }
 
 protobuf {

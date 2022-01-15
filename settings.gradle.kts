@@ -1,3 +1,1 @@
-
-rootProject.name = "soroutines"
-
+rootProject.name = "lambdarpc"
