@@ -1,32 +1,31 @@
 package io.lambdarpc.functions.frontend
 
+import io.lambdarpc.exceptions.UnknownMessageType
+import io.lambdarpc.serialization.ChannelRegistry
 import io.lambdarpc.serialization.FunctionRegistry
 import io.lambdarpc.serialization.Serializer
-import io.lambdarpc.serialization.decode
-import io.lambdarpc.transport.grpc.outExecuteRequest
+import io.lambdarpc.serialization.scope
+import io.lambdarpc.transport.grpc.executeRequest
 import io.lambdarpc.utils.AccessName
-import io.lambdarpc.utils.grpc.InChannel
-import io.lambdarpc.utils.grpc.OutChannel
 
-// TODO error handling
 class ReplyFunction1<A, R>(
     val name: AccessName,
+    private val channelRegistry: ChannelRegistry,
     val s1: Serializer<A>,
-    val rs: Serializer<R>,
-    private val inChannel: InChannel,
-    private val outChannel: OutChannel
+    val rs: Serializer<R>
 ) : suspend (A) -> R {
-    override suspend fun invoke(arg: A): R = FunctionRegistry().apply {
-        val executeRequest = outExecuteRequest {
+    override suspend fun invoke(arg: A): R = scope(FunctionRegistry(), channelRegistry) {
+        val executeRequest = executeRequest {
             accessName = name.n
             args.add(s1.encode(arg))
         }
-        outChannel.send(executeRequest)
-        val response = inChannel.receive()
+        val (id, channels) = channelRegistry.registerFromProvider()
+        channels.requests.send(executeRequest)
+        val response = channels.responses.receive()
         when {
-            response.hasResult() -> rs.decode(response.result, inChannel, outChannel)
-            response.hasError() -> TODO()
-            else -> throw InternalError("Unknown response type")
+            response.hasResult() -> rs.decode(response.result)
+            response.hasError() -> TODO("Error handling")
+            else -> throw UnknownMessageType("execute result")
         }
     }
 }

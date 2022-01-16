@@ -7,8 +7,8 @@ import io.lambdarpc.utils.ServiceId
 fun ClientFunction.encode(): io.lambdarpc.transport.grpc.ClientFunction =
     clientFunction {
         accessName = name.n
-        serviceURL = connection.serviceEndpoint.endpoint.toString()
-        serviceUUID = connection.serviceEndpoint.id.encode()
+        serviceURL = endpoint.endpoint.toString()
+        serviceUUID = endpoint.id.encode()
     }
 
 fun ServiceId.encode() = id.toString()

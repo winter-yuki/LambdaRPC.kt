@@ -5,14 +5,14 @@ import io.grpc.ManagedChannelBuilder
 import io.lambdarpc.transport.grpc.InMessage
 import io.lambdarpc.transport.grpc.OutMessage
 import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.grpc.stub
 import kotlinx.coroutines.flow.Flow
 import java.io.Closeable
-import java.util.*
 
 data class LibServiceEndpoint(
     val endpoint: Endpoint,
-    val uuid: UUID
+    val id: ServiceId
 )
 
 class Accessor(val channel: ManagedChannel) : Closeable {

@@ -18,8 +18,18 @@ class SerializationScope(
             is FunctionSerializer -> encode(value, functionRegistry)
         }
 
-    fun <T> Serializer<T>.decode(entity: Entity): T = when (this) {
-        is DataSerializer -> decode(entity)
-        is FunctionSerializer -> decode(entity, channelRegistry)
-    }
+    fun <T> Serializer<T>.decode(entity: Entity): T =
+        when (this) {
+            is DataSerializer -> decode(entity)
+            is FunctionSerializer -> decode(entity, channelRegistry)
+        }
 }
+
+infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
+    SerializationScope(this, channelRegistry)
+
+inline fun <R> scope(
+    functionRegistry: FunctionRegistry,
+    channelRegistry: ChannelRegistry,
+    block: SerializationScope.() -> R
+) = SerializationScope(functionRegistry, channelRegistry).block()

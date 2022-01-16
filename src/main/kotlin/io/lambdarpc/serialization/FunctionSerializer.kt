@@ -12,7 +12,6 @@ import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.entity
 import io.lambdarpc.transport.grpc.function
 import io.lambdarpc.transport.grpc.replyFunction
-import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.grpc.encode
@@ -59,7 +58,7 @@ class FunctionSerializer1<A, R>(
             function.hasReplyFunction() -> {
                 ReplyFunction1(
                     function.replyFunction.accessName.an,
-                    s1, rs, registry
+                    registry, s1, rs
                 )
             }
             function.hasClientFunction() -> {
@@ -68,8 +67,8 @@ class FunctionSerializer1<A, R>(
                     endpoint, function.clientFunction.serviceUUID.sid
                 )
                 ClientFunction1(
-                    AccessName(function.clientFunction.accessName),
-                    s1, rs, Connection(serviceEndpoint)
+                    function.clientFunction.accessName.an,
+                    Connection(serviceEndpoint), s1, rs
                 )
             }
             else -> throw UnknownMessageType("function")

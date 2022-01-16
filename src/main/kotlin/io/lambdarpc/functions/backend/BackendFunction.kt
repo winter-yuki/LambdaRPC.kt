@@ -1,11 +1,8 @@
 package io.lambdarpc.functions.backend
 
-import io.lambdarpc.serialization.FunctionRegistry
+import io.lambdarpc.serialization.SerializationScope
 import io.lambdarpc.serialization.Serializer
-import io.lambdarpc.serialization.decode
 import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.utils.grpc.InChannel
-import io.lambdarpc.utils.grpc.OutChannel
 
 /**
  * Holds local function and allows to execute it from the outside
@@ -14,9 +11,7 @@ import io.lambdarpc.utils.grpc.OutChannel
 interface BackendFunction {
     suspend operator fun invoke(
         args: List<Entity>,
-        registry: FunctionRegistry,
-        inChannel: InChannel,
-        outChannel: OutChannel
+        serializationScope: SerializationScope
     ): Entity
 }
 
@@ -27,13 +22,11 @@ class BackendFunction1<A, R>(
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Entity>,
-        registry: FunctionRegistry,
-        inChannel: InChannel,
-        outChannel: OutChannel
-    ): Entity = registry.apply {
+        serializationScope: SerializationScope
+    ): Entity = serializationScope.run {
         require(args.size == 1) { "${args.size} != 1" }
         val (arg1) = args
-        val result = f(s1.decode(arg1, inChannel, outChannel))
+        val result = f(s1.decode(arg1))
         rs.encode(result)
     }
 }

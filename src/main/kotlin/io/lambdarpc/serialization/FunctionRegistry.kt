@@ -15,8 +15,14 @@ class FunctionRegistry {
 
     private val accessNameSeed = AtomicInteger(0)
 
+    operator fun get(name: AccessName) = functions[name]
+    fun getValue(name: AccessName) = functions.getValue(name)
+
     fun register(f: BackendFunction): AccessName =
         AccessName(accessNameSeed.getAndIncrement().toString()).also { name ->
             _functions[name] = f
         }
+
+    fun register(name: AccessName, f: BackendFunction): Boolean =
+        _functions.computeIfAbsent(name) { f } == f
 }
