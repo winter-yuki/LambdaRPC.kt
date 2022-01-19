@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * [TransportChannel] is an accessor that allows frontend functions to work with client-server
+ * bidirectional communication: send requests and get responses.
+ */
 class TransportChannel(
     private val response: CompletableDeferred<ExecuteResponse>,
     private val requests: MutableSharedFlow<ExecuteRequest>,

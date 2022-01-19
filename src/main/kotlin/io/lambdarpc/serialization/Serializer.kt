@@ -3,14 +3,14 @@ package io.lambdarpc.serialization
 import io.lambdarpc.transport.grpc.Entity
 
 /**
- * Serializer interface that is able to work with functions.
+ * Serializer interface that is able to work with data and functions.
  * To add custom data serialization, implement [DataSerializer] interface.
  */
 sealed interface Serializer<T>
 
-class SerializationScope<M>(
+class SerializationScope(
     val functionRegistry: FunctionRegistry,
-    val channelRegistry: ChannelRegistry<M>
+    val channelRegistry: ChannelRegistry
 ) {
     fun <T> Serializer<T>.encode(value: T): Entity =
         when (this) {
@@ -25,11 +25,11 @@ class SerializationScope<M>(
         }
 }
 
-infix fun <M> FunctionRegistry.and(channelRegistry: ChannelRegistry<M>) =
+infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
     SerializationScope(this, channelRegistry)
 
-inline fun <M, R> scope(
+inline fun <R> scope(
     functionRegistry: FunctionRegistry,
-    channelRegistry: ChannelRegistry<M>,
-    block: SerializationScope<M>.() -> R
+    channelRegistry: ChannelRegistry,
+    block: SerializationScope.() -> R
 ) = SerializationScope(functionRegistry, channelRegistry).block()

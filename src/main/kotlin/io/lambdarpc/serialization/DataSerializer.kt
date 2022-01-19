@@ -9,7 +9,7 @@ import kotlinx.serialization.serializer
 import java.nio.charset.Charset
 
 /**
- * Serializer for the data. Be able to work with custom serialization, extend it.
+ * Serializer for the data. To be able to work with custom serialization, extend it.
  */
 interface DataSerializer<T> : Serializer<T> {
     fun encode(value: T): Entity
