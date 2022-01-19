@@ -47,8 +47,8 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
 }
 
 class FunctionSerializer1<A, R>(
-    val s1: Serializer<A>,
-    val rs: Serializer<R>,
+    private val s1: Serializer<A>,
+    private val rs: Serializer<R>,
 ) : AbstractFunctionSerializer<suspend (A) -> R>() {
     override fun decode(entity: Entity, registry: ChannelRegistry): suspend (A) -> R {
         require(entity.hasFunction()) { "Function required" }

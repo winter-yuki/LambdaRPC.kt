@@ -8,37 +8,40 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class TransportChannel<M>(
-    val response: CompletableDeferred<ExecuteResponse>,
-    private val requests: MutableSharedFlow<M>,
-    private val toMessage: (ExecuteRequest) -> M
+class TransportChannel(
+    private val response: CompletableDeferred<ExecuteResponse>,
+    private val requests: MutableSharedFlow<ExecuteRequest>,
 ) {
     suspend fun receive(): ExecuteResponse = response.await()
 
     suspend fun send(request: ExecuteRequest) {
-        requests.emit(toMessage(request))
+        requests.emit(request)
+    }
+
+    fun complete(response: ExecuteResponse) {
+        this.response.complete(response)
     }
 }
 
-class ChannelRegistry<M>(private val channelProvider: suspend () -> TransportChannel<M>) {
-    private val _channels = ConcurrentHashMap<ExecutionId, TransportChannel<M>>()
-    val channels: Map<ExecutionId, TransportChannel<M>>
+class ChannelRegistry(private val requests: MutableSharedFlow<ExecuteRequest>) {
+    private val _channels = ConcurrentHashMap<ExecutionId, TransportChannel>()
+    val channels: Map<ExecutionId, TransportChannel>
         get() = _channels
 
-    suspend operator fun <R> invoke(block: suspend TransportChannel<M>.() -> R): R {
-        val channel = channelProvider()
+    suspend fun <R> use(block: suspend (TransportChannel) -> R): R {
+        val channel = TransportChannel(CompletableDeferred(), requests)
         val id = register(channel)
-        val result = channel.block()
+        val result = block(channel)
         _channels.remove(id)
         return result
     }
 
-    private fun register(channels: TransportChannel<M>): ExecutionId =
+    private fun register(channels: TransportChannel): ExecutionId =
         ExecutionId(UUID.randomUUID()).also {
             _channels[it] = channels
         }
 }
 
-operator fun <M> ChannelRegistry<M>.get(id: ExecutionId) = channels[id]
+operator fun ChannelRegistry.get(id: ExecutionId) = channels[id]
 
-fun <M> ChannelRegistry<M>.getValue(id: ExecutionId) = channels.getValue(id)
+fun ChannelRegistry.getValue(id: ExecutionId) = channels.getValue(id)
