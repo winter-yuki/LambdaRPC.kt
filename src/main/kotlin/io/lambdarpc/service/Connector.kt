@@ -11,7 +11,10 @@ import io.lambdarpc.utils.grpc.stub
 import kotlinx.coroutines.flow.Flow
 import java.io.Closeable
 
-class Accessor(
+/**
+ * Represents connection between client and service.
+ */
+class Connection(
     private val channel: ManagedChannel,
     private val stub: Stub = channel.stub
 ) : Closeable {
@@ -22,18 +25,22 @@ class Accessor(
     }
 
     companion object {
-        fun of(endpoint: Endpoint): Accessor {
+        fun of(endpoint: Endpoint): Connection {
             val builder = ManagedChannelBuilder
                 .forAddress(endpoint.address.a, endpoint.port.p)
                 .usePlaintext()
-            return Accessor(builder.build())
+            return Connection(builder.build())
         }
     }
 }
 
-open class Connection(val serviceId: ServiceId, val endpoint: Endpoint) {
-    suspend fun <R> use(block: suspend (Accessor) -> R): R = useStrategy(block)
+/**
+ * [Connector] is able to provide connection between client and service.
+ * To change create-close connection behaviour, override [useStrategy] method.
+ */
+open class Connector(val serviceId: ServiceId, val endpoint: Endpoint) {
+    suspend fun <R> connect(block: suspend (Connection) -> R): R = useStrategy(block)
 
-    protected open suspend fun <R> useStrategy(block: suspend (Accessor) -> R): R =
-        Accessor.of(endpoint).use { block(it) }
+    protected open suspend fun <R> useStrategy(block: suspend (Connection) -> R): R =
+        Connection.of(endpoint).use { block(it) }
 }

@@ -6,7 +6,7 @@ import io.lambdarpc.functions.backend.BackendFunction1
 import io.lambdarpc.functions.frontend.ChannelFunction1
 import io.lambdarpc.functions.frontend.ClientFunction
 import io.lambdarpc.functions.frontend.ClientFunction1
-import io.lambdarpc.service.Connection
+import io.lambdarpc.service.Connector
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.channelFunction
 import io.lambdarpc.transport.grpc.entity
@@ -58,14 +58,14 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
                 val name = function.clientFunction.accessName.an
                 val id = function.clientFunction.serviceUUID.sid
                 val endpoint = Endpoint.of(function.clientFunction.serviceURL)
-                clientFunction(name, Connection(id, endpoint))
+                clientFunction(name, Connector(id, endpoint))
             }
             else -> throw UnknownMessageType("function")
         }
     }
 
     protected abstract fun channelFunction(name: AccessName, registry: ChannelRegistry): F
-    protected abstract fun clientFunction(name: AccessName, connection: Connection): F
+    protected abstract fun clientFunction(name: AccessName, connector: Connector): F
 }
 
 class FunctionSerializer1<A, R>(
@@ -77,6 +77,6 @@ class FunctionSerializer1<A, R>(
     override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A) -> R =
         ChannelFunction1(name, registry, s1, rs)
 
-    override fun clientFunction(name: AccessName, connection: Connection): suspend (A) -> R =
-        ClientFunction1(name, connection, s1, rs)
+    override fun clientFunction(name: AccessName, connector: Connector): suspend (A) -> R =
+        ClientFunction1(name, connector, s1, rs)
 }
