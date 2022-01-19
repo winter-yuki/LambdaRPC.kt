@@ -8,9 +8,9 @@ import io.lambdarpc.transport.grpc.Entity
  */
 sealed interface Serializer<T>
 
-class SerializationScope(
+class SerializationScope<M>(
     val functionRegistry: FunctionRegistry,
-    val channelRegistry: ChannelRegistry
+    val channelRegistry: ChannelRegistry<M>
 ) {
     fun <T> Serializer<T>.encode(value: T): Entity =
         when (this) {
@@ -25,11 +25,11 @@ class SerializationScope(
         }
 }
 
-infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
+infix fun <M> FunctionRegistry.and(channelRegistry: ChannelRegistry<M>) =
     SerializationScope(this, channelRegistry)
 
-inline fun <R> scope(
+inline fun <M, R> scope(
     functionRegistry: FunctionRegistry,
-    channelRegistry: ChannelRegistry,
-    block: SerializationScope.() -> R
+    channelRegistry: ChannelRegistry<M>,
+    block: SerializationScope<M>.() -> R
 ) = SerializationScope(functionRegistry, channelRegistry).block()

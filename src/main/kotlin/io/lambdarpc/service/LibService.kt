@@ -1,53 +1,39 @@
 package io.lambdarpc.service
 
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.serialization.ChannelRegistry
-import io.lambdarpc.serialization.FunctionRegistry
-import io.lambdarpc.serialization.and
+import io.lambdarpc.serialization.*
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.utils.an
-import io.lambdarpc.utils.eid
+import io.lambdarpc.utils.*
 import io.lambdarpc.utils.grpc.encode
-import io.lambdarpc.utils.sid
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 
 class LibService(
-    private val endpoint: LibServiceEndpoint,
+    private val serviceId: ServiceId,
+    private val endpoint: Endpoint,
     private val registry: FunctionRegistry,
-    private val reply: Int = 500
 ) : LibServiceGrpcKt.LibServiceCoroutineImplBase(), KLoggable {
     override val logger: KLogger = logger()
 
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
-        logger.info { "Service ${endpoint.id} function executed" }
+        logger.info { "Service $serviceId function executed" }
         val localRegistry = FunctionRegistry()
-        val responses = MutableSharedFlow<OutMessage>(reply)
+        val responses = MutableSharedFlow<OutMessage>(replay = 1, extraBufferCapacity = 100)
         CoroutineScope(Dispatchers.Default).launch {
             val channelRegistry = ChannelRegistry {
-                val inChannel = Channel<ExecuteResponse>()
-                val outChannel = Channel<ExecuteRequest>()
-                launch {
-                    outChannel.consumeEach { request ->
-                        responses.emit(outMessage {
-                            executeRequest = request
-                        })
-                    }
+                val completable = CompletableDeferred<ExecuteResponse>(context.job)
+                TransportChannel(completable, responses) {
+                    outMessage { executeRequest = it }
                 }
-                inChannel and outChannel
             }
             requests.collect { inMessage ->
                 when {
                     inMessage.hasInitialRequest() -> {
-                        if (inMessage.initialRequest.serviceUUID.sid == endpoint.id) {
+                        if (inMessage.initialRequest.serviceUUID.sid != serviceId) {
                             TODO("Service UUID error handling")
                         }
                         val request = inMessage.initialRequest.executeRequest
@@ -59,7 +45,7 @@ class LibService(
                             val result = f(request.argsList, localRegistry and channelRegistry)
                             responses.emit(outMessage {
                                 finalResponse = executeResponse {
-                                    this.result = result.replyToClient(localRegistry)
+                                    this.result = result.channelToClient(localRegistry)
                                 }
                             })
                         }
@@ -84,7 +70,7 @@ class LibService(
                         when {
                             response.hasResult() -> {
                                 channelRegistry[response.executionId.eid]
-                                    ?.responses?.send(response) ?: TODO()
+                                    ?.response?.complete(response) ?: TODO()
                             }
                             response.hasError() -> TODO("Error processing")
                             else -> throw UnknownMessageType("execute response")
@@ -97,18 +83,17 @@ class LibService(
         return responses
     }
 
-    private fun Entity.replyToClient(localRegistry: FunctionRegistry): Entity =
-        if (!hasFunction() || !function.hasReplyFunction()) this
-        else {
-            val oldName = function.replyFunction.accessName
+    private fun Entity.channelToClient(localRegistry: FunctionRegistry): Entity =
+        if (!hasFunction() || !function.hasChannelFunction()) this else {
+            val oldName = function.channelFunction.accessName
             val f = localRegistry[oldName.an] ?: TODO()
             val name = registry.register(f)
             entity {
                 function = function {
                     clientFunction = clientFunction {
                         accessName = name.n
-                        serviceURL = endpoint.endpoint.toString()
-                        serviceUUID = endpoint.id.encode()
+                        serviceURL = endpoint.encode()
+                        serviceUUID = serviceId.encode()
                     }
                 }
             }

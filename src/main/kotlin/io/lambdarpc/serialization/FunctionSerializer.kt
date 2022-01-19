@@ -3,15 +3,14 @@ package io.lambdarpc.serialization
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.functions.backend.BackendFunction1
+import io.lambdarpc.functions.frontend.ChannelFunction1
 import io.lambdarpc.functions.frontend.ClientFunction
 import io.lambdarpc.functions.frontend.ClientFunction1
-import io.lambdarpc.functions.frontend.ReplyFunction1
 import io.lambdarpc.service.Connection
-import io.lambdarpc.service.LibServiceEndpoint
 import io.lambdarpc.transport.grpc.Entity
+import io.lambdarpc.transport.grpc.channelFunction
 import io.lambdarpc.transport.grpc.entity
 import io.lambdarpc.transport.grpc.function
-import io.lambdarpc.transport.grpc.replyFunction
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.grpc.encode
@@ -39,7 +38,7 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
                     clientFunction = f.encode()
                 } else {
                     val name = registry.register(f.toBackendFunction())
-                    replyFunction = replyFunction { accessName = name.n }
+                    channelFunction = channelFunction { accessName = name.n }
                 }
             }
         }
@@ -55,20 +54,18 @@ class FunctionSerializer1<A, R>(
         require(entity.hasFunction()) { "Function required" }
         val function = entity.function
         return when {
-            function.hasReplyFunction() -> {
-                ReplyFunction1(
-                    function.replyFunction.accessName.an,
+            function.hasChannelFunction() -> {
+                ChannelFunction1(
+                    function.channelFunction.accessName.an,
                     registry, s1, rs
                 )
             }
             function.hasClientFunction() -> {
+                val id = function.clientFunction.serviceUUID.sid
                 val endpoint = Endpoint.of(function.clientFunction.serviceURL)
-                val serviceEndpoint = LibServiceEndpoint(
-                    endpoint, function.clientFunction.serviceUUID.sid
-                )
                 ClientFunction1(
                     function.clientFunction.accessName.an,
-                    Connection(serviceEndpoint), s1, rs
+                    Connection(id, endpoint), s1, rs
                 )
             }
             else -> throw UnknownMessageType("function")

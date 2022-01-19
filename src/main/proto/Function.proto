@@ -5,7 +5,7 @@ option java_generic_services = true; // For julia client
 option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
-message ReplyFunction {
+message ChannelFunction {
   string accessName = 1;
 }
 
@@ -16,8 +16,9 @@ message ClientFunction {
 }
 
 message Function {
+  bool cached = 1;
   oneof function {
-    ReplyFunction replyFunction = 1;
-    ClientFunction clientFunction = 2;
+    ChannelFunction channelFunction = 2;
+    ClientFunction clientFunction = 3;
   }
 }

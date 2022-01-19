@@ -19,13 +19,6 @@ val String.sid: ServiceId
 
 
 @JvmInline
-value class AccessName(val n: String)
-
-val String.an: AccessName
-    get() = AccessName(this)
-
-
-@JvmInline
 value class ExecutionId(val id: UUID) {
     override fun toString(): String = id.toString()
 
@@ -39,3 +32,10 @@ val UUID.eid: ExecutionId
 
 val String.eid: ExecutionId
     get() = ExecutionId.of(this)
+
+
+@JvmInline
+value class AccessName(val n: String)
+
+val String.an: AccessName
+    get() = AccessName(this)
