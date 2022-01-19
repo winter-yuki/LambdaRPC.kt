@@ -14,7 +14,7 @@ abstract class AbstractChannelFunction<R>(
     protected suspend operator fun SerializationScope.invoke(vararg entities: Entity): R {
         val executeRequest = executeRequest {
             accessName = name.n
-            entities.forEach { args.add(it) }
+            args.addAll(entities.toList())
         }
         val response = channelRegistry.use { channel ->
             channel.send(executeRequest)
