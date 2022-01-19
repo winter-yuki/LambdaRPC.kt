@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.basic.service
+package io.lambdarpc.examples.wrapperlib.service
 
 import io.lambdarpc.dsl.backend.LibService
 import io.lambdarpc.dsl.f1

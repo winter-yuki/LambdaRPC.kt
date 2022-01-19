@@ -1,8 +1,8 @@
-package io.lambdarpc.examples.basic.client
+package io.lambdarpc.examples.wrapperlib.client
 
 import io.lambdarpc.dsl.f1
 import io.lambdarpc.dsl.frontend.MutableConfiguration
-import io.lambdarpc.dsl.frontend.def
+import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.s
 import java.util.*
 

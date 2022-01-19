@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.basic.client
+package io.lambdarpc.examples.wrapperlib.client
 
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.runBlocking
