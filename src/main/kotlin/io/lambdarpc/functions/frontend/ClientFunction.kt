@@ -7,6 +7,7 @@ import io.lambdarpc.serialization.*
 import io.lambdarpc.service.Connector
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
+import io.lambdarpc.utils.ExecutionId
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.eid
 import io.lambdarpc.utils.grpc.encode
@@ -38,14 +39,15 @@ abstract class AbstractClientFunction<R>(
             merge(inMessages, executeRequests.map { inMessage { executeRequest = it } })
         )
         val result = coroutineScope {
-            withContext(Dispatchers.Default) {
-                var result: ExecuteResponse? = null
+            var result: ExecuteResponse? = null
+            launch {
                 outMessages.collect { outMessage ->
                     when {
                         outMessage.hasFinalResponse() -> {
                             val response = outMessage.finalResponse
                             logger.info { "Final response received: ${response.executionId}" }
                             result = response
+                            cancel()
                         }
                         outMessage.hasExecuteRequest() -> processExecuteRequest(
                             outMessage, functionRegistry, channelRegistry, inMessages
@@ -54,8 +56,8 @@ abstract class AbstractClientFunction<R>(
                         else -> throw UnknownMessageType("out message")
                     }
                 }
-                result ?: TODO()
-            }
+            }.join()
+            result ?: TODO()
         }
         when {
             result.hasResult() -> rs.decode(result.result)
@@ -70,6 +72,7 @@ abstract class AbstractClientFunction<R>(
                 serviceUUID = connector.serviceId.encode()
                 executeRequest = executeRequest {
                     accessName = name.n
+                    executionId = ExecutionId.random().encode()
                     args.addAll(entities)
                 }
             }

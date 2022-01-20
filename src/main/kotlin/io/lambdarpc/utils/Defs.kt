@@ -24,6 +24,7 @@ value class ExecutionId(val id: UUID) {
 
     companion object {
         fun of(uuid: String) = ExecutionId(UUID.fromString(uuid))
+        fun random() = ExecutionId(UUID.randomUUID())
     }
 }
 

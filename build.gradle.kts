@@ -55,16 +55,16 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-tasks.register<JavaExec>("exampleService") {
+tasks.register<JavaExec>("example.basic.service") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.basic.service.LibServiceKt")
+    mainClass.set("io.lambdarpc.examples.basic.service.MainKt")
 }
 
-tasks.register<JavaExec>("exampleClient") {
+tasks.register<JavaExec>("example.basic.client") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.basic.client.LibClientKt")
+    mainClass.set("io.lambdarpc.examples.basic.client.MainKt")
 }
 
 protobuf {
