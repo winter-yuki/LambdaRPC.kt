@@ -90,6 +90,7 @@ abstract class AbstractClientFunction<R>(
             val result = f(request.argsList, functionRegistry and channelRegistry)
             inMessages.emit(inMessage {
                 executeResponse = executeResponse {
+                    executionId = request.executionId
                     this.result = result
                 }
             })

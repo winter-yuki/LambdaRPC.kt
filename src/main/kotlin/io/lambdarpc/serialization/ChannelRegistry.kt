@@ -5,7 +5,6 @@ import io.lambdarpc.transport.grpc.ExecuteResponse
 import io.lambdarpc.utils.ExecutionId
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableSharedFlow
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -32,16 +31,16 @@ class ChannelRegistry(private val requests: MutableSharedFlow<ExecuteRequest>) {
     val channels: Map<ExecutionId, TransportChannel>
         get() = _channels
 
-    suspend fun <R> use(block: suspend (TransportChannel) -> R): R {
+    suspend fun <R> use(block: suspend (ExecutionId, TransportChannel) -> R): R {
         val channel = TransportChannel(CompletableDeferred(), requests)
         val id = register(channel)
-        val result = block(channel)
+        val result = block(id, channel)
         _channels.remove(id)
         return result
     }
 
     private fun register(channels: TransportChannel): ExecutionId =
-        ExecutionId(UUID.randomUUID()).also {
+        ExecutionId.random().also {
             _channels[it] = channels
         }
 }
