@@ -15,7 +15,9 @@ suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int {
 }
 
 @Serializable
-data class Point(val x: Double, val y: Double)
+data class Point(val x: Double, val y: Double) {
+    fun norm() = sqrt(x * x + y * y)
+}
 
 fun distance(a: Point, b: Point): Double {
     val dx = a.x - b.x
@@ -23,4 +25,5 @@ fun distance(a: Point, b: Point): Double {
     return sqrt(dx * dx + dy * dy)
 }
 
-fun filter(xs: List<Int>, p: (Int) -> Boolean) = xs.filter(p)
+suspend fun filter(xs: List<Point>, p: suspend (Int, Point) -> Boolean) =
+    xs.filterIndexed { i, point -> p(i, point) }

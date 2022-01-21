@@ -11,6 +11,8 @@ fun main() {
         eval5 of ::eval5
         specializeAdd of ::specializeAdd
         executeAndAdd of ::executeAndAdd
+        distance of ::distance
+        filter of ::filter
     }
     service.start()
     service.awaitTermination()

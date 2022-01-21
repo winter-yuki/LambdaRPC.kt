@@ -110,6 +110,18 @@ abstract class AbstractClientFunction<R>(
     }
 }
 
+class ClientFunction0<R>(
+    name: AccessName,
+    connector: Connector,
+    rs: Serializer<R>,
+) : AbstractClientFunction<R>(name, connector, rs), suspend () -> R {
+    override val logger: KLogger = logger()
+
+    override suspend fun invoke(): R = scope { requests ->
+        invoke(requests)
+    }
+}
+
 class ClientFunction1<A, R>(
     name: AccessName,
     connector: Connector,
@@ -120,5 +132,67 @@ class ClientFunction1<A, R>(
 
     override suspend fun invoke(arg: A): R = scope { requests ->
         invoke(requests, s1.encode(arg))
+    }
+}
+
+class ClientFunction2<A, B, R>(
+    name: AccessName,
+    connector: Connector,
+    private val s1: Serializer<A>,
+    private val s2: Serializer<B>,
+    rs: Serializer<R>,
+) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B) -> R {
+    override val logger: KLogger = logger()
+
+    override suspend fun invoke(arg1: A, arg2: B): R = scope { requests ->
+        invoke(requests, s1.encode(arg1), s2.encode(arg2))
+    }
+}
+
+class ClientFunction3<A, B, C, R>(
+    name: AccessName,
+    connector: Connector,
+    private val s1: Serializer<A>,
+    private val s2: Serializer<B>,
+    private val s3: Serializer<C>,
+    rs: Serializer<R>,
+) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C) -> R {
+    override val logger: KLogger = logger()
+
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C): R = scope { requests ->
+        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3))
+    }
+}
+
+class ClientFunction4<A, B, C, D, R>(
+    name: AccessName,
+    connector: Connector,
+    private val s1: Serializer<A>,
+    private val s2: Serializer<B>,
+    private val s3: Serializer<C>,
+    private val s4: Serializer<D>,
+    rs: Serializer<R>,
+) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C, D) -> R {
+    override val logger: KLogger = logger()
+
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D): R = scope { requests ->
+        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4))
+    }
+}
+
+class ClientFunction5<A, B, C, D, E, R>(
+    name: AccessName,
+    connector: Connector,
+    private val s1: Serializer<A>,
+    private val s2: Serializer<B>,
+    private val s3: Serializer<C>,
+    private val s4: Serializer<D>,
+    private val s5: Serializer<E>,
+    rs: Serializer<R>,
+) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C, D, E) -> R {
+    override val logger: KLogger = logger()
+
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R = scope { requests ->
+        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4), s5.encode(arg5))
     }
 }
