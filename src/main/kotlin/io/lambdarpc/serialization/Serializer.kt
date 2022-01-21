@@ -1,6 +1,9 @@
 package io.lambdarpc.serialization
 
 import io.lambdarpc.transport.grpc.Entity
+import io.lambdarpc.transport.grpc.ExecuteRequest
+import io.lambdarpc.utils.unreachable
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Serializer interface that is able to work with data and functions.
@@ -16,17 +19,24 @@ class SerializationScope(
         when (this) {
             is DataSerializer -> encode(value)
             is FunctionSerializer -> encode(value, functionRegistry)
+            else -> unreachable("Compiler fails to check exhaustiveness")
         }
 
     fun <T> Serializer<T>.decode(entity: Entity): T =
         when (this) {
             is DataSerializer -> decode(entity)
             is FunctionSerializer -> decode(entity, channelRegistry)
+            else -> unreachable("Compiler fails to check exhaustiveness")
         }
 }
 
 infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
     SerializationScope(this, channelRegistry)
+
+inline fun <R> scope(
+    requests: MutableSharedFlow<ExecuteRequest> = MutableSharedFlow(),
+    block: SerializationScope.(MutableSharedFlow<ExecuteRequest>) -> R
+) = useChannelRegistry(requests) { registry -> scope(FunctionRegistry(), registry) { block(requests) } }
 
 inline fun <R> scope(
     functionRegistry: FunctionRegistry,

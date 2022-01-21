@@ -20,8 +20,7 @@ abstract class AbstractChannelFunction<R>(
             executionId = id.encode()
             args.addAll(entities.toList())
         }
-        channel.send(executeRequest)
-        val response = channel.receive()
+        val response = channel.request(executeRequest)
         when {
             response.hasResult() -> rs.decode(response.result)
             response.hasError() -> TODO("Error handling")

@@ -1,28 +1,43 @@
 package io.lambdarpc.serialization
 
+import io.lambdarpc.exceptions.CallInvalidatedChannelFunction
 import io.lambdarpc.transport.grpc.ExecuteRequest
 import io.lambdarpc.transport.grpc.ExecuteResponse
 import io.lambdarpc.utils.ExecutionId
+import io.lambdarpc.utils.getValue
+import io.lambdarpc.utils.setValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableSharedFlow
+import mu.KLoggable
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * [TransportChannel] is an accessor that allows frontend functions to work with client-server
  * bidirectional communication: send requests and get responses.
  */
 class TransportChannel(
-    private val response: CompletableDeferred<ExecuteResponse>,
-    private val requests: MutableSharedFlow<ExecuteRequest>,
-) {
-    suspend fun receive(): ExecuteResponse = response.await()
+    response: CompletableDeferred<ExecuteResponse>,
+    requests: MutableSharedFlow<ExecuteRequest>,
+) : KLoggable {
+    override val logger = logger()
 
-    suspend fun send(request: ExecuteRequest) {
-        requests.emit(request)
+    private var response by AtomicReference(response)
+    private var requests by AtomicReference(requests)
+
+    suspend fun request(request: ExecuteRequest): ExecuteResponse {
+        requests?.apply { emit(request) } ?: throw CallInvalidatedChannelFunction()
+        return response?.await() ?: error("Channel is invalidated before response received")
     }
 
     fun complete(response: ExecuteResponse) {
-        this.response.complete(response)
+        this.response?.apply { complete(response) } ?: logger.error { "Try to complete invalidated " }
+    }
+
+    fun invalidate() {
+        // Order is sensitive here
+        requests = null
+        response = null
     }
 }
 
@@ -45,6 +60,17 @@ class ChannelRegistry(private val requests: MutableSharedFlow<ExecuteRequest>) {
         ExecutionId.random().also {
             _channels[it] = channels
         }
+}
+
+fun ChannelRegistry.invalidate() = channels.values.forEach(TransportChannel::invalidate)
+
+inline fun <R> useChannelRegistry(requests: MutableSharedFlow<ExecuteRequest>, block: (ChannelRegistry) -> R): R {
+    val registry = ChannelRegistry(requests)
+    return try {
+        block(registry)
+    } finally {
+        registry.invalidate()
+    }
 }
 
 operator fun ChannelRegistry.get(id: ExecutionId) = channels[id]

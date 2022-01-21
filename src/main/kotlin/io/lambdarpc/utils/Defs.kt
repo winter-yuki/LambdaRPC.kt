@@ -29,7 +29,9 @@ fun String.toEid() = ExecutionId(UUID.fromString(this))
 
 
 @JvmInline
-value class AccessName(val n: String)
+value class AccessName(val n: String) {
+    override fun toString(): String = n
+}
 
 val String.an: AccessName
     get() = AccessName(this)

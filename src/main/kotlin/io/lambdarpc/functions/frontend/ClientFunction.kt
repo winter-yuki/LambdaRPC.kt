@@ -118,10 +118,7 @@ class ClientFunction1<A, R>(
 ) : AbstractClientFunction<R>(name, connector, rs), suspend (A) -> R {
     override val logger: KLogger = logger()
 
-    override suspend fun invoke(arg: A): R {
-        val executeRequests = MutableSharedFlow<ExecuteRequest>()
-        return scope(FunctionRegistry(), ChannelRegistry(executeRequests)) {
-            invoke(executeRequests, s1.encode(arg))
-        }
+    override suspend fun invoke(arg: A): R = scope { requests ->
+        invoke(requests, s1.encode(arg))
     }
 }

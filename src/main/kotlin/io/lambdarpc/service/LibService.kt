@@ -31,18 +31,19 @@ class LibService(
         // One message will be sent before gRPC consumer begin to collect
         val responses = MutableSharedFlow<OutMessage>(replay = 1)
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
-        val channelRegistry = ChannelRegistry(executeRequests)
-        CoroutineScope(Dispatchers.Default).launch {
-            requests.collect { inMessage ->
-                when {
-                    inMessage.hasInitialRequest() -> processInitial(
-                        inMessage, localRegistry, channelRegistry, responses
-                    )
-                    inMessage.hasExecuteRequest() -> processRequest(
-                        inMessage, localRegistry, channelRegistry, responses
-                    )
-                    inMessage.hasExecuteResponse() -> processResponse(inMessage, channelRegistry)
-                    else -> throw UnknownMessageType("in message")
+        useChannelRegistry(executeRequests) { channelRegistry ->
+            CoroutineScope(Dispatchers.Default).launch {
+                requests.collect { inMessage ->
+                    when {
+                        inMessage.hasInitialRequest() -> processInitial(
+                            inMessage, localRegistry, channelRegistry, responses
+                        )
+                        inMessage.hasExecuteRequest() -> processRequest(
+                            inMessage, localRegistry, channelRegistry, responses
+                        )
+                        inMessage.hasExecuteResponse() -> processResponse(inMessage, channelRegistry)
+                        else -> throw UnknownMessageType("in message")
+                    }
                 }
             }
         }
