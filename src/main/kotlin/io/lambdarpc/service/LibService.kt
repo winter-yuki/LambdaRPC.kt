@@ -23,7 +23,6 @@ class LibService(
     override val logger: KLogger = logger()
 
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
-        logger.info { "Service $serviceId function executed" }
         val localRegistry = FunctionRegistry()
         // One message will be sent before gRPC consumer begin to collect
         val responses = MutableSharedFlow<OutMessage>(replay = 1)

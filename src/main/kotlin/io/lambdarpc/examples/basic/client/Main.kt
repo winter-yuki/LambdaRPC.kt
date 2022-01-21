@@ -1,18 +1,18 @@
 package io.lambdarpc.examples.basic.client
 
 import io.lambdarpc.dsl.ServiceContext
-import io.lambdarpc.examples.basic.service.add5F
-import io.lambdarpc.examples.basic.service.conf
-import io.lambdarpc.examples.basic.service.eval5F
-import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.examples.basic.endpoint
+import io.lambdarpc.examples.basic.service.facade.*
 import kotlinx.coroutines.runBlocking
 
 val serviceContext = ServiceContext(
-    conf.serviceId to Endpoint.of("localhost", 8088)
+    conf.serviceId to endpoint
 )
 
 fun main() = runBlocking(serviceContext) {
-    println("add5F(2) = ${add5F(2)}")
+    println("add5F(2) = ${add5(2)}")
     val m = 3
-    println("eval5F { it + m } = ${eval5F { it + m }}")
+    println("eval5F { it + m } = ${eval5 { it + m }}")
+    println("specializeAdd(5)(37) = ${specializeAdd(5)(37)}")
+    println("executeAndAddF { it + 12 }(30) = ${executeAndAdd { it + 12 }(30)}")
 }
