@@ -85,6 +85,7 @@ abstract class AbstractClientFunction<R>(
         inMessages: MutableSharedFlow<InMessage>
     ) {
         val request = outMessage.executeRequest
+        logger.info { "Execute request: name = ${request.accessName}, id = ${request.executionId}" }
         val f = functionRegistry[request.accessName.an] ?: TODO()
         launch {
             val result = f(request.argsList, functionRegistry and channelRegistry)
