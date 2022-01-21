@@ -10,9 +10,9 @@ val serviceContext = ServiceContext(
 )
 
 fun main() = runBlocking(serviceContext) {
-    println("add5F(2) = ${add5(2)}")
+    println("add5(2) = ${add5(2)}")
     val m = 3
-    println("eval5F { it + m } = ${eval5 { it + m }}")
+    println("eval5 { it + m } = ${eval5 { it + m }}")
     println("specializeAdd(5)(37) = ${specializeAdd(5)(37)}")
-    println("executeAndAddF { it + 12 }(30) = ${executeAndAdd { it + 12 }(30)}")
+    println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it + 12 }(100)}")
 }
