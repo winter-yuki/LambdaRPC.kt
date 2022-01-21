@@ -1,9 +1,9 @@
 package io.lambdarpc.exceptions
 
-open class InternalError(message: String) : RuntimeException(message)
+open class LambdaRpcException(message: String) : RuntimeException(message)
 
 class UnknownMessageType(messageKind: String? = null) :
-    InternalError(
+    LambdaRpcException(
         "Unsupported message " +
                 if (messageKind == null) "kind"
                 else "of kind ${messageKind.lowercase()}"
