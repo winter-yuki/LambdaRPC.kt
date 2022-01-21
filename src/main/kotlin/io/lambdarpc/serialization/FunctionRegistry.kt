@@ -2,8 +2,8 @@ package io.lambdarpc.serialization
 
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.utils.AccessName
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * [FunctionRegistry] contains serialized functions which can be exposed for remote calls.
@@ -13,10 +13,8 @@ class FunctionRegistry {
     val functions: Map<AccessName, BackendFunction>
         get() = _functions
 
-    private val accessNameSeed = AtomicInteger(0)
-
     fun register(f: BackendFunction): AccessName =
-        AccessName(accessNameSeed.getAndIncrement().toString()).also { name ->
+        AccessName(UUID.randomUUID().toString()).also { name ->
             _functions[name] = f
         }
 

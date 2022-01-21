@@ -3,13 +3,14 @@ package io.lambdarpc.examples.basic.client
 import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.examples.basic.endpoint
 import io.lambdarpc.examples.basic.service.facade.*
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 
 val serviceContext = ServiceContext(
     conf.serviceId to endpoint
 )
 
-fun main() = runBlocking(serviceContext) {
+fun main(): Unit = runBlocking(serviceContext) {
     println("add5(2) = ${add5(2)}")
     val m = 3
     println("eval5 { it + m } = ${eval5 { it + m }}")

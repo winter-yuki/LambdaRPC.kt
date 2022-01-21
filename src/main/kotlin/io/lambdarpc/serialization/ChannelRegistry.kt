@@ -34,9 +34,11 @@ class ChannelRegistry(private val requests: MutableSharedFlow<ExecuteRequest>) {
     suspend fun <R> use(block: suspend (ExecutionId, TransportChannel) -> R): R {
         val channel = TransportChannel(CompletableDeferred(), requests)
         val id = register(channel)
-        val result = block(id, channel)
-        _channels.remove(id)
-        return result
+        return try {
+            block(id, channel)
+        } finally {
+            _channels.remove(id)
+        }
     }
 
     private fun register(channels: TransportChannel): ExecutionId =
