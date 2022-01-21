@@ -16,14 +16,9 @@ val Int.port: Port
 
 data class Endpoint(val address: Address, val port: Port) {
     override fun toString(): String = "${address.a}:${port.p}"
-
-    companion object {
-        fun of(address: String, port: Int) = Endpoint(Address(address), Port(port))
-        fun of(string: String) =
-            string.split(':').let { (address, port) ->
-                of(address, port.toInt())
-            }
-    }
 }
 
-infix fun Address.and(port: Port) = Endpoint(this, port)
+fun Endpoint(endpoint: String) =
+    endpoint.split(':').let { (address, port) ->
+        Endpoint(address.addr, port.toInt().port)
+    }

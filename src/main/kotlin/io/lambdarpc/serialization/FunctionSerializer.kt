@@ -15,7 +15,7 @@ import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.grpc.encode
-import io.lambdarpc.utils.sid
+import io.lambdarpc.utils.toSid
 
 interface FunctionSerializer<F> : Serializer<F> {
     /**
@@ -56,8 +56,8 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
             }
             function.hasClientFunction() -> {
                 val name = function.clientFunction.accessName.an
-                val id = function.clientFunction.serviceUUID.sid
-                val endpoint = Endpoint.of(function.clientFunction.serviceURL)
+                val id = function.clientFunction.serviceUUID.toSid()
+                val endpoint = Endpoint(function.clientFunction.serviceURL)
                 clientFunction(name, Connector(id, endpoint))
             }
             else -> throw UnknownMessageType("function")

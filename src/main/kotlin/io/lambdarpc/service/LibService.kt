@@ -55,12 +55,12 @@ class LibService(
         channelRegistry: ChannelRegistry,
         responses: MutableSharedFlow<OutMessage>
     ) {
-        if (inMessage.initialRequest.serviceUUID.sid != serviceId) {
+        if (inMessage.initialRequest.serviceUUID.toSid() != serviceId) {
             TODO("Service UUID error handling")
         }
         val request = inMessage.initialRequest.executeRequest
         val name = request.accessName.an
-        val executionId = request.executionId.eid
+        val executionId = request.executionId.toEid()
         logger.info { "Initial request: name = $name, id = $executionId" }
         val f = registry[name] ?: TODO("Error handling")
         launch {
@@ -81,7 +81,7 @@ class LibService(
     ) {
         val request = inMessage.executeRequest
         val name = request.accessName.an
-        val executionId = request.executionId.eid
+        val executionId = request.executionId.toEid()
         logger.info { "Execute request: name = $name, id = $executionId" }
         val f = registry[name] ?: localRegistry[name] ?: TODO("Error handling")
         launch {
@@ -99,7 +99,7 @@ class LibService(
         when {
             response.hasResult() -> {
                 logger.info { "Complete request ${response.executionId}" }
-                channelRegistry.getValue(response.executionId.eid).complete(response)
+                channelRegistry.getValue(response.executionId.toEid()).complete(response)
             }
             response.hasError() -> TODO("Error processing")
             else -> throw UnknownMessageType("execute response")

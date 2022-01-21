@@ -3,7 +3,6 @@ package io.lambdarpc.examples.basic.client
 import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.examples.basic.endpoint
 import io.lambdarpc.examples.basic.service.facade.*
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 
 val serviceContext = ServiceContext(

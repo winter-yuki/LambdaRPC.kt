@@ -20,7 +20,7 @@ class ServiceContext(val endpoints: Map<ServiceId, Endpoint>) : CoroutineContext
 
 fun serviceContext(vararg endpoints: Pair<UUID, String>) =
     ServiceContext(endpoints.associate { (uuid, endpoint) ->
-        uuid.sid to Endpoint.of(endpoint)
+        uuid.sid to Endpoint(endpoint)
     })
 
 fun ServiceContext(vararg endpoints: Pair<ServiceId, Endpoint>) =

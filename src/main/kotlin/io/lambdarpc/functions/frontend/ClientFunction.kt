@@ -9,8 +9,8 @@ import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ExecutionId
 import io.lambdarpc.utils.an
-import io.lambdarpc.utils.eid
 import io.lambdarpc.utils.grpc.encode
+import io.lambdarpc.utils.toEid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import mu.KLoggable
@@ -102,7 +102,7 @@ abstract class AbstractClientFunction<R>(
         logger.info { "Execute response: ${response.executionId}" }
         when {
             response.hasResult() -> {
-                channelRegistry.getValue(response.executionId.eid).complete(response)
+                channelRegistry.getValue(response.executionId.toEid()).complete(response)
             }
             response.hasError() -> TODO()
             else -> throw UnknownMessageType("execute response")
