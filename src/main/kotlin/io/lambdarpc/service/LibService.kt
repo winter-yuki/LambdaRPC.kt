@@ -22,6 +22,10 @@ class LibService(
 ) : LibServiceGrpcKt.LibServiceCoroutineImplBase(), KLoggable {
     override val logger: KLogger = logger()
 
+    init {
+        logger.info { "Lib service $serviceId started on $endpoint" }
+    }
+
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
         val localRegistry = FunctionRegistry()
         // One message will be sent before gRPC consumer begin to collect

@@ -5,16 +5,15 @@ option java_generic_services = true; // For julia client
 option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
-enum ExecuteType {
-  FUNCTION_ERROR = 0;
+enum ErrorType {
+  OTHER = 0;
   TIMEOUT_ERROR = 1;
-  WRONG_SERVICE_ERROR = 2;
-  SERIALIZATION_ERROR = 3;
+  SERIALIZATION_ERROR = 2;
+  WRONG_SERVICE_ERROR = 3;
   FUNCTION_NOT_FOUND_ERROR = 4;
-  INTERNAL_ERROR = 5;
 }
 
 message ExecuteError {
-  ExecuteType type = 1;
+  ErrorType type = 1;
   string message = 2;
 }
