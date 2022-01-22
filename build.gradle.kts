@@ -79,6 +79,18 @@ tasks.register<JavaExec>("example.basic.stress") {
     mainClass.set("io.lambdarpc.examples.basic.stress.MainKt")
 }
 
+tasks.register<JavaExec>("example.pipeline.client") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("io.lambdarpc.examples.pipeline.client.ClientKt")
+}
+
+tasks.register<JavaExec>("example.pipeline.service") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("io.lambdarpc.examples.pipeline.service.ServiceKt")
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${rootProject.ext["protobufVersion"]}"

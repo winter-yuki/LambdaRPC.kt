@@ -18,6 +18,8 @@ data class Endpoint(val address: Address, val port: Port) {
     override fun toString(): String = "${address.a}:${port.p}"
 }
 
+fun Endpoint(address: String, port: Int) = Endpoint(address.addr, port.port)
+
 fun Endpoint(endpoint: String) =
     endpoint.split(':').let { (address, port) ->
         Endpoint(address.addr, port.toInt().port)

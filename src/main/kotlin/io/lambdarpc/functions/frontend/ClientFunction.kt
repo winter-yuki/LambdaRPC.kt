@@ -29,13 +29,13 @@ abstract class AbstractClientFunction<R>(
     protected suspend operator fun SerializationScope.invoke(
         executeRequests: Flow<ExecuteRequest>,
         vararg entities: Entity
-    ): R = connector.connect { accessor ->
+    ): R = connector.connect { connection ->
         logger.info { "invoke called on $name" }
         // One message will be sent before gRPC consumer begin to collect
         val inMessages = MutableSharedFlow<InMessage>(1).apply {
             emit(initialRequest(entities.toList()))
         }
-        val outMessages = accessor.execute(
+        val outMessages = connection.execute(
             merge(inMessages, executeRequests.map { inMessage { executeRequest = it } })
         )
         val result = coroutineScope {
