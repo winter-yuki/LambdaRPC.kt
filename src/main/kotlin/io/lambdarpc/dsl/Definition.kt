@@ -25,11 +25,11 @@ class Definition0<R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.() -> R {
     override suspend fun invoke(scope: CoroutineScope): R =
-        scope.clientFunction(this)()
+        scope.cf(this)()
 }
 
-fun <R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.() -> R) =
-    clientFunction(definition as Definition0<R>) { connector ->
+fun <R> CoroutineScope.cf(definition: suspend CoroutineScope.() -> R) =
+    cf(definition as Definition0<R>) { connector ->
         ClientFunction0(name, connector, rs)
     }
 
@@ -40,11 +40,11 @@ class Definition1<A, R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.(A) -> R {
     override suspend fun invoke(scope: CoroutineScope, arg: A): R =
-        scope.clientFunction(this)(arg)
+        scope.cf(this)(arg)
 }
 
-fun <A, R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.(A) -> R) =
-    clientFunction(definition as Definition1<A, R>) { connector ->
+fun <A, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A) -> R) =
+    cf(definition as Definition1<A, R>) { connector ->
         ClientFunction1(name, connector, s1, rs)
     }
 
@@ -56,11 +56,11 @@ class Definition2<A, B, R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.(A, B) -> R {
     override suspend fun invoke(scope: CoroutineScope, arg1: A, arg2: B): R =
-        scope.clientFunction(this)(arg1, arg2)
+        scope.cf(this)(arg1, arg2)
 }
 
-fun <A, B, R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.(A, B) -> R) =
-    clientFunction(definition as Definition2<A, B, R>) { connector ->
+fun <A, B, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B) -> R) =
+    cf(definition as Definition2<A, B, R>) { connector ->
         ClientFunction2(name, connector, s1, s2, rs)
     }
 
@@ -73,11 +73,11 @@ class Definition3<A, B, C, R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.(A, B, C) -> R {
     override suspend fun invoke(scope: CoroutineScope, arg1: A, arg2: B, arg3: C): R =
-        scope.clientFunction(this)(arg1, arg2, arg3)
+        scope.cf(this)(arg1, arg2, arg3)
 }
 
-fun <A, B, C, R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.(A, B, C) -> R) =
-    clientFunction(definition as Definition3<A, B, C, R>) { connector ->
+fun <A, B, C, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C) -> R) =
+    cf(definition as Definition3<A, B, C, R>) { connector ->
         ClientFunction3(name, connector, s1, s2, s3, rs)
     }
 
@@ -91,11 +91,11 @@ class Definition4<A, B, C, D, R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.(A, B, C, D) -> R {
     override suspend fun invoke(scope: CoroutineScope, arg1: A, arg2: B, arg3: C, arg4: D): R =
-        scope.clientFunction(this)(arg1, arg2, arg3, arg4)
+        scope.cf(this)(arg1, arg2, arg3, arg4)
 }
 
-fun <A, B, C, D, R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.(A, B, C, D) -> R) =
-    clientFunction(definition as Definition4<A, B, C, D, R>) { connector ->
+fun <A, B, C, D, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C, D) -> R) =
+    cf(definition as Definition4<A, B, C, D, R>) { connector ->
         ClientFunction4(name, connector, s1, s2, s3, s4, rs)
     }
 
@@ -110,15 +110,15 @@ class Definition5<A, B, C, D, E, R>(
     val rs: Serializer<R>,
 ) : Definition, suspend CoroutineScope.(A, B, C, D, E) -> R {
     override suspend fun invoke(scope: CoroutineScope, arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R =
-        scope.clientFunction(this)(arg1, arg2, arg3, arg4, arg5)
+        scope.cf(this)(arg1, arg2, arg3, arg4, arg5)
 }
 
-fun <A, B, C, D, E, R> CoroutineScope.clientFunction(definition: suspend CoroutineScope.(A, B, C, D, E) -> R) =
-    clientFunction(definition as Definition5<A, B, C, D, E, R>) { connector ->
+fun <A, B, C, D, E, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C, D, E) -> R) =
+    cf(definition as Definition5<A, B, C, D, E, R>) { connector ->
         ClientFunction5(name, connector, s1, s2, s3, s4, s5, rs)
     }
 
-private fun <F : Definition, G> CoroutineScope.clientFunction(
+private fun <F : Definition, G> CoroutineScope.cf(
     definition: F,
     clientFunctionProvider: F.(Connector) -> G
 ): G {
