@@ -14,6 +14,7 @@ fun main() {
         distance of ::distance
         normFilter of ::normFilter
         mapPoints of ::mapPoints
+        numpyAdd of ::numpyAdd
     }
     service.start()
     service.awaitTermination()

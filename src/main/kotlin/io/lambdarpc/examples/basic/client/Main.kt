@@ -3,6 +3,7 @@ package io.lambdarpc.examples.basic.client
 import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.dsl.cf
 import io.lambdarpc.examples.basic.*
+import io.lambdarpc.examples.basic.service1.NumpyArray
 import io.lambdarpc.examples.basic.service1.facade.*
 import io.lambdarpc.examples.basic.service2.facade.norm1
 import io.lambdarpc.examples.basic.service2.facade.norm2
@@ -27,4 +28,5 @@ fun main(): Unit = runBlocking(serviceContext) {
     println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
     println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
     println("mapPoints(ps, norm()) = ${mapPoints(ps, cf(norm2))}")
+    println("numpyAdd(2, NumpyArray(40)) = ${numpyAdd(2, NumpyArray(40))}")
 }

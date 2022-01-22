@@ -1,6 +1,10 @@
 package io.lambdarpc.examples.basic.service1
 
+import com.google.protobuf.ByteString
 import io.lambdarpc.examples.basic.Point
+import io.lambdarpc.serialization.DataSerializer
+import io.lambdarpc.transport.grpc.Entity
+import io.lambdarpc.transport.grpc.entity
 import kotlin.math.sqrt
 
 fun add5(x: Int) = x + 5
@@ -21,7 +25,26 @@ fun distance(a: Point, b: Point): Double {
 }
 
 suspend fun normFilter(xs: List<Point>, p: suspend (Point, suspend (Point) -> Double) -> Boolean) =
-    xs.filter { point -> p(point) { sqrt(it.x * it.x + it.y * it.y) } }
+    xs.filter { point ->
+        p(point) { sqrt(it.x * it.x + it.y * it.y) }
+    }
 
 suspend fun mapPoints(xs: List<Point>, f: suspend (Point) -> Double): List<Double> =
     xs.map { f(it) }
+
+/**
+ * Some struct with difficult internal structure
+ */
+data class NumpyArray(val x: Int)
+
+object NumpyArraySerializer : DataSerializer<NumpyArray> {
+    override fun encode(value: NumpyArray): Entity =
+        entity {
+            data = ByteString.copyFrom(byteArrayOf(value.x.toByte()))
+        }
+
+    override fun decode(entity: Entity): NumpyArray =
+        NumpyArray(entity.data.toByteArray().first().toInt())
+}
+
+fun numpyAdd(x: Int, arr: NumpyArray) = NumpyArray(x + arr.x)
