@@ -1,12 +1,12 @@
-package io.lambdarpc.examples.pipeline.service
+package io.lambdarpc.examples.lazy.service
 
 import io.lambdarpc.dsl.Configuration
 import io.lambdarpc.dsl.LibService
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.s
-import io.lambdarpc.examples.pipeline.D
-import io.lambdarpc.examples.pipeline.a
-import io.lambdarpc.examples.pipeline.serviceId
+import io.lambdarpc.examples.lazy.D
+import io.lambdarpc.examples.lazy.a
+import io.lambdarpc.examples.lazy.serviceId
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

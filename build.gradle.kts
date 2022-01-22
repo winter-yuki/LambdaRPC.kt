@@ -79,16 +79,16 @@ tasks.register<JavaExec>("example.basic.stress") {
     mainClass.set("io.lambdarpc.examples.basic.stress.MainKt")
 }
 
-tasks.register<JavaExec>("example.pipeline.client") {
+tasks.register<JavaExec>("example.lazy.client") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.pipeline.client.ClientKt")
+    mainClass.set("io.lambdarpc.examples.lazy.client.ClientKt")
 }
 
-tasks.register<JavaExec>("example.pipeline.service") {
+tasks.register<JavaExec>("example.lazy.service") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("io.lambdarpc.examples.pipeline.service.ServiceKt")
+    mainClass.set("io.lambdarpc.examples.lazy.service.ServiceKt")
 }
 
 protobuf {

@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.pipeline
+package io.lambdarpc.examples.lazy
 
 import io.lambdarpc.utils.toSid
 
