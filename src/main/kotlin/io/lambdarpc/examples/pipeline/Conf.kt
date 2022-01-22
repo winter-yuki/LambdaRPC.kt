@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.graph
+package io.lambdarpc.examples.pipeline
 
 import io.lambdarpc.utils.toSid
 

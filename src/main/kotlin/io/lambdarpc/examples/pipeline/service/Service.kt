@@ -1,10 +1,10 @@
-package io.lambdarpc.examples.graph.service
+package io.lambdarpc.examples.pipeline.service
 
 import io.lambdarpc.dsl.Configuration
-import io.lambdarpc.examples.graph.serviceId
+import io.lambdarpc.examples.pipeline.serviceId
 
 val conf = Configuration(serviceId)
-//
+
 //val ss by conf.def(a<Int>())
 //val aa by conf.def(a<Int>(), a<Int>())
 //val bb by conf.def(a<Int>(), a<Int>())

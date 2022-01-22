@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.graph
+package io.lambdarpc.examples.pipeline.pipeline
 
 //fun <R> cached(computation: Accessor<R>): Accessor<R> {
 //    var result: R? = null
@@ -14,13 +14,3 @@ package io.lambdarpc.examples.graph
 //        }
 //    }
 //}
-//
-//typealias GraphConf = Map<String, Any>
-//
-//class Operation(val curr: AccessName, val prev: AccessName)
-//
-//class Graph<R>(private val computation: suspend (GraphConf) -> Pair<R, Operation>) {
-//    suspend fun eval()
-//}
-//
-//fun op() {}
