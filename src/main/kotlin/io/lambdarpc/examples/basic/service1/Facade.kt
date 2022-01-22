@@ -1,13 +1,13 @@
 @file:Suppress("PackageDirectoryMismatch")
 
-package io.lambdarpc.examples.basic.service.facade
+package io.lambdarpc.examples.basic.service1.facade
 
 import io.lambdarpc.dsl.*
-import io.lambdarpc.examples.basic.service.Point
-import io.lambdarpc.examples.basic.serviceId
+import io.lambdarpc.examples.basic.Point
+import io.lambdarpc.examples.basic.serviceId1
 
 val conf = Configuration(
-    serviceId = serviceId
+    serviceId = serviceId1
 )
 
 val add5 by conf.def<Int, Int>()
@@ -20,3 +20,4 @@ val normFilter by conf.def(
     f2(s<Point>(), f1<Point, Double>(), s<Boolean>()),
     s<List<Point>>()
 )
+val mapPoints by conf.def(s<List<Point>>(), f1<Point, Double>(), s<List<Double>>())

@@ -17,8 +17,9 @@ TODO Custom in-project declarations instead of the auto-generated API. Keep code
 
 ```bash
 $ cd LambdaRPC.kt
-$ ./gradlew example.basic.service
-$ ./gradlew example.basic.client
+$ ./gradlew example.basic.service1
+$ ./gradlew example.basic.service2
+$ ./gradlew example.basic.client  # or example.basic.stress
 ```
 
 ## Repository organization

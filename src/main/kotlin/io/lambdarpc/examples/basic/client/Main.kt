@@ -1,13 +1,16 @@
 package io.lambdarpc.examples.basic.client
 
 import io.lambdarpc.dsl.ServiceContext
-import io.lambdarpc.examples.basic.endpoint
-import io.lambdarpc.examples.basic.service.Point
-import io.lambdarpc.examples.basic.service.facade.*
+import io.lambdarpc.dsl.cf
+import io.lambdarpc.examples.basic.*
+import io.lambdarpc.examples.basic.service1.facade.*
+import io.lambdarpc.examples.basic.service2.facade.norm1
+import io.lambdarpc.examples.basic.service2.facade.norm2
 import kotlinx.coroutines.runBlocking
 
 val serviceContext = ServiceContext(
-    conf.serviceId to endpoint
+    serviceId1 to endpoint1,
+    serviceId2 to endpoint2
 )
 
 fun main(): Unit = runBlocking(serviceContext) {
@@ -22,4 +25,6 @@ fun main(): Unit = runBlocking(serviceContext) {
     )
     val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
     println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
+    println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
+    println("mapPoints(ps, norm()) = ${mapPoints(ps, cf(norm2))}")
 }

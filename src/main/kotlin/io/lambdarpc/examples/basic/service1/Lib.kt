@@ -1,6 +1,6 @@
-package io.lambdarpc.examples.basic.service
+package io.lambdarpc.examples.basic.service1
 
-import kotlinx.serialization.Serializable
+import io.lambdarpc.examples.basic.Point
 import kotlin.math.sqrt
 
 fun add5(x: Int) = x + 5
@@ -14,11 +14,6 @@ suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int {
     return { x + it }
 }
 
-@Serializable
-data class Point(val x: Double, val y: Double) {
-    fun norm() = sqrt(x * x + y * y)
-}
-
 fun distance(a: Point, b: Point): Double {
     val dx = a.x - b.x
     val dy = a.y - b.y
@@ -26,4 +21,7 @@ fun distance(a: Point, b: Point): Double {
 }
 
 suspend fun normFilter(xs: List<Point>, p: suspend (Point, suspend (Point) -> Double) -> Boolean) =
-    xs.filter { point -> p(point) { it.norm() } }
+    xs.filter { point -> p(point) { sqrt(it.x * it.x + it.y * it.y) } }
+
+suspend fun mapPoints(xs: List<Point>, f: suspend (Point) -> Double): List<Double> =
+    xs.map { f(it) }
