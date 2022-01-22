@@ -2,6 +2,7 @@ package io.lambdarpc.examples.basic.stress
 
 import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.examples.basic.endpoint
+import io.lambdarpc.examples.basic.service.Point
 import io.lambdarpc.examples.basic.service.facade.*
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.launch
@@ -27,6 +28,10 @@ fun main(): Unit = runBlocking(serviceContext + newSingleThreadContext("name")) 
         }
         launch {
             println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it + 12 }(100)}")
+        }
+        launch {
+            val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
+            println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
         }
     }
 }

@@ -25,5 +25,5 @@ fun distance(a: Point, b: Point): Double {
     return sqrt(dx * dx + dy * dy)
 }
 
-suspend fun filter(xs: List<Point>, p: suspend (Int, Point) -> Boolean) =
-    xs.filterIndexed { i, point -> p(i, point) }
+suspend fun normFilter(xs: List<Point>, p: suspend (Point, suspend (Point) -> Double) -> Boolean) =
+    xs.filter { point -> p(point) { it.norm() } }

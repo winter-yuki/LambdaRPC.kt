@@ -25,7 +25,7 @@ interface FunctionSerializer<F> : Serializer<F> {
      * Decoded function is a callable object that serializes the data
      * and communicates with the origin function via channels.
      */
-    fun decode(entity: Entity, registry: ChannelRegistry): F
+    fun decode(entity: Entity, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F
 }
 
 abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
@@ -43,13 +43,13 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
 
     protected abstract fun F.toBackendFunction(): BackendFunction
 
-    override fun decode(entity: Entity, registry: ChannelRegistry): F {
+    override fun decode(entity: Entity, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F {
         require(entity.hasFunction()) { "Function required" }
         val function = entity.function
         return when {
             function.hasChannelFunction() -> {
                 val name = function.channelFunction.accessName.an
-                channelFunction(name, registry)
+                channelFunction(name, functionRegistry, channelRegistry)
             }
             function.hasClientFunction() -> {
                 val name = function.clientFunction.accessName.an
@@ -61,7 +61,12 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
         }
     }
 
-    protected abstract fun channelFunction(name: AccessName, registry: ChannelRegistry): F
+    protected abstract fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): F
+
     protected abstract fun clientFunction(name: AccessName, connector: Connector): F
 }
 
@@ -70,8 +75,12 @@ class FunctionSerializer0<R>(
 ) : AbstractFunctionSerializer<suspend () -> R>() {
     override fun (suspend () -> R).toBackendFunction() = BackendFunction0(this, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend () -> R =
-        ChannelFunction0(name, registry, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend () -> R =
+        ChannelFunction0(name, functionRegistry, channelRegistry, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend () -> R =
         ClientFunction0(name, connector, rs)
@@ -83,8 +92,12 @@ class FunctionSerializer1<A, R>(
 ) : AbstractFunctionSerializer<suspend (A) -> R>() {
     override fun (suspend (A) -> R).toBackendFunction() = BackendFunction1(this, s1, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A) -> R =
-        ChannelFunction1(name, registry, s1, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend (A) -> R =
+        ChannelFunction1(name, functionRegistry, channelRegistry, s1, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend (A) -> R =
         ClientFunction1(name, connector, s1, rs)
@@ -97,8 +110,12 @@ class FunctionSerializer2<A, B, R>(
 ) : AbstractFunctionSerializer<suspend (A, B) -> R>() {
     override fun (suspend (A, B) -> R).toBackendFunction() = BackendFunction2(this, s1, s2, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A, B) -> R =
-        ChannelFunction2(name, registry, s1, s2, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend (A, B) -> R =
+        ChannelFunction2(name, functionRegistry, channelRegistry, s1, s2, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend (A, B) -> R =
         ClientFunction2(name, connector, s1, s2, rs)
@@ -112,8 +129,12 @@ class FunctionSerializer3<A, B, C, R>(
 ) : AbstractFunctionSerializer<suspend (A, B, C) -> R>() {
     override fun (suspend (A, B, C) -> R).toBackendFunction() = BackendFunction3(this, s1, s2, s3, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A, B, C) -> R =
-        ChannelFunction3(name, registry, s1, s2, s3, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend (A, B, C) -> R =
+        ChannelFunction3(name, functionRegistry, channelRegistry, s1, s2, s3, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend (A, B, C) -> R =
         ClientFunction3(name, connector, s1, s2, s3, rs)
@@ -128,8 +149,12 @@ class FunctionSerializer4<A, B, C, D, R>(
 ) : AbstractFunctionSerializer<suspend (A, B, C, D) -> R>() {
     override fun (suspend (A, B, C, D) -> R).toBackendFunction() = BackendFunction4(this, s1, s2, s3, s4, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A, B, C, D) -> R =
-        ChannelFunction4(name, registry, s1, s2, s3, s4, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend (A, B, C, D) -> R =
+        ChannelFunction4(name, functionRegistry, channelRegistry, s1, s2, s3, s4, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend (A, B, C, D) -> R =
         ClientFunction4(name, connector, s1, s2, s3, s4, rs)
@@ -145,8 +170,12 @@ class FunctionSerializer5<A, B, C, D, E, R>(
 ) : AbstractFunctionSerializer<suspend (A, B, C, D, E) -> R>() {
     override fun (suspend (A, B, C, D, E) -> R).toBackendFunction() = BackendFunction5(this, s1, s2, s3, s4, s5, rs)
 
-    override fun channelFunction(name: AccessName, registry: ChannelRegistry): suspend (A, B, C, D, E) -> R =
-        ChannelFunction5(name, registry, s1, s2, s3, s4, s5, rs)
+    override fun channelFunction(
+        name: AccessName,
+        functionRegistry: FunctionRegistry,
+        channelRegistry: ChannelRegistry
+    ): suspend (A, B, C, D, E) -> R =
+        ChannelFunction5(name, functionRegistry, channelRegistry, s1, s2, s3, s4, s5, rs)
 
     override fun clientFunction(name: AccessName, connector: Connector): suspend (A, B, C, D, E) -> R =
         ClientFunction5(name, connector, s1, s2, s3, s4, s5, rs)

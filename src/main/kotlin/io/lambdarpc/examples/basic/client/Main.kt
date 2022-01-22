@@ -21,5 +21,5 @@ fun main(): Unit = runBlocking(serviceContext) {
                 "${distance(Point(9.0, 1.0), Point(5.0, 4.0))}"
     )
     val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
-    println("filter($ps) { i, p -> i < p.norm() } = ${filter(ps) { i, p -> i <= p.norm() }}")
+    println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
 }

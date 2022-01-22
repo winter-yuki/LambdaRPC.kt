@@ -12,7 +12,7 @@ fun main() {
         specializeAdd of ::specializeAdd
         executeAndAdd of ::executeAndAdd
         distance of ::distance
-        filter of ::filter
+        normFilter of ::normFilter
     }
     service.start()
     service.awaitTermination()

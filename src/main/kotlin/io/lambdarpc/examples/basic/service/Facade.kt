@@ -15,4 +15,8 @@ val eval5 by conf.def(f1<Int, Int>(), s<Int>())
 val specializeAdd by conf.def(s<Int>(), f1<Int, Int>())
 val executeAndAdd by conf.def(f1<Int, Int>(), f1<Int, Int>())
 val distance by conf.def<Point, Point, Double>()
-val filter by conf.def(s<List<Point>>(), f2<Int, Point, Boolean>(), s<List<Point>>())
+val normFilter by conf.def(
+    s<List<Point>>(),
+    f2(s<Point>(), f1<Point, Double>(), s<Boolean>()),
+    s<List<Point>>()
+)

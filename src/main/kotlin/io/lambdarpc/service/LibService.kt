@@ -68,6 +68,7 @@ class LibService(
             val result = f(request.argsList, localRegistry and channelRegistry)
             responses.emit(outMessage {
                 finalResponse = executeResponse {
+                    this.executionId = executionId.encode()
                     this.result = result.channelToClient(localRegistry)
                 }
             })
@@ -89,6 +90,7 @@ class LibService(
             val result = f(request.argsList, localRegistry and channelRegistry)
             responses.emit(outMessage {
                 executeResponse = executeResponse {
+                    this.executionId = executionId.encode()
                     this.result = result
                 }
             })
