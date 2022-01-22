@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.basic.client
 
-import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.dsl.cf
+import io.lambdarpc.dsl.serviceContext
 import io.lambdarpc.examples.basic.*
 import io.lambdarpc.examples.basic.service1.NumpyArray
 import io.lambdarpc.examples.basic.service1.facade.*
@@ -9,7 +9,7 @@ import io.lambdarpc.examples.basic.service2.facade.norm1
 import io.lambdarpc.examples.basic.service2.facade.norm2
 import kotlinx.coroutines.runBlocking
 
-val serviceContext = ServiceContext(
+val serviceContext = serviceContext(
     serviceId1 to endpoint1,
     serviceId2 to endpoint2
 )

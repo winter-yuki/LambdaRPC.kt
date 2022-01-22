@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.basic.stress
 
-import io.lambdarpc.dsl.ServiceContext
 import io.lambdarpc.dsl.cf
+import io.lambdarpc.dsl.serviceContext
 import io.lambdarpc.examples.basic.*
 import io.lambdarpc.examples.basic.service1.facade.*
 import io.lambdarpc.examples.basic.service2.facade.norm1
@@ -11,14 +11,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 
-val serviceContext = ServiceContext(
+val serviceContext = serviceContext(
     serviceId1 to endpoint1,
     serviceId2 to endpoint2
 )
 
 @OptIn(ObsoleteCoroutinesApi::class)
 fun main(): Unit = runBlocking(serviceContext + newSingleThreadContext("name")) {
-    repeat(1000) {
+    repeat(100) {
         launch {
             println("add5(2) = ${add5(2)}")
         }
@@ -36,11 +36,11 @@ fun main(): Unit = runBlocking(serviceContext + newSingleThreadContext("name")) 
         launch {
             println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
         }
-//        launch {
-//            println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
-//        }
-//        launch {
-//            println("mapPoints(ps, norm()) = ${mapPoints(ps, cf(norm2))}")
-//        }
+        launch {
+            println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
+        }
+        launch {
+            println("mapPoints(ps, norm()) = ${mapPoints(ps, cf(norm2))}")
+        }
     }
 }

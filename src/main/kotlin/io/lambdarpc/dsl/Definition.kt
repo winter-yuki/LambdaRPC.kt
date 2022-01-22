@@ -122,6 +122,6 @@ private fun <F : Definition, G> CoroutineScope.cf(
     definition: F,
     clientFunctionProvider: F.(Connector) -> G
 ): G {
-    val connector = Connector(definition.serviceId, endpoint(definition.serviceId))
+    val connector = Connector(definition.serviceId, randomEndpoint(definition.serviceId))
     return definition.clientFunctionProvider(connector)
 }
