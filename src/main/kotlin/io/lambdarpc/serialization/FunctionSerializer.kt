@@ -4,62 +4,56 @@ import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.service.Connector
-import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.channelFunction
-import io.lambdarpc.transport.grpc.entity
 import io.lambdarpc.transport.grpc.function
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.grpc.encode
 import io.lambdarpc.utils.toSid
+import io.lambdarpc.transport.grpc.Function as TFunction
 
 interface FunctionSerializer<F> : Serializer<F> {
     /**
      * Encoding function is saving it to the registry and
      * providing its name for the remote caller.
      */
-    fun encode(f: F, registry: FunctionRegistry): Entity
+    fun encode(f: F, registry: FunctionRegistry): TFunction
 
     /**
      * Decoded function is a callable object that serializes the data
      * and communicates with the origin function via channels.
      */
-    fun decode(entity: Entity, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F
+    fun decode(f: TFunction, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F
 }
 
 abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
-    override fun encode(f: F, registry: FunctionRegistry): Entity =
-        entity {
-            function = function {
-                if (f is ClientFunction) {
-                    clientFunction = f.encode()
-                } else {
-                    val name = registry.register(f.toBackendFunction())
-                    channelFunction = channelFunction { accessName = name.n }
-                }
+    override fun encode(f: F, registry: FunctionRegistry): TFunction =
+        function {
+            if (f is ClientFunction) {
+                clientFunction = f.encode()
+            } else {
+                val name = registry.register(f.toBackendFunction())
+                channelFunction = channelFunction { accessName = name.n }
             }
         }
 
     protected abstract fun F.toBackendFunction(): BackendFunction
 
-    override fun decode(entity: Entity, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F {
-        require(entity.hasFunction()) { "Function required" }
-        val function = entity.function
-        return when {
-            function.hasChannelFunction() -> {
-                val name = function.channelFunction.accessName.an
+    override fun decode(f: TFunction, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F =
+        when {
+            f.hasChannelFunction() -> {
+                val name = f.channelFunction.accessName.an
                 channelFunction(name, functionRegistry, channelRegistry)
             }
-            function.hasClientFunction() -> {
-                val name = function.clientFunction.accessName.an
-                val id = function.clientFunction.serviceUUID.toSid()
-                val endpoint = Endpoint(function.clientFunction.serviceURL)
+            f.hasClientFunction() -> {
+                val name = f.clientFunction.accessName.an
+                val id = f.clientFunction.serviceUUID.toSid()
+                val endpoint = Endpoint(f.clientFunction.serviceURL)
                 clientFunction(name, Connector(id, endpoint))
             }
             else -> throw UnknownMessageType("function")
         }
-    }
 
     protected abstract fun channelFunction(
         name: AccessName,

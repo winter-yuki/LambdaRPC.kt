@@ -2,6 +2,7 @@ package io.lambdarpc.serialization
 
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
+import io.lambdarpc.transport.grpc.entity
 import io.lambdarpc.utils.unreachable
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -18,16 +19,22 @@ class SerializationScope(
     @Suppress("REDUNDANT_ELSE_IN_WHEN")
     fun <T> Serializer<T>.encode(value: T): Entity =
         when (this) {
-            is DataSerializer -> encode(value)
-            is FunctionSerializer -> encode(value, functionRegistry)
+            is DataSerializer -> entity { data = encode(value) }
+            is FunctionSerializer -> entity { function = encode(value, functionRegistry) }
             else -> unreachable("Compiler fails to check exhaustiveness")
         }
 
     @Suppress("REDUNDANT_ELSE_IN_WHEN")
     fun <T> Serializer<T>.decode(entity: Entity): T =
         when (this) {
-            is DataSerializer -> decode(entity)
-            is FunctionSerializer -> decode(entity, functionRegistry, channelRegistry)
+            is DataSerializer -> {
+                require(entity.hasData()) { "Entity should contain data" }
+                decode(entity.data)
+            }
+            is FunctionSerializer -> {
+                require(entity.hasFunction()) { "Function required" }
+                decode(entity.function, functionRegistry, channelRegistry)
+            }
             else -> unreachable("Compiler fails to check exhaustiveness")
         }
 }
