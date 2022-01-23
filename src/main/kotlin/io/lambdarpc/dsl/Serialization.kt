@@ -2,7 +2,7 @@ package io.lambdarpc.dsl
 
 import io.lambdarpc.serialization.*
 
-inline fun <reified T> s(): DefaultDataSerializer<T> = DefaultDataSerializer.of()
+inline fun <reified T> s(): DefaultDataSerializer<T> = DefaultDataSerializer()
 
 inline fun <reified R> f0(rs: Serializer<R> = s()) = FunctionSerializer0(rs)
 

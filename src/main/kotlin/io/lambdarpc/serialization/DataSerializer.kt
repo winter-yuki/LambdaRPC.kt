@@ -24,8 +24,6 @@ class DefaultDataSerializer<T>(private val serializer: KSerializer<T>) : DataSer
         val string = data.toString(Charset.defaultCharset())
         return Json.decodeFromString(serializer, string)
     }
-
-    companion object {
-        inline fun <reified T> of() = DefaultDataSerializer<T>(serializer())
-    }
 }
+
+inline fun <reified T> DefaultDataSerializer() = DefaultDataSerializer<T>(serializer())
