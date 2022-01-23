@@ -17,7 +17,8 @@ fun <A, R> adapt(f: suspend (A) -> R): suspend (Accessor<A>) -> Accessor<R> = { 
 }
 
 fun <A, B, R> adapt(f: suspend (A, B) -> R): suspend (Accessor<A>, Accessor<B>) -> Accessor<R> = { a, b ->
-    require(a is ClientFunction);
+    require(a is ClientFunction)
+    require(b is ClientFunction);
     {
         coroutineScope {
             val aa = async { a() }
