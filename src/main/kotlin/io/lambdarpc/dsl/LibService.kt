@@ -34,32 +34,32 @@ class LibServiceDSL {
     val registry = FunctionRegistry()
 
     infix fun <R> (suspend CoroutineScope.() -> R).of(f: suspend () -> R) =
-        (this as Definition0<R>).run {
+        (this as Declaration0<R>).run {
             registry.register(name, BackendFunction0(f, rs))
         }
 
     infix fun <A, R> (suspend CoroutineScope.(A) -> R).of(f: suspend (A) -> R) =
-        (this as Definition1<A, R>).run {
+        (this as Declaration1<A, R>).run {
             registry.register(name, BackendFunction1(f, s1, rs))
         }
 
     infix fun <A, B, R> (suspend CoroutineScope.(A, B) -> R).of(f: suspend (A, B) -> R) =
-        (this as Definition2<A, B, R>).run {
+        (this as Declaration2<A, B, R>).run {
             registry.register(name, BackendFunction2(f, s1, s2, rs))
         }
 
     infix fun <A, B, C, R> (suspend CoroutineScope.(A, B, C) -> R).of(f: suspend (A, B, C) -> R) =
-        (this as Definition3<A, B, C, R>).run {
+        (this as Declaration3<A, B, C, R>).run {
             registry.register(name, BackendFunction3(f, s1, s2, s3, rs))
         }
 
     infix fun <A, B, C, D, R> (suspend CoroutineScope.(A, B, C, D) -> R).of(f: suspend (A, B, C, D) -> R) =
-        (this as Definition4<A, B, C, D, R>).run {
+        (this as Declaration4<A, B, C, D, R>).run {
             registry.register(name, BackendFunction4(f, s1, s2, s3, s4, rs))
         }
 
     infix fun <A, B, C, D, E, R> (suspend CoroutineScope.(A, B, C, D, E) -> R).of(f: suspend (A, B, C, D, E) -> R) =
-        (this as Definition5<A, B, C, D, E, R>).run {
+        (this as Declaration5<A, B, C, D, E, R>).run {
             registry.register(name, BackendFunction5(f, s1, s2, s3, s4, s5, rs))
         }
 }
