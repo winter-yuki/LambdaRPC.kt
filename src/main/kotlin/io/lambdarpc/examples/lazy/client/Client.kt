@@ -1,8 +1,8 @@
 package io.lambdarpc.examples.lazy.client
 
 import io.lambdarpc.dsl.ServiceContext
+import io.lambdarpc.examples.graph.serviceId
 import io.lambdarpc.examples.lazy.service.*
-import io.lambdarpc.examples.pipeline.serviceId
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.runBlocking
 

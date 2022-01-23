@@ -1,7 +1,7 @@
-package io.lambdarpc.examples.pipeline.service
+package io.lambdarpc.examples.graph.service
 
 import io.lambdarpc.dsl.Configuration
-import io.lambdarpc.examples.pipeline.serviceId
+import io.lambdarpc.examples.graph.serviceId
 
 val conf = Configuration(serviceId)
 

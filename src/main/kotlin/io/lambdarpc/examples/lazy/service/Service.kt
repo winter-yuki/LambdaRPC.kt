@@ -4,7 +4,7 @@ import io.lambdarpc.dsl.Configuration
 import io.lambdarpc.dsl.LibService
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.s
-import io.lambdarpc.examples.lazy.D
+import io.lambdarpc.examples.lazy.Accessor
 import io.lambdarpc.examples.lazy.a
 import io.lambdarpc.examples.lazy.serviceId
 import io.lambdarpc.utils.Endpoint
@@ -20,12 +20,12 @@ val cc by conf.def(a<Int>(), s<Int>(), a<Int>())
 val dd by conf.def(a<Int>(), a<Int>())
 val ee by conf.def(a<Int>(), a<Int>(), a<Int>())
 
-fun source(): D<Int> = { 1 }
-suspend fun a(x: D<Int>): D<Int> = { x() + 1 }
-suspend fun b(x: D<Int>): D<Int> = { x() + 3 }
-suspend fun c(x: D<Int>, k: Int): D<Int> = { x() * k }
-suspend fun d(x: D<Int>): D<Int> = { x() + 8 }
-suspend fun e(x: D<Int>, y: D<Int>): D<Int> = {
+fun source(): Accessor<Int> = { 1 }
+suspend fun a(x: Accessor<Int>): Accessor<Int> = { x() + 1 }
+suspend fun b(x: Accessor<Int>): Accessor<Int> = { x() + 3 }
+suspend fun c(x: Accessor<Int>, k: Int): Accessor<Int> = { x() * k }
+suspend fun d(x: Accessor<Int>): Accessor<Int> = { x() + 8 }
+suspend fun e(x: Accessor<Int>, y: Accessor<Int>): Accessor<Int> = {
     coroutineScope {
         val xx = async { x() }
         val yy = async { y() }

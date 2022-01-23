@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.pipeline.pipeline
+package io.lambdarpc.examples.graph.pipeline
 
 typealias PipelineConf = Map<String, Any>
 

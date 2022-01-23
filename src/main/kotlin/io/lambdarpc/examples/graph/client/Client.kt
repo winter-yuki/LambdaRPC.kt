@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.pipeline.client
+package io.lambdarpc.examples.graph.client
 
 //fun main(args: Array<String>) = runBlocking(
 //    ServiceContext(

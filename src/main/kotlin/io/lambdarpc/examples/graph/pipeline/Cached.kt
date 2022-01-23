@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.pipeline.pipeline
+package io.lambdarpc.examples.graph.pipeline
 
 //fun <R> cached(computation: Accessor<R>): Accessor<R> {
 //    var result: R? = null
