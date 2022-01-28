@@ -69,7 +69,7 @@ abstract class AbstractClientFunction<R>(
     private fun initialRequest(entities: Iterable<Entity>): InMessage =
         inMessage {
             initialRequest = initialRequest {
-                serviceUUID = connector.serviceId.encode()
+                serviceId = connector.serviceId.encode()
                 executeRequest = executeRequest {
                     accessName = name.n
                     executionId = ExecutionId.random().encode()

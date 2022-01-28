@@ -10,7 +10,7 @@ fun ClientFunction.encode(): io.lambdarpc.transport.grpc.ClientFunction =
     clientFunction {
         accessName = name.n
         serviceURL = connector.endpoint.encode()
-        serviceUUID = connector.serviceId.encode()
+        serviceId = connector.serviceId.encode()
     }
 
 fun ServiceId.encode() = id.toString()

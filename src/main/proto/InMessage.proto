@@ -9,7 +9,7 @@ import "ExecuteRequest.proto";
 import "ExecuteResponse.proto";
 
 message InitialRequest {
-  string serviceUUID = 1;
+  string serviceId = 1;
   ExecuteRequest executeRequest = 2;
 }
 

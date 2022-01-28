@@ -45,7 +45,9 @@ infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
 inline fun <R> scope(
     requests: MutableSharedFlow<ExecuteRequest> = MutableSharedFlow(),
     block: SerializationScope.(MutableSharedFlow<ExecuteRequest>) -> R
-) = useChannelRegistry(requests) { registry -> scope(FunctionRegistry(), registry) { block(requests) } }
+) = useChannelRegistry(requests) { registry ->
+    scope(FunctionRegistry(), registry) { block(requests) }
+}
 
 inline fun <R> scope(
     functionRegistry: FunctionRegistry,

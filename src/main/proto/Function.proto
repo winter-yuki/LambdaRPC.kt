@@ -12,7 +12,7 @@ message ChannelFunction {
 message ClientFunction {
   string accessName = 1;
   string serviceURL = 2;
-  string serviceUUID = 3;
+  string serviceId = 3;
 }
 
 message Function {

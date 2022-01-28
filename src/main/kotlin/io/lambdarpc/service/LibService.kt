@@ -56,7 +56,7 @@ class LibService(
         channelRegistry: ChannelRegistry,
         responses: MutableSharedFlow<OutMessage>
     ) {
-        if (inMessage.initialRequest.serviceUUID.toSid() != serviceId) {
+        if (inMessage.initialRequest.serviceId.toSid() != serviceId) {
             TODO("Service UUID error handling")
         }
         val request = inMessage.initialRequest.executeRequest
@@ -119,7 +119,7 @@ class LibService(
                     clientFunction = clientFunction {
                         accessName = name.n
                         serviceURL = endpoint.encode()
-                        serviceUUID = serviceId.encode()
+                        serviceId = this@LibService.serviceId.encode()
                     }
                 }
             }

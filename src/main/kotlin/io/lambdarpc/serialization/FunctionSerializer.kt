@@ -48,7 +48,7 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
             }
             f.hasClientFunction() -> {
                 val name = f.clientFunction.accessName.an
-                val id = f.clientFunction.serviceUUID.toSid()
+                val id = f.clientFunction.serviceId.toSid()
                 val endpoint = Endpoint(f.clientFunction.serviceURL)
                 clientFunction(name, Connector(id, endpoint))
             }
