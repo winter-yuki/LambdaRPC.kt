@@ -26,7 +26,6 @@ suspend fun c(x: Accessor<Int>, k: Int): Accessor<Int> = { x() * k }
 fun d(x: Int): Int = x + 8
 fun e(x: Int, y: Int): Int = x + y
 
-@Suppress("COMPATIBILITY_WARNING")
 fun main(args: Array<String>) {
     val (port) = args
     val service = LibService(serviceId, Endpoint("localhost", port.toInt())) {
