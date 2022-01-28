@@ -11,12 +11,20 @@ typealias Accessor<R> = suspend () -> R
 
 inline fun <reified R> a(rs: Serializer<R> = s()): Serializer<Accessor<R>> = f0(rs)
 
-fun <A, R> adapt(f: suspend (A) -> R): suspend (Accessor<A>) -> Accessor<R> = { a ->
+fun <R> adapt(f: suspend () -> R): suspend () -> Accessor<R> = {
+    { f() }
+}
+
+fun <A, R> adapt(
+    f: suspend (A) -> R
+): suspend (Accessor<A>) -> Accessor<R> = { a ->
     require(a is ClientFunction);
     { f(a()) }
 }
 
-fun <A, B, R> adapt(f: suspend (A, B) -> R): suspend (Accessor<A>, Accessor<B>) -> Accessor<R> = { a, b ->
+fun <A, B, R> adapt(
+    f: suspend (A, B) -> R
+): suspend (Accessor<A>, Accessor<B>) -> Accessor<R> = { a, b ->
     require(a is ClientFunction)
     require(b is ClientFunction);
     {
