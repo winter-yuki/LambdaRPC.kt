@@ -1,19 +1,42 @@
 # λRPC
 
+Simple native RPC with high order functions support.
+
 ## Service as a library
 
-TODO Custom in-project declarations instead of the auto-generated API. Keep code contracts at the same place.
+λRPC does not use standalone declarations to generate code (native). 
+It uses user-defined (and project-specific) data structures and default or custom serializers instead.
 
-## High order functions use-cases
+Functions can receive and return other functions as first-class objects.
+Provided lambdas are executed on the client side, so they can easily capture state and be "sent" to the other language process.
 
-- Security: send closure instead of sensitive data.
-- Protocol simplification: additional data (or some configuration update) can be requested via hof call.
-- Manageable data-processing pipelines (continuations).
-- Stateful streaming computations.
-- Load balancing: task is done, request new.
-- Dynamically choose: compute on client or send data to the server and compute there.
+All of it makes multi-process communication smooth enough to recognize remote service as a common library.
+
+## Service-decomposition purposes
+
+- Code execution in different containers or on various hardware (GPU for instance).
+- Parallel execution of independent tasks.
+- Communication with code written in other language.
+- Rerun subtasks in case of failures or resume using some state snapshot.
+- Microservice architecture.
+
+## High order functions (HOF) use-cases
+
+- Communication protocol simplification:
+  - Service function can easily request additional information in some cases.
+  - Reduce service code duplication: make HOF and receive specific operations from the client.
+- Interactive computations: receive client lambda, provide information about computation (loss function value for instance), 
+  and lambda cancels computation (machine learning process) if something is not good.
+- Security: 
+  - Send closures operating on the sensitive data instead of the data itself.
+  - Provide computational resources as a library of functions that are parametrized by client lambdas instead of receiving client's code and executing it.
+- Computation location dynamic choice: compute something using amount of data on a client or send data to the server and compute there.
+- Load balancing: task is done, request new via client's lambda.
+- Stateful streaming computations: nodes provide theirs lambdas for a mapper.
 
 ## Run examples
+
+### Basic example
 
 ```bash
 $ cd LambdaRPC.kt
@@ -22,4 +45,23 @@ $ ./gradlew example.basic.service2
 $ ./gradlew example.basic.client  # or example.basic.stress
 ```
 
+### Lazy pipeline example
+
+```bash
+$ cd LambdaRPC.kt
+$ ./gradlew example.lazy.service --args=8090
+$ ./gradlew example.lazy.service --args=8091
+# Any number of services on different ports
+$ ./gradlew example.lazy.client --args='8090 8091' # Ports of all services
+```
+
 ## Repository organization
+
+- `dsl` -- domain-specific language for λRPC library users.
+- `examples` -- examples of λRPC usage.
+- `exceptions` -- base library exception classes.
+- `functions` -- each λRPC function consists of two parts: `backend` that holds original function and deserializes data for it, 
+  and `frontend` which is a callable proxy object that being called on the client side serializes arguments, sends them to the 
+  backend function and awaits result from it.
+- `service` -- lib service implementation and it's connection.
+- `utils` -- some useful utils.
