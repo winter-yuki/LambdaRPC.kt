@@ -2,6 +2,8 @@
 
 Simple native RPC with high order functions support.
 
+Inspired by [mipt communicator project](https://github.com/mipt-npm/communicator/tree/gh-pages).
+
 ## Service as a library
 
 λRPC does not use standalone declarations to generate code (native). It uses user-defined (and project-specific) data
