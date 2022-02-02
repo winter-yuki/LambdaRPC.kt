@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.*
 import mu.KLoggable
 import mu.KLogger
 
+/**
+ * [ClientFunction] is a callable proxy object that communicates directly
+ * with the service and executes there its backend part.
+ */
 interface ClientFunction {
     val name: AccessName
     val connector: Connector

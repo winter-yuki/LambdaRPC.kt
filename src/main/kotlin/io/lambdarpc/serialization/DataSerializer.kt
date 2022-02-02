@@ -14,6 +14,9 @@ interface DataSerializer<T> : Serializer<T> {
     fun decode(data: ByteString): T
 }
 
+/**
+ * [DefaultDataSerializer] uses `kotlinx.serialization` to serialize data to JSON.
+ */
 class DefaultDataSerializer<T>(private val serializer: KSerializer<T>) : DataSerializer<T> {
     override fun encode(value: T): ByteString {
         val string = Json.encodeToString(serializer, value)
