@@ -96,7 +96,7 @@ class LibService(
         }
     }
 
-    private fun processResponse(inMessage: InMessage, channelRegistry: ChannelRegistry) {
+    private fun processResponse(inMessage: InMessage, channelRegistry: CompletableChannelRegistry) {
         val response = inMessage.executeResponse
         when {
             response.hasResult() -> {

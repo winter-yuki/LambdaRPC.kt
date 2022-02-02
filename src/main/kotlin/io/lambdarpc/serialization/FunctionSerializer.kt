@@ -60,7 +60,7 @@ abstract class AbstractFunctionSerializer<F> : FunctionSerializer<F> {
 
     protected abstract fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): F
 
@@ -74,7 +74,7 @@ class FunctionSerializer0<R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend () -> R =
         ChannelFunction0(name, executionChannel, serializationScope, rs)
@@ -91,7 +91,7 @@ class FunctionSerializer1<A, R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend (A) -> R =
         ChannelFunction1(name, executionChannel, serializationScope, s1, rs)
@@ -109,7 +109,7 @@ class FunctionSerializer2<A, B, R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend (A, B) -> R =
         ChannelFunction2(name, executionChannel, serializationScope, s1, s2, rs)
@@ -128,7 +128,7 @@ class FunctionSerializer3<A, B, C, R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend (A, B, C) -> R =
         ChannelFunction3(name, executionChannel, serializationScope, s1, s2, s3, rs)
@@ -148,7 +148,7 @@ class FunctionSerializer4<A, B, C, D, R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend (A, B, C, D) -> R =
         ChannelFunction4(name, executionChannel, serializationScope, s1, s2, s3, s4, rs)
@@ -169,7 +169,7 @@ class FunctionSerializer5<A, B, C, D, E, R>(
 
     override fun channelFunction(
         name: AccessName,
-        executionChannel: ExecutionChannel,
+        executionChannel: RequestExecutionChannel,
         serializationScope: SerializationScope,
     ): suspend (A, B, C, D, E) -> R =
         ChannelFunction5(name, executionChannel, serializationScope, s1, s2, s3, s4, s5, rs)

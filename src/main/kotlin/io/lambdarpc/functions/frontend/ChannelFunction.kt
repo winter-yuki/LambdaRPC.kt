@@ -2,6 +2,7 @@ package io.lambdarpc.functions.frontend
 
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.serialization.ExecutionChannel
+import io.lambdarpc.serialization.RequestExecutionChannel
 import io.lambdarpc.serialization.SerializationScope
 import io.lambdarpc.serialization.Serializer
 import io.lambdarpc.transport.grpc.Entity
@@ -13,7 +14,7 @@ import io.lambdarpc.utils.AccessName
  */
 abstract class AbstractChannelFunction<R>(
     val name: AccessName,
-    private val executionChannel: ExecutionChannel,
+    private val executionChannel: RequestExecutionChannel,
     private val rs: Serializer<R>
 ) {
     protected suspend operator fun SerializationScope.invoke(
@@ -29,7 +30,7 @@ abstract class AbstractChannelFunction<R>(
 
 class ChannelFunction0<R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     rs: Serializer<R>
 ) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend () -> R {
@@ -38,7 +39,7 @@ class ChannelFunction0<R>(
 
 class ChannelFunction1<A, R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     private val s1: Serializer<A>,
     rs: Serializer<R>
@@ -50,7 +51,7 @@ class ChannelFunction1<A, R>(
 
 class ChannelFunction2<A, B, R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     private val s1: Serializer<A>,
     private val s2: Serializer<B>,
@@ -63,7 +64,7 @@ class ChannelFunction2<A, B, R>(
 
 class ChannelFunction3<A, B, C, R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     private val s1: Serializer<A>,
     private val s2: Serializer<B>,
@@ -77,7 +78,7 @@ class ChannelFunction3<A, B, C, R>(
 
 class ChannelFunction4<A, B, C, D, R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     private val s1: Serializer<A>,
     private val s2: Serializer<B>,
@@ -92,7 +93,7 @@ class ChannelFunction4<A, B, C, D, R>(
 
 class ChannelFunction5<A, B, C, D, E, R>(
     name: AccessName,
-    executionChannel: ExecutionChannel,
+    executionChannel: RequestExecutionChannel,
     private val serializationScope: SerializationScope,
     private val s1: Serializer<A>,
     private val s2: Serializer<B>,

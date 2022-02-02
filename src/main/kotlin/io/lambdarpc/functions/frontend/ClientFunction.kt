@@ -102,7 +102,7 @@ abstract class AbstractClientFunction<R>(
         }
     }
 
-    private fun processExecuteResponse(outMessage: OutMessage, channelRegistry: ChannelRegistry) {
+    private fun processExecuteResponse(outMessage: OutMessage, channelRegistry: CompletableChannelRegistry) {
         val response = outMessage.executeResponse
         logger.info { "Execute response: ${response.executionId}" }
         when {
