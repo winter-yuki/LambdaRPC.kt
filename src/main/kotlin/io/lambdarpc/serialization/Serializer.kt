@@ -8,10 +8,17 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Serializer interface that is able to work with data and functions.
+ *
+ * Function serialization is not a bytecode serialization. Backend side only saves the function,
+ * when the fronted only creates callable proxy object that is able co communicate with the backend side.
+ *
  * To add custom data serialization, implement [DataSerializer] interface.
  */
 sealed interface Serializer<T>
 
+/**
+ * [SerializationScope] makes it possible to
+ */
 class SerializationScope(
     val functionRegistry: FunctionRegistry,
     val channelRegistry: ChannelRegistry
@@ -43,9 +50,9 @@ infix fun FunctionRegistry.and(channelRegistry: ChannelRegistry) =
     SerializationScope(this, channelRegistry)
 
 inline fun <R> scope(
-    requests: MutableSharedFlow<ExecuteRequest> = MutableSharedFlow(),
+    requests: MutableSharedFlow<ExecuteRequest> = MutableSharedFlow(extraBufferCapacity = 100500),
     block: SerializationScope.(MutableSharedFlow<ExecuteRequest>) -> R
-) = useChannelRegistry(requests) { registry ->
+) = ChannelRegistry(requests).use { registry ->
     scope(FunctionRegistry(), registry) { block(requests) }
 }
 

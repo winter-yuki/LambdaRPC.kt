@@ -7,11 +7,8 @@ import io.lambdarpc.serialization.*
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.*
 import io.lambdarpc.utils.grpc.encode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 
@@ -29,10 +26,10 @@ class LibService(
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
         val localRegistry = FunctionRegistry()
         // One message will be sent before gRPC consumer begin to collect
-        val responses = MutableSharedFlow<OutMessage>(replay = 1)
-        val executeRequests = MutableSharedFlow<ExecuteRequest>()
-        useChannelRegistry(executeRequests) { channelRegistry ->
-            CoroutineScope(Dispatchers.Default).launch {
+        val responses = MutableSharedFlow<OutMessage>(replay = 1, extraBufferCapacity = 100500)
+        val executeRequests = MutableSharedFlow<ExecuteRequest>(extraBufferCapacity = 100500)
+        CoroutineScope(Dispatchers.Default).launch {
+            ChannelRegistry(executeRequests).use { channelRegistry ->
                 requests.collect { inMessage ->
                     when {
                         inMessage.hasInitialRequest() -> processInitial(
@@ -64,6 +61,7 @@ class LibService(
         val executionId = request.executionId.toEid()
         logger.info { "Initial request: name = $name, id = $executionId" }
         val f = registry[name] ?: TODO("Error handling")
+        val job = coroutineContext[Job]!!
         launch {
             val result = f(request.argsList, localRegistry and channelRegistry)
             responses.emit(outMessage {
@@ -72,6 +70,7 @@ class LibService(
                     this.result = result.channelToClient(localRegistry)
                 }
             })
+            job.cancel()
         }
     }
 

@@ -6,7 +6,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * [FunctionRegistry] contains serialized functions which can be exposed for remote calls.
+ * [FunctionRegistry] contains backend functions which can be exposed for remote calls.
+ *
+ * Class is thread-safe.
  */
 class FunctionRegistry {
     private val _functions = ConcurrentHashMap<AccessName, BackendFunction>()
@@ -22,6 +24,6 @@ class FunctionRegistry {
         _functions.computeIfAbsent(name) { f } === f
 }
 
-operator fun FunctionRegistry.get(name: AccessName) = functions[name]
+operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name]
 
-fun FunctionRegistry.getValue(name: AccessName) = functions.getValue(name)
+fun FunctionRegistry.getValue(name: AccessName): BackendFunction = functions.getValue(name)
