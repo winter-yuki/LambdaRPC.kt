@@ -19,6 +19,9 @@ class ServiceContext(val endpoints: Map<ServiceId, List<Endpoint>>) : CoroutineC
     companion object Key : CoroutineContext.Key<ServiceContext>
 }
 
+fun ServiceContext(vararg endpoints: Pair<ServiceId, List<Endpoint>>) =
+    ServiceContext(endpoints.associate { it })
+
 fun serviceContext(vararg endpoints: Pair<UUID, String>) =
     ServiceContext(endpoints.associateRepeatable { (uuid, endpoint) ->
         uuid.sid to Endpoint(endpoint)

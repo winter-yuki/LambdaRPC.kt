@@ -4,7 +4,7 @@ package io.lambdarpc.examples.basic.service1.facade
 
 import io.lambdarpc.dsl.*
 import io.lambdarpc.examples.basic.Point
-import io.lambdarpc.examples.basic.service1.NumpyArraySerializer
+import io.lambdarpc.examples.basic.service1.NumpyArrayIntCoder
 import io.lambdarpc.examples.basic.serviceId1
 
 val conf = Configuration(
@@ -22,4 +22,4 @@ val normFilter by conf.def(
     d<List<Point>>()
 )
 val mapPoints by conf.def(d<List<Point>>(), f1<Point, Double>(), d<List<Double>>())
-val numpyAdd by conf.def(d<Int>(), NumpyArraySerializer, NumpyArraySerializer)
+val numpyAdd by conf.def(d<Int>(), NumpyArrayIntCoder, NumpyArrayIntCoder)

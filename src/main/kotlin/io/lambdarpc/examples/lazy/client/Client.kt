@@ -7,9 +7,9 @@ import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) = runBlocking(
-    ServiceContext(
-        mapOf(serviceId to args.map { Endpoint("localhost", it.toInt()) })
-    )
+    ServiceContext(serviceId to args.map {
+        Endpoint("localhost", it.toInt())
+    })
 ) {
     val s = ss()
     val a = aa(s)

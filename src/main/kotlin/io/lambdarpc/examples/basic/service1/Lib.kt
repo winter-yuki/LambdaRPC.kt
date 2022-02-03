@@ -23,9 +23,7 @@ fun distance(a: Point, b: Point): Double {
 }
 
 suspend fun normFilter(xs: List<Point>, p: suspend (Point, suspend (Point) -> Double) -> Boolean) =
-    xs.filter { point ->
-        p(point) { sqrt(it.x * it.x + it.y * it.y) }
-    }
+    xs.filter { point -> p(point) { sqrt(it.x * it.x + it.y * it.y) } }
 
 suspend fun mapPoints(xs: List<Point>, f: suspend (Point) -> Double): List<Double> =
     xs.map { f(it) }
@@ -33,14 +31,14 @@ suspend fun mapPoints(xs: List<Point>, f: suspend (Point) -> Double): List<Doubl
 /**
  * Some struct with difficult internal structure
  */
-data class NumpyArray(val x: Int)
+data class NumpyArray<T>(val x: T)
 
-object NumpyArraySerializer : DataCoder<NumpyArray> {
-    override fun encode(value: NumpyArray): ByteString =
+object NumpyArrayIntCoder : DataCoder<NumpyArray<Int>> {
+    override fun encode(value: NumpyArray<Int>): ByteString =
         ByteString.copyFrom(byteArrayOf(value.x.toByte()))
 
-    override fun decode(data: ByteString): NumpyArray =
+    override fun decode(data: ByteString): NumpyArray<Int> =
         NumpyArray(data.toByteArray().first().toInt())
 }
 
-fun numpyAdd(x: Int, arr: NumpyArray) = NumpyArray(x + arr.x)
+fun numpyAdd(x: Int, arr: NumpyArray<Int>) = NumpyArray(x + arr.x)
