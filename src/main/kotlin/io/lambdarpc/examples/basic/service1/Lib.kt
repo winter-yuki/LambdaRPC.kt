@@ -1,8 +1,8 @@
 package io.lambdarpc.examples.basic.service1
 
 import com.google.protobuf.ByteString
+import io.lambdarpc.coders.DataCoder
 import io.lambdarpc.examples.basic.Point
-import io.lambdarpc.serialization.DataSerializer
 import kotlin.math.sqrt
 
 fun add5(x: Int) = x + 5
@@ -35,7 +35,7 @@ suspend fun mapPoints(xs: List<Point>, f: suspend (Point) -> Double): List<Doubl
  */
 data class NumpyArray(val x: Int)
 
-object NumpyArraySerializer : DataSerializer<NumpyArray> {
+object NumpyArraySerializer : DataCoder<NumpyArray> {
     override fun encode(value: NumpyArray): ByteString =
         ByteString.copyFrom(byteArrayOf(value.x.toByte()))
 

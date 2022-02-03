@@ -1,4 +1,4 @@
-package io.lambdarpc.serialization
+package io.lambdarpc.coders
 
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.utils.AccessName
@@ -6,7 +6,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * [FunctionRegistry] contains backend functions which can be exposed for remote calls.
+ * [FunctionRegistry] contains backend functions: encoded functions.
  *
  * Class is thread-safe.
  */

@@ -1,4 +1,4 @@
-package io.lambdarpc.serialization
+package io.lambdarpc.coders
 
 import com.google.protobuf.ByteString
 import kotlinx.serialization.KSerializer
@@ -7,17 +7,25 @@ import kotlinx.serialization.serializer
 import java.nio.charset.Charset
 
 /**
- * Serializer for the data. To be able to work with custom serialization, extend it.
+ * Encodes data. To provide custom encoder, implement [DataEncoder].
  */
-interface DataSerializer<T> : Serializer<T> {
+interface DataEncoder<T> : Encoder<T> {
     fun encode(value: T): ByteString
-    fun decode(data: ByteString): T
 }
 
 /**
- * [DefaultDataSerializer] uses `kotlinx.serialization` to serialize data to JSON.
+ * Decodes the data. To implement custom decoder, implement [DataDecoder].
  */
-class DefaultDataSerializer<T>(private val serializer: KSerializer<T>) : DataSerializer<T> {
+interface DataDecoder<T> : Decoder<T> {
+    fun decode(data: ByteString): T
+}
+
+interface DataCoder<T> : DataEncoder<T>, DataDecoder<T>, Coder<T>
+
+/**
+ * [DefaultDataCoder] uses `kotlinx.serialization` to encode data to JSON.
+ */
+class DefaultDataCoder<T>(private val serializer: KSerializer<T>) : DataCoder<T>, Coder<T> {
     override fun encode(value: T): ByteString {
         val string = Json.encodeToString(serializer, value)
         return ByteString.copyFrom(string, Charset.defaultCharset())
@@ -29,4 +37,4 @@ class DefaultDataSerializer<T>(private val serializer: KSerializer<T>) : DataSer
     }
 }
 
-inline fun <reified T> DefaultDataSerializer() = DefaultDataSerializer<T>(serializer())
+inline fun <reified T> DefaultDataCoder() = DefaultDataCoder<T>(serializer())

@@ -3,7 +3,9 @@
 package io.lambdarpc.service
 
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.serialization.*
+import io.lambdarpc.coders.*
+import io.lambdarpc.coders.ChannelRegistry
+import io.lambdarpc.coders.CompletableChannelRegistry
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.*
 import io.lambdarpc.utils.grpc.encode

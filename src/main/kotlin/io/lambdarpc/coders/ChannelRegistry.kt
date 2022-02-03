@@ -1,4 +1,4 @@
-package io.lambdarpc.serialization
+package io.lambdarpc.coders
 
 import io.lambdarpc.exceptions.CallDisconnectedChannelFunction
 import io.lambdarpc.transport.grpc.Entity
@@ -32,8 +32,8 @@ interface CompletableExecutionChannel {
 }
 
 /**
- * [ExecutionChannel] is an accessor that allows frontend functions to work with client-server
- * bidirectional communication: send requests and get responses.
+ * [ExecutionChannel] is an accessor that allows frontend functions to work with
+ * existing client-server bidirectional connection: send requests and get responses.
  *
  * Class is thread-safe.
  */
@@ -55,9 +55,9 @@ class ExecutionChannel(
             this.executionId = executionId.encode()
             args.addAll(entities)
         }
-        val rc = synchronized(requestsMutex) { requests?.run { tryEmit(executeRequest) } }
+        val wasEmitted = synchronized(requestsMutex) { requests?.run { tryEmit(executeRequest) } }
             ?: throw CallDisconnectedChannelFunction()
-        if (!rc) error("ExecutionChannel request failed")
+        if (!wasEmitted) error("ExecutionChannel request failed")
         response.await()
     }
 
@@ -80,7 +80,7 @@ typealias CompletableChannelRegistry = Map<ExecutionId, CompletableExecutionChan
 
 /**
  * Contains [ExecutionChannel]s of decoded channel functions.
- * Should be closed when client-server connection expires.
+ * Should be closed when corresponding client-server connection expires.
  *
  * Class is thread-safe.
  */

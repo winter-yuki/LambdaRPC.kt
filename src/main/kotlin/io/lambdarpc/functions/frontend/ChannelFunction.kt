@@ -1,10 +1,7 @@
 package io.lambdarpc.functions.frontend
 
+import io.lambdarpc.coders.*
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.serialization.ExecutionChannel
-import io.lambdarpc.serialization.RequestExecutionChannel
-import io.lambdarpc.serialization.SerializationScope
-import io.lambdarpc.serialization.Serializer
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.utils.AccessName
 
@@ -15,13 +12,13 @@ import io.lambdarpc.utils.AccessName
 abstract class AbstractChannelFunction<R>(
     val name: AccessName,
     private val executionChannel: RequestExecutionChannel,
-    private val rs: Serializer<R>
+    private val rc: Decoder<R>
 ) {
-    protected suspend operator fun SerializationScope.invoke(
+    protected suspend operator fun CodingScope.invoke(
         vararg entities: Entity
     ): R = executionChannel.request(name, entities.toList()).run {
         when {
-            hasResult() -> rs.decode(result)
+            hasResult() -> rc.decode(result)
             hasError() -> TODO("Error handling")
             else -> throw UnknownMessageType("execute result")
         }
@@ -31,78 +28,78 @@ abstract class AbstractChannelFunction<R>(
 class ChannelFunction0<R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend () -> R {
-    override suspend fun invoke(): R = serializationScope.run { invoke() }
+    private val codingScope: CodingScope,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend () -> R {
+    override suspend fun invoke(): R = codingScope.run { invoke() }
 }
 
 class ChannelFunction1<A, R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    private val s1: Serializer<A>,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend (A) -> R {
-    override suspend fun invoke(arg: A): R = serializationScope.run {
-        invoke(s1.encode(arg))
+    private val codingScope: CodingScope,
+    private val c1: Encoder<A>,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend (A) -> R {
+    override suspend fun invoke(arg: A): R = codingScope.run {
+        invoke(c1.encode(arg))
     }
 }
 
 class ChannelFunction2<A, B, R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend (A, B) -> R {
-    override suspend fun invoke(arg1: A, arg2: B): R = serializationScope.run {
-        invoke(s1.encode(arg1), s2.encode(arg2))
+    private val codingScope: CodingScope,
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend (A, B) -> R {
+    override suspend fun invoke(arg1: A, arg2: B): R = codingScope.run {
+        invoke(c1.encode(arg1), c2.encode(arg2))
     }
 }
 
 class ChannelFunction3<A, B, C, R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend (A, B, C) -> R {
-    override suspend fun invoke(arg1: A, arg2: B, arg3: C): R = serializationScope.run {
-        invoke(s1.encode(arg1), s2.encode(arg2), s3.encode(arg3))
+    private val codingScope: CodingScope,
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend (A, B, C) -> R {
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C): R = codingScope.run {
+        invoke(c1.encode(arg1), c2.encode(arg2), c3.encode(arg3))
     }
 }
 
 class ChannelFunction4<A, B, C, D, R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    private val s4: Serializer<D>,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend (A, B, C, D) -> R {
-    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D): R = serializationScope.run {
-        invoke(s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4))
+    private val codingScope: CodingScope,
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    private val c4: Encoder<D>,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend (A, B, C, D) -> R {
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D): R = codingScope.run {
+        invoke(c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4))
     }
 }
 
 class ChannelFunction5<A, B, C, D, E, R>(
     name: AccessName,
     executionChannel: RequestExecutionChannel,
-    private val serializationScope: SerializationScope,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    private val s4: Serializer<D>,
-    private val s5: Serializer<E>,
-    rs: Serializer<R>
-) : AbstractChannelFunction<R>(name, executionChannel, rs), suspend (A, B, C, D, E) -> R {
-    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R = serializationScope.run {
-        invoke(s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4), s5.encode(arg5))
+    private val codingScope: CodingScope,
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    private val c4: Encoder<D>,
+    private val c5: Encoder<E>,
+    rc: Decoder<R>
+) : AbstractChannelFunction<R>(name, executionChannel, rc), suspend (A, B, C, D, E) -> R {
+    override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R = codingScope.run {
+        invoke(c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4), c5.encode(arg5))
     }
 }

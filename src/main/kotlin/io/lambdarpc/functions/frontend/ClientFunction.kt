@@ -2,8 +2,8 @@
 
 package io.lambdarpc.functions.frontend
 
+import io.lambdarpc.coders.*
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.serialization.*
 import io.lambdarpc.service.Connector
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
@@ -18,7 +18,7 @@ import mu.KLogger
 
 /**
  * [ClientFunction] is a callable proxy object that communicates directly
- * with the service and executes there its backend part.
+ * with the service instance and executes there its backend part.
  */
 interface ClientFunction {
     val name: AccessName
@@ -28,15 +28,15 @@ interface ClientFunction {
 abstract class AbstractClientFunction<R>(
     override val name: AccessName,
     override val connector: Connector,
-    private val rs: Serializer<R>
+    private val rc: Decoder<R>
 ) : ClientFunction, KLoggable {
-    protected suspend operator fun SerializationScope.invoke(
+    protected suspend operator fun CodingScope.invoke(
         executeRequests: Flow<ExecuteRequest>,
         vararg entities: Entity
     ): R = connector.connect { connection ->
         logger.info { "invoke called on $name" }
         // One message will be sent before gRPC consumer begin to collect
-        val inMessages = MutableSharedFlow<InMessage>(1).apply {
+        val inMessages = MutableSharedFlow<InMessage>(replay = 1, extraBufferCapacity = 100500).apply {
             emit(initialRequest(entities.toList()))
         }
         val outMessages = connection.execute(
@@ -64,7 +64,7 @@ abstract class AbstractClientFunction<R>(
             result ?: TODO()
         }
         when {
-            result.hasResult() -> rs.decode(result.result)
+            result.hasResult() -> rc.decode(result.result)
             result.hasError() -> TODO()
             else -> throw UnknownMessageType("execute result")
         }
@@ -118,8 +118,8 @@ abstract class AbstractClientFunction<R>(
 class ClientFunction0<R>(
     name: AccessName,
     connector: Connector,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend () -> R {
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend () -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(): R = scope { requests ->
@@ -130,74 +130,74 @@ class ClientFunction0<R>(
 class ClientFunction1<A, R>(
     name: AccessName,
     connector: Connector,
-    private val s1: Serializer<A>,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend (A) -> R {
+    private val c1: Encoder<A>,
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend (A) -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(arg: A): R = scope { requests ->
-        invoke(requests, s1.encode(arg))
+        invoke(requests, c1.encode(arg))
     }
 }
 
 class ClientFunction2<A, B, R>(
     name: AccessName,
     connector: Connector,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B) -> R {
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B) -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(arg1: A, arg2: B): R = scope { requests ->
-        invoke(requests, s1.encode(arg1), s2.encode(arg2))
+        invoke(requests, c1.encode(arg1), c2.encode(arg2))
     }
 }
 
 class ClientFunction3<A, B, C, R>(
     name: AccessName,
     connector: Connector,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C) -> R {
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C) -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(arg1: A, arg2: B, arg3: C): R = scope { requests ->
-        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3))
+        invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3))
     }
 }
 
 class ClientFunction4<A, B, C, D, R>(
     name: AccessName,
     connector: Connector,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    private val s4: Serializer<D>,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C, D) -> R {
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    private val c4: Encoder<D>,
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C, D) -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D): R = scope { requests ->
-        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4))
+        invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4))
     }
 }
 
 class ClientFunction5<A, B, C, D, E, R>(
     name: AccessName,
     connector: Connector,
-    private val s1: Serializer<A>,
-    private val s2: Serializer<B>,
-    private val s3: Serializer<C>,
-    private val s4: Serializer<D>,
-    private val s5: Serializer<E>,
-    rs: Serializer<R>,
-) : AbstractClientFunction<R>(name, connector, rs), suspend (A, B, C, D, E) -> R {
+    private val c1: Encoder<A>,
+    private val c2: Encoder<B>,
+    private val c3: Encoder<C>,
+    private val c4: Encoder<D>,
+    private val c5: Encoder<E>,
+    rc: Decoder<R>,
+) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C, D, E) -> R {
     override val logger: KLogger = logger()
 
     override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R = scope { requests ->
-        invoke(requests, s1.encode(arg1), s2.encode(arg2), s3.encode(arg3), s4.encode(arg4), s5.encode(arg5))
+        invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4), c5.encode(arg5))
     }
 }
