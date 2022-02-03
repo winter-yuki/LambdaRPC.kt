@@ -7,11 +7,6 @@ import io.lambdarpc.utils.unreachable
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
- * Encodes and decodes data and functions.
- */
-interface Coder<T> : Encoder<T>, Decoder<T>
-
-/**
  * Serializes data and encodes functions.
  */
 sealed interface Encoder<T>
@@ -22,26 +17,33 @@ sealed interface Encoder<T>
 sealed interface Decoder<T>
 
 /**
+ * Encodes and decodes data and functions.
+ */
+sealed interface Coder<T> : Encoder<T>, Decoder<T>
+
+/**
  * Scope in which encoding and decoding of data and functions works same.
  */
 class CodingScope(
     val functionRegistry: FunctionRegistry,
     val channelRegistry: ChannelRegistry
 ) {
+    @Suppress("REDUNDANT_ELSE_IN_WHEN")
     fun <T> Encoder<T>.encode(value: T): Entity =
         when (this) {
-            is DataEncoder -> entity { data = encode(value) }
-            is FunctionEncoder -> entity { function = encode(value, functionRegistry) }
+            is DataCoder -> entity { data = encode(value) }
+            is FunctionCoder -> entity { function = encode(value, functionRegistry) }
             else -> unreachable("Compiler fails to check exhaustiveness")
         }
 
+    @Suppress("REDUNDANT_ELSE_IN_WHEN")
     fun <T> Decoder<T>.decode(entity: Entity): T =
         when (this) {
-            is DataDecoder -> {
+            is DataCoder -> {
                 require(entity.hasData()) { "Entity should contain data" }
                 decode(entity.data)
             }
-            is FunctionDecoder -> {
+            is FunctionCoder -> {
                 require(entity.hasFunction()) { "Function required" }
                 decode(entity.function, functionRegistry, channelRegistry)
             }

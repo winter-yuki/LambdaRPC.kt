@@ -12,23 +12,21 @@ import io.lambdarpc.utils.an
 import io.lambdarpc.utils.grpc.encode
 import io.lambdarpc.utils.toSid
 
-/**
- * [FunctionEncoder] encodes function by saving it to the registry
- * and providing the data structure that identifies it.
- */
-interface FunctionEncoder<F> : Encoder<F> {
+interface FunctionCoder<F> : Coder<F> {
+    /**
+     * Encodes function by saving it to the registry
+     * and providing the data structure that identifies it.
+     */
     fun encode(f: F, registry: FunctionRegistry): Function
-}
 
-/**
- * Creates a callable proxy object that serializes the data,
- * sends it to the backend side and receives the result.
- */
-interface FunctionDecoder<F> : Decoder<F> {
+    /**
+     * Creates a callable proxy object that serializes the data,
+     * sends it to the backend side and receives the result.
+     */
     fun decode(f: Function, functionRegistry: FunctionRegistry, channelRegistry: ChannelRegistry): F
 }
 
-abstract class AbstractFunctionCoder<F> : FunctionEncoder<F>, FunctionDecoder<F>, Coder<F> {
+abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     override fun encode(f: F, registry: FunctionRegistry): Function =
         function {
             if (f is ClientFunction) {

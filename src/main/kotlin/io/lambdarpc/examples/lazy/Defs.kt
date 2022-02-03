@@ -1,8 +1,8 @@
 package io.lambdarpc.examples.lazy
 
 import io.lambdarpc.coders.Coder
-import io.lambdarpc.dsl.f0
 import io.lambdarpc.dsl.d
+import io.lambdarpc.dsl.f0
 import io.lambdarpc.functions.frontend.ClientFunction
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
