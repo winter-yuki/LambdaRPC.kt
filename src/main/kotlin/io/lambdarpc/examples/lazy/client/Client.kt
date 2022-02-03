@@ -1,13 +1,13 @@
 package io.lambdarpc.examples.lazy.client
 
-import io.lambdarpc.dsl.ServiceContext
+import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.examples.graph.serviceId
 import io.lambdarpc.examples.lazy.service.*
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) = runBlocking(
-    ServiceContext(serviceId to args.map {
+    ServiceDispatcher(serviceId to args.map {
         Endpoint("localhost", it.toInt())
     })
 ) {

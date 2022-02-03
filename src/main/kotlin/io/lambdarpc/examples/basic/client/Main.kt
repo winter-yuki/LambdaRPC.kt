@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.basic.client
 
 import io.lambdarpc.dsl.cf
-import io.lambdarpc.dsl.serviceContext
+import io.lambdarpc.dsl.serviceDispatcher
 import io.lambdarpc.examples.basic.*
 import io.lambdarpc.examples.basic.service1.NumpyArray
 import io.lambdarpc.examples.basic.service1.facade.*
@@ -9,12 +9,12 @@ import io.lambdarpc.examples.basic.service2.facade.norm1
 import io.lambdarpc.examples.basic.service2.facade.norm2
 import kotlinx.coroutines.runBlocking
 
-val serviceContext = serviceContext(
+val serviceDispatcher = serviceDispatcher(
     serviceId1 to endpoint1,
     serviceId2 to endpoint2
 )
 
-fun main(): Unit = runBlocking(serviceContext) {
+fun main(): Unit = runBlocking(serviceDispatcher) {
     println("add5(2) = ${add5(2)}")
     val m = 3
     println("eval5 { it + m } = ${eval5 { it + m }}")
