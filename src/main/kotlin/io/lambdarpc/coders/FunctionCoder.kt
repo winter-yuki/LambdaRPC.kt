@@ -5,6 +5,7 @@ import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.service.Connector
 import io.lambdarpc.transport.grpc.Function
+import io.lambdarpc.transport.grpc.channelFunction
 import io.lambdarpc.transport.grpc.function
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
@@ -33,7 +34,7 @@ abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
                 clientFunction = f.encode()
             } else {
                 val name = registry.register(f.toBackendFunction())
-                channelFunction = io.lambdarpc.transport.grpc.channelFunction { accessName = name.n }
+                channelFunction = channelFunction { accessName = name.n }
             }
         }
 

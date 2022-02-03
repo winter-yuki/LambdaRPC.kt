@@ -6,7 +6,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * [FunctionRegistry] contains backend functions: encoded functions.
+ * [FunctionRegistry] contains backend functions.
  *
  * Class is thread-safe.
  */

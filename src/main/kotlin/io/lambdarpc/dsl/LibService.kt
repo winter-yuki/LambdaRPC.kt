@@ -9,6 +9,9 @@ import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
+/**
+ * Object that represents libservice.
+ */
 class LibService(serviceId: ServiceId, endpoint: Endpoint, builder: LibServiceDSL.() -> Unit) {
     val service: Server = ServerBuilder
         .forPort(endpoint.port.p)

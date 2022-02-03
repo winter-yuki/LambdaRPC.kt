@@ -9,8 +9,8 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /**
- * [ServiceContext] is a Kotlin [CoroutineContext] that contains all necessary information
- * for frontend functions execution.
+ * [ServiceContext] is a Kotlin [CoroutineContext.Element] that contains
+ * all necessary information for frontend functions execution.
  */
 class ServiceContext(val endpoints: Map<ServiceId, List<Endpoint>>) : CoroutineContext.Element {
     override val key: CoroutineContext.Key<*>

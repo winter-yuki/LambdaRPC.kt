@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.*
 import mu.KLoggable
 import mu.KLogger
 
+/**
+ * Implementation of the lib service.
+ */
 class LibService(
     private val serviceId: ServiceId,
     private val endpoint: Endpoint,

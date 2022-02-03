@@ -7,12 +7,12 @@ import io.lambdarpc.utils.unreachable
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
- * Serializes data and encodes functions.
+ * Encodes data and functions.
  */
 sealed interface Encoder<T>
 
 /**
- * Deserializes data and decodes functions.
+ * Decodes data and functions.
  */
 sealed interface Decoder<T>
 
