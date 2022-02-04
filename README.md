@@ -6,7 +6,7 @@ Inspired by [mipt communicator project](https://github.com/mipt-npm/communicator
 
 ## Service as a library
 
-λRPC does not use standalone declarations to generate code (native). It uses user-defined (and project-specific) data
+λRPC does not use standalone declarations to generate code (native). It uses library-specific data
 structures and default or custom serializers instead.
 
 Functions can receive and return other functions as first-class objects. Provided lambdas are executed on the client
@@ -67,9 +67,9 @@ $ ./gradlew example.lazy.client --args='8090 8091' # Ports of all services
 - `functions` -- each λRPC function consists of two parts: `backend` that holds original function and deserializes data
   for it, and `frontend` which is a callable proxy object that being called on the client side serializes arguments,
   sends them to the backend function and awaits result from it.
-- `serialization` -- serializers of two kinds: data serializers and function serializers.
-    - Default data serializer uses `kotlinx.serialization` to serialize data to JSON.
-    - Function serialization saves function as backend function to some registry and returns its `access name`. Function
-      deserialization creates frontend function that is able to communicate with the corresponding backend function.
+- `coders` -- data coder (serializer) and function coder.
+    - Default data coder uses `kotlinx.serialization` to serialize data to JSON.
+    - Function encoding saves function as backend function to some registry and returns its `access name`. 
+      Function decoding creates frontend function that is able to communicate with the corresponding backend function.
 - `service` -- lib service implementation and it's connection.
 - `utils` -- some useful utils.
