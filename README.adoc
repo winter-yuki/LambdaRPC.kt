@@ -1,16 +1,77 @@
 = λRPC
 
 Simple native RPC with high order functions support.
+Inspired by https://github.com/mipt-npm/communicator/tree/gh-pages[Communicator].
 
-Inspired by https://github.com/mipt-npm/communicator/tree/gh-pages[mipt communicator project].
+λRPC allows using code with high-order functions as a service.
+
+.Suppose that we have a code
+[source,kotlin]
+----
+@Serializable
+data class Point(val x: Double, val y: Double)
+
+fun compute(ps: List<Point>, norm: suspend (Point) -> Double): Double = ...
+----
+
+.To transform it to a service just add a facade declaration and a `main` function
+[source,kotlin]
+----
+val conf = Configuration(serviceId)
+val compute by conf.def(d<List<Point>>(), f1<Point, Double>(), d<Double>())
+
+fun main() {
+    val service = LibService(serviceId, endpoint) {
+        compute of ::compute // Bind declaration and implementation
+    }
+    service.start()
+    service.awaitTermination()
+}
+----
+
+.To make calls from the client, add `serviceDispatcher` to the coroutine context and invoke declaration
+[source,kotlin]
+----
+val serviceDispatcher = serviceDispatcher(
+    serviceId to endpoint
+)
+
+fun main() = runBlocking(serviceDispatcher) {
+    val ps = listOf(Point(9.0, 1.0), Point(5.0, 4.0))
+    val k = AtomicInteger(2)
+    val res = compute(ps) {
+        val k = k.getAndIncrement()
+        (it.x.pow(k) + it.y.pow(k)).pow(1.0 / k)
+    }
+    println(res)
+}
+----
+
+Note that we pass to `compute` closure that captures and changes state.
+It is possible because λRPC does not serialize lambdas and execute them on the client site.
+Thus, closures can be passed even to the services written in other languages.
+
+For instance, for this code, the call diagram is the following:
+[source,kotlin]
+----
+// Service
+suspend fun f(g: suspend (Int) -> Int) = g(5) + 1
+
+// Client
+val m = 36
+f { it + m }
+----
+
+image::https://user-images.githubusercontent.com/25281147/153264790-74784fb7-3be6-44a9-a4cf-aa80bb706306.png[]
 
 == Service as a library
 
-λRPC does not use standalone declarations to generate code (native). It uses library-specific data structures and
-default or custom serializers instead.
+λRPC does not use standalone declarations to generate code (native).
+It uses library-specific data structures and default or custom serializers instead.
 
-Functions can receive and return other functions as first-class objects. Provided lambdas are executed on the client
-side, so they can easily capture state and be "sent" to the other language process.
+Functions can receive and return other functions as first-class objects.
+Provided lambdas are executed on the client side,
+so they can easily capture state and be "sent" to the other language process.
 
 All of it makes multi-process communication smooth enough to recognize remote service as a common library.
 
@@ -24,24 +85,24 @@ All of it makes multi-process communication smooth enough to recognize remote se
 
 == High order functions (HOF) use-cases
 
-- Communication protocol simplification:
-    - Service function can easily request additional information in some cases.
-    - Reduce service code duplication: make HOF and receive specific operations from the client.
-- Interactive computations: receive client lambda, provide information about computation (loss function value for
+* Communication protocol simplification:
+** Service function can easily request additional information in some cases.
+** Reduce service code duplication: make HOF and receive specific operations from the client.
+* Interactive computations: receive client lambda, provide information about computation (loss function value for
   instance), and lambda cancels computation (machine learning process) if something is not good.
-- Security:
-    - Send closures operating on the sensitive data instead of the data itself.
-    - Provide computational resources as a library of functions that are parametrized by client lambdas instead of
-      receiving client's code and executing it.
-- Computation location dynamic choice: compute something using amount of data on a client or send data to the server and
+* Security:
+** Send closures operating on the sensitive data instead of the data itself.
+** Provide computational resources as a library of functions that are parametrized by client lambdas instead of
+   receiving client's code and executing it.
+* Choose dynamically computation location: compute something using amount of data on a client or send data to the server and
   compute there.
-- Load balancing: task is done, request new via client's lambda.
-- Stateful streaming computations: nodes provide theirs lambdas for a mapper.
+* Load balancing: task is done, request new via client's lambda.
+* Stateful streaming computations: nodes provide theirs lambdas for a mapper.
 
-== Run examples
+=== Repository organization
 
-=== Basic example
-
+.examples
+* `basic` -- examples that demonstrate usage of basic λRPC functionality.
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
@@ -49,9 +110,8 @@ $ ./gradlew :examples:basic.service1
 $ ./gradlew :examples:basic.service2
 $ ./gradlew :examples:basic.client  # or :examples:basic.stress
 ----
-
-=== Lazy pipeline example
-
+* `lazy` -- interesting example that shows possibility to build lazy
+data processing pipelines using common λRPC functionality.
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
@@ -61,17 +121,15 @@ $ ./gradlew :examples:lazy.service --args=8091
 $ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
 ----
 
-=== Repository organization
-
 .lambdarpc
 * `dsl` -- domain-specific language for λRPC library users.
-* `exceptions` -- base library exception classes.
-* `functions` -- each λRPC function consists of two parts: `backend` that holds original function and deserializes data
-  for it, and `frontend` which is a callable proxy object that being called on the client side serializes arguments,
+* `exceptions` -- base λRPC exception classes.
+* `functions` -- each λRPC function consists of two parts: `backend` that holds original function and decodes data
+  for it, and `frontend` which is a callable proxy object that being called on the client side encodes arguments,
   sends them to the backend function and awaits result from it.
 * `coders` -- data coder (serializer) and function coder.
 ** Default data coder uses `kotlinx.serialization` to serialize data to JSON.
-** Function encoding saves function as backend function to some registry and returns its `access name`. Function
-      decoding creates frontend function that is able to communicate with the corresponding backend function.
-* `service` -- lib service implementation and it's connection.
+** Function encoding saves function as backend function to some registry and returns its `access name`.
+Function decoding creates frontend function that is able to communicate with the corresponding backend function.
+* `service` -- lib service implementation and `Connection`.
 * `utils` -- some useful utils.
