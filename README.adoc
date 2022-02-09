@@ -1,7 +1,8 @@
 = λRPC
 
 Simple native RPC with high order functions support.
-Inspired by https://github.com/mipt-npm/communicator/tree/gh-pages[Communicator].
+
+> Inspired by https://github.com/mipt-npm/communicator/tree/gh-pages[Communicator].
 
 λRPC allows using code with high-order functions as a service.
 

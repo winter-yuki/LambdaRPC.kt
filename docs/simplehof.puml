@@ -1,0 +1,16 @@
+@startuml hof
+
+!$client = "Client"
+!$lib = "Library"
+
+' fun f(g: (Int) -> Int) = g(5) + 1
+
+"$client" -> "$lib" : Invoke f { it + m }
+"$lib" -> "$lib" : g(5)
+"$lib" -> "$client" : Invoke closure
+"$client" -> "$client" : 5 + m
+"$client" -> "$lib" : Closure result
+"$lib" -> "$lib" : g(5) + 1
+"$lib" -> "$client" : f result
+
+@enduml

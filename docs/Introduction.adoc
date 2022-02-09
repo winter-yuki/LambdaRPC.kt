@@ -1,0 +1,54 @@
+= Introduction
+
+== LibService
+
+.Let *Libservice* be a triple of
+. Library code with functions: Julia in our example.
+. Facade (declarations of exposed library functions): in Julia and in Kotlin.
+. Main:
+** Starts a libservice.
+** Sets up a correspondence between declarations and library functions.
+
+image::https://user-images.githubusercontent.com/25281147/153276120-5b4cffdf-fafe-49bb-bcf5-f5bcb6462dce.png[]
+
+== Passing high-order functions (HOFs)
+
+.Service
+[source,Kotlin]
+----
+suspend fun eval5(f: suspend (Int) -> Int): Int = f(5)
+val eval5 by conf.def(f1<Int, Int>(), d<Int>())
+----
+
+.Client
+[source,Kotlin]
+----
+val m = 34; eval5 { it + m }
+----
+
+.Function encoding
+* Function + argument decoders -> *Backend function*.
+* Send backend function identifier.
+
+.Function decoding
+* Received backend function identifier + argument encoders -> *Frontend function* --
+a callable proxy object that communicates with the backend function on invocation.
+
+image::https://user-images.githubusercontent.com/25281147/153276345-f2054310-fb32-420c-9cee-6bde32eee000.png[]
+
+== Communicator vs λRPC
+
+.Communicator
+* Based on ZMQ
+* Big and complex, lots of effort
+* Hard to port to other ecosystems:
+** Use C FFI
+** Implement ZMQ client-server
+** Tried to implement simple ZMQ client in Julia
+* Iterative development
+
+.λRPC
+* Based on gRPC
+* Relatively small (~2kloc)
+* gRPC helps to port
+* Incremental development
