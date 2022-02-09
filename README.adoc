@@ -134,3 +134,8 @@ $ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
 Function decoding creates frontend function that is able to communicate with the corresponding backend function.
 * `service` -- lib service implementation and `Connection`.
 * `utils` -- some useful utils.
+
+== Links
+
+* See more information https://github.com/winter-yuki/LambdaRPC.kt/tree/main/docs[here].
+* Basic Julia lang https://github.com/winter-yuki/LambdaRPC.jl[prototype].
