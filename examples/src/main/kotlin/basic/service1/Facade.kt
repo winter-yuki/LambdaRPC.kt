@@ -7,9 +7,7 @@ import basic.service1.NumpyArrayIntCoder
 import basic.serviceId1
 import io.lambdarpc.dsl.*
 
-val conf = Configuration(
-    serviceId = serviceId1
-)
+val conf = Configuration(serviceId = serviceId1)
 
 val add5 by conf.def<Int, Int>()
 val eval5 by conf.def(f1<Int, Int>(), d<Int>())
