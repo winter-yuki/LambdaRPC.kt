@@ -8,10 +8,6 @@ import java.nio.charset.Charset
 
 /**
  * To implement custom data coder, implement [DataCoder] interface.
- *
- * It is no need to split concrete encoders and decoders because
- * there is no case when only one of them is implemented.
- * Backend function always use one of them and frontend one -- another.
  */
 interface DataCoder<T> : Coder<T> {
     fun encode(value: T): ByteString

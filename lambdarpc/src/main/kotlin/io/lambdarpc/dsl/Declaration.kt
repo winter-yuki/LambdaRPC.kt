@@ -28,8 +28,8 @@ class Declaration0<R>(
         scope.cf(this)()
 }
 
-fun <R> CoroutineScope.cf(definition: suspend CoroutineScope.() -> R) =
-    cf(definition as Declaration0<R>) { connector ->
+fun <R> CoroutineScope.cf(declaration: suspend CoroutineScope.() -> R) =
+    cf(declaration as Declaration0<R>) { connector ->
         ClientFunction0(name, connector, rc)
     }
 
@@ -43,8 +43,8 @@ class Declaration1<A, R>(
         scope.cf(this)(arg)
 }
 
-fun <A, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A) -> R) =
-    cf(definition as Declaration1<A, R>) { connector ->
+fun <A, R> CoroutineScope.cf(declaration: suspend CoroutineScope.(A) -> R) =
+    cf(declaration as Declaration1<A, R>) { connector ->
         ClientFunction1(name, connector, c1, rc)
     }
 
@@ -59,8 +59,8 @@ class Declaration2<A, B, R>(
         scope.cf(this)(arg1, arg2)
 }
 
-fun <A, B, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B) -> R) =
-    cf(definition as Declaration2<A, B, R>) { connector ->
+fun <A, B, R> CoroutineScope.cf(declaration: suspend CoroutineScope.(A, B) -> R) =
+    cf(declaration as Declaration2<A, B, R>) { connector ->
         ClientFunction2(name, connector, c1, c2, rc)
     }
 
@@ -76,8 +76,8 @@ class Declaration3<A, B, C, R>(
         scope.cf(this)(arg1, arg2, arg3)
 }
 
-fun <A, B, C, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C) -> R) =
-    cf(definition as Declaration3<A, B, C, R>) { connector ->
+fun <A, B, C, R> CoroutineScope.cf(declaration: suspend CoroutineScope.(A, B, C) -> R) =
+    cf(declaration as Declaration3<A, B, C, R>) { connector ->
         ClientFunction3(name, connector, c1, c2, c3, rc)
     }
 
@@ -94,8 +94,8 @@ class Declaration4<A, B, C, D, R>(
         scope.cf(this)(arg1, arg2, arg3, arg4)
 }
 
-fun <A, B, C, D, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C, D) -> R) =
-    cf(definition as Declaration4<A, B, C, D, R>) { connector ->
+fun <A, B, C, D, R> CoroutineScope.cf(declaration: suspend CoroutineScope.(A, B, C, D) -> R) =
+    cf(declaration as Declaration4<A, B, C, D, R>) { connector ->
         ClientFunction4(name, connector, c1, c2, c3, c4, rc)
     }
 
@@ -113,15 +113,15 @@ class Declaration5<A, B, C, D, E, R>(
         scope.cf(this)(arg1, arg2, arg3, arg4, arg5)
 }
 
-fun <A, B, C, D, E, R> CoroutineScope.cf(definition: suspend CoroutineScope.(A, B, C, D, E) -> R) =
-    cf(definition as Declaration5<A, B, C, D, E, R>) { connector ->
+fun <A, B, C, D, E, R> CoroutineScope.cf(declaration: suspend CoroutineScope.(A, B, C, D, E) -> R) =
+    cf(declaration as Declaration5<A, B, C, D, E, R>) { connector ->
         ClientFunction5(name, connector, c1, c2, c3, c4, c5, rc)
     }
 
 private fun <F : Declaration, G> CoroutineScope.cf(
-    definition: F,
+    declaration: F,
     clientFunctionProvider: F.(Connector) -> G
 ): G {
-    val connector = Connector(definition.serviceId, randomEndpoint(definition.serviceId))
-    return definition.clientFunctionProvider(connector)
+    val connector = Connector(declaration.serviceId, randomEndpoint(declaration.serviceId))
+    return declaration.clientFunctionProvider(connector)
 }
