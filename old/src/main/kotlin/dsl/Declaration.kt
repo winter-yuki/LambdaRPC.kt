@@ -2,7 +2,6 @@ package io.lambdarpc.dsl
 
 import io.lambdarpc.coders.Coder
 import io.lambdarpc.functions.frontend.*
-import io.lambdarpc.service.Connector
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope

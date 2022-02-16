@@ -4,13 +4,10 @@ package io.lambdarpc.functions.frontend
 
 import io.lambdarpc.coders.*
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.service.Connector
+import io.lambdarpc.transport.ServiceIdConnector
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.utils.AccessName
-import io.lambdarpc.utils.ExecutionId
-import io.lambdarpc.utils.an
+import io.lambdarpc.utils.*
 import io.lambdarpc.utils.grpc.encode
-import io.lambdarpc.utils.toEid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,23 +20,26 @@ import mu.KLogger
  * [ClientFunction] is a callable proxy object that communicates directly
  * with the service instance and executes there its backend part.
  */
-interface ClientFunction {
+internal interface ClientFunction {
     val name: AccessName
-    val connector: Connector
+    val serviceId: ServiceId
+    val endpoint: Endpoint
 }
 
-abstract class AbstractClientFunction<R>(
+internal abstract class AbstractClientFunction<R>(
     override val name: AccessName,
-    override val connector: Connector,
+    private val connector: ServiceIdConnector,
     private val rc: Decoder<R>
 ) : ClientFunction, KLoggable {
+    override val logger: KLogger = logger()
+
     protected suspend operator fun CodingScope.invoke(
         executeRequests: Flow<ExecuteRequest>,
         vararg entities: Entity
-    ): R = connector.connect { connection ->
+    ): R = connector.withConnection(endpoint) { connection ->
         logger.info { "invoke called on $name" }
         // One message will be sent before gRPC consumer begin to collect
-        val inMessages = MutableSharedFlow<InMessage>(replay = 1, extraBufferCapacity = 100500).apply {
+        val inMessages = MutableSharedFlow<InMessage>(replay = 1).apply {
             emit(initialRequest(entities.toList()))
         }
         val outMessages = connection.execute(
@@ -76,7 +76,7 @@ abstract class AbstractClientFunction<R>(
     private fun initialRequest(entities: Iterable<Entity>): InMessage =
         inMessage {
             initialRequest = initialRequest {
-                serviceId = connector.serviceId.encode()
+                serviceId = this@AbstractClientFunction.serviceId.encode()
                 executeRequest = executeRequest {
                     accessName = name.n
                     executionId = ExecutionId.random().encode()
@@ -118,79 +118,81 @@ abstract class AbstractClientFunction<R>(
     }
 }
 
-class ClientFunction0<R>(
+internal class ClientFunction0<R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend () -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(): R = scope { requests ->
         invoke(requests)
     }
 }
 
-class ClientFunction1<A, R>(
+internal class ClientFunction1<A, R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     private val c1: Encoder<A>,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend (A) -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(arg: A): R = scope { requests ->
         invoke(requests, c1.encode(arg))
     }
 }
 
-class ClientFunction2<A, B, R>(
+internal class ClientFunction2<A, B, R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     private val c1: Encoder<A>,
     private val c2: Encoder<B>,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B) -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(arg1: A, arg2: B): R = scope { requests ->
         invoke(requests, c1.encode(arg1), c2.encode(arg2))
     }
 }
 
-class ClientFunction3<A, B, C, R>(
+internal class ClientFunction3<A, B, C, R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     private val c1: Encoder<A>,
     private val c2: Encoder<B>,
     private val c3: Encoder<C>,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C) -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(arg1: A, arg2: B, arg3: C): R = scope { requests ->
         invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3))
     }
 }
 
-class ClientFunction4<A, B, C, D, R>(
+internal class ClientFunction4<A, B, C, D, R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     private val c1: Encoder<A>,
     private val c2: Encoder<B>,
     private val c3: Encoder<C>,
     private val c4: Encoder<D>,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C, D) -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D): R = scope { requests ->
         invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4))
     }
 }
 
-class ClientFunction5<A, B, C, D, E, R>(
+internal class ClientFunction5<A, B, C, D, E, R>(
     name: AccessName,
-    connector: Connector,
+    override val serviceId: ServiceId,
+    override val endpoint: Endpoint,
+    connector: ServiceIdConnector,
     private val c1: Encoder<A>,
     private val c2: Encoder<B>,
     private val c3: Encoder<C>,
@@ -198,8 +200,6 @@ class ClientFunction5<A, B, C, D, E, R>(
     private val c5: Encoder<E>,
     rc: Decoder<R>,
 ) : AbstractClientFunction<R>(name, connector, rc), suspend (A, B, C, D, E) -> R {
-    override val logger: KLogger = logger()
-
     override suspend fun invoke(arg1: A, arg2: B, arg3: C, arg4: D, arg5: E): R = scope { requests ->
         invoke(requests, c1.encode(arg1), c2.encode(arg2), c3.encode(arg3), c4.encode(arg4), c5.encode(arg5))
     }

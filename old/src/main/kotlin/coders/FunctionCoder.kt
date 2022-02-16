@@ -3,7 +3,6 @@ package io.lambdarpc.coders
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
-import io.lambdarpc.service.Connector
 import io.lambdarpc.transport.grpc.Function
 import io.lambdarpc.transport.grpc.channelFunction
 import io.lambdarpc.transport.grpc.function
