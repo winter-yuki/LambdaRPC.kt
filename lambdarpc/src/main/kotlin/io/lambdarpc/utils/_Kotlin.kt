@@ -17,8 +17,8 @@ inline fun <T, K, V> Array<T>.associateRepeatable(
     transform: (T) -> Pair<K, V>
 ): MutableMap<K, out MutableList<V>> {
     val map = mutableMapOf<K, MutableList<V>>()
-    forEach { p ->
-        val (k, v) = transform(p)
+    forEach { t ->
+        val (k, v) = transform(t)
         map.putIfAbsent(k, mutableListOf())
         map.getValue(k).add(v)
     }
