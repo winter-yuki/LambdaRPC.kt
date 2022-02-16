@@ -1,21 +1,21 @@
-package functions.backend
+package io.lambdarpc.functions.backend
 
-import coders.CodingScope
-import coders.Decoder
-import coders.Encoder
+import io.lambdarpc.coders.CodingScope
+import io.lambdarpc.coders.Decoder
+import io.lambdarpc.coders.Encoder
 import io.lambdarpc.transport.grpc.Entity
 
 /**
  * Holds function and decodes arguments for it.
  */
-interface BackendFunction {
+internal interface BackendFunction {
     suspend operator fun invoke(
         args: List<Entity>,
         codingScope: CodingScope
     ): Entity
 }
 
-class BackendFunction0<R>(
+internal class BackendFunction0<R>(
     private val f: suspend () -> R,
     private val rs: Encoder<R>,
 ) : BackendFunction {
@@ -29,7 +29,7 @@ class BackendFunction0<R>(
     }
 }
 
-class BackendFunction1<A, R>(
+internal class BackendFunction1<A, R>(
     private val f: suspend (A) -> R,
     private val c1: Decoder<A>,
     private val rc: Encoder<R>,
@@ -45,7 +45,7 @@ class BackendFunction1<A, R>(
     }
 }
 
-class BackendFunction2<A, B, R>(
+internal class BackendFunction2<A, B, R>(
     private val f: suspend (A, B) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
@@ -62,7 +62,7 @@ class BackendFunction2<A, B, R>(
     }
 }
 
-class BackendFunction3<A, B, C, R>(
+internal class BackendFunction3<A, B, C, R>(
     private val f: suspend (A, B, C) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
@@ -76,45 +76,6 @@ class BackendFunction3<A, B, C, R>(
         require(args.size == 3) { "${args.size} != 3" }
         val (arg1, arg2, arg3) = args
         val result = f(c1.decode(arg1), c2.decode(arg2), c3.decode(arg3))
-        rc.encode(result)
-    }
-}
-
-class BackendFunction4<A, B, C, D, R>(
-    private val f: suspend (A, B, C, D) -> R,
-    private val c1: Decoder<A>,
-    private val c2: Decoder<B>,
-    private val c3: Decoder<C>,
-    private val c4: Decoder<D>,
-    private val rc: Encoder<R>,
-) : BackendFunction {
-    override suspend fun invoke(
-        args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
-        require(args.size == 4) { "${args.size} != 4" }
-        val (arg1, arg2, arg3, arg4) = args
-        val result = f(c1.decode(arg1), c2.decode(arg2), c3.decode(arg3), c4.decode(arg4))
-        rc.encode(result)
-    }
-}
-
-class BackendFunction5<A, B, C, D, E, R>(
-    private val f: suspend (A, B, C, D, E) -> R,
-    private val c1: Decoder<A>,
-    private val c2: Decoder<B>,
-    private val c3: Decoder<C>,
-    private val c4: Decoder<D>,
-    private val c5: Decoder<E>,
-    private val rc: Encoder<R>,
-) : BackendFunction {
-    override suspend fun invoke(
-        args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
-        require(args.size == 5) { "${args.size} != 5" }
-        val (arg1, arg2, arg3, arg4, arg5) = args
-        val result = f(c1.decode(arg1), c2.decode(arg2), c3.decode(arg3), c4.decode(arg4), c5.decode(arg5))
         rc.encode(result)
     }
 }

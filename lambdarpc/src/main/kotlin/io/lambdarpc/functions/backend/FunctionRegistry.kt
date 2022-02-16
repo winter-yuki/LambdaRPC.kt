@@ -1,6 +1,5 @@
-package io.lambdarpc.coders
+package io.lambdarpc.functions.backend
 
-import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.utils.AccessName
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -20,8 +19,13 @@ internal class FunctionRegistry {
             _functions[name] = f
         }
 
-    fun register(name: AccessName, f: BackendFunction): Boolean =
-        _functions.computeIfAbsent(name) { f } === f
+    /**
+     * Use this method to prepopulate [FunctionRegistry].
+     */
+    fun register(name: AccessName, f: BackendFunction) {
+        val g = _functions.computeIfAbsent(name) { f }
+        if (f !== g) error("Function with this name already exists")
+    }
 }
 
 internal operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name]
