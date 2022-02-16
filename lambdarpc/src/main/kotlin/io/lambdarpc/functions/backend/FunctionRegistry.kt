@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * Class is thread-safe.
  */
-class FunctionRegistry {
+internal class FunctionRegistry {
     private val _functions = ConcurrentHashMap<AccessName, BackendFunction>()
     val functions: Map<AccessName, BackendFunction>
         get() = _functions
@@ -24,6 +24,6 @@ class FunctionRegistry {
         _functions.computeIfAbsent(name) { f } === f
 }
 
-operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name]
+internal operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name]
 
-fun FunctionRegistry.getValue(name: AccessName): BackendFunction = functions.getValue(name)
+internal fun FunctionRegistry.getValue(name: AccessName): BackendFunction = functions.getValue(name)

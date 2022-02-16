@@ -1,8 +1,8 @@
-package io.lambdarpc.functions.backend
+package functions.backend
 
-import io.lambdarpc.coders.CodingScope
-import io.lambdarpc.coders.Decoder
-import io.lambdarpc.coders.Encoder
+import coders.CodingScope
+import coders.Decoder
+import coders.Encoder
 import io.lambdarpc.transport.grpc.Entity
 
 /**

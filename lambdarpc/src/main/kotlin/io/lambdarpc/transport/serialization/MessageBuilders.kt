@@ -2,7 +2,6 @@ package io.lambdarpc.transport.serialization
 
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
-import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ExecutionId
 import io.lambdarpc.utils.ServiceId
 
@@ -61,11 +60,3 @@ internal val ExecuteResponse.outMessage: OutMessage
 
 internal val ExecuteResponse.outMessageFinal: OutMessage
     get() = outMessage { finalResponse = this@outMessageFinal }
-
-private fun AccessName.encode() = n
-
-private fun ServiceId.encode() = id.toString()
-
-private fun Endpoint.encode() = toString()
-
-private fun ExecutionId.encode() = id.toString()
