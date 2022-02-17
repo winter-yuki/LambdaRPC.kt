@@ -1,8 +1,9 @@
 package io.lambdarpc.functions.backend
 
-import io.lambdarpc.coders.CodingScope
+import io.lambdarpc.coders.CodingContext
 import io.lambdarpc.coders.Decoder
 import io.lambdarpc.coders.Encoder
+import io.lambdarpc.coders.withContext
 import io.lambdarpc.transport.grpc.Entity
 
 /**
@@ -11,7 +12,7 @@ import io.lambdarpc.transport.grpc.Entity
 internal interface BackendFunction {
     suspend operator fun invoke(
         args: List<Entity>,
-        codingScope: CodingScope
+        context: CodingContext
     ): Entity
 }
 
@@ -21,8 +22,8 @@ internal class BackendFunction0<R>(
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
+        context: CodingContext
+    ): Entity = withContext(context) {
         require(args.isEmpty()) { "${args.size} != 0" }
         val result = f()
         rs.encode(result)
@@ -36,8 +37,8 @@ internal class BackendFunction1<A, R>(
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
+        context: CodingContext
+    ): Entity = withContext(context) {
         require(args.size == 1) { "${args.size} != 1" }
         val (arg1) = args
         val result = f(c1.decode(arg1))
@@ -53,8 +54,8 @@ internal class BackendFunction2<A, B, R>(
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
+        context: CodingContext
+    ): Entity = withContext(context) {
         require(args.size == 2) { "${args.size} != 2" }
         val (arg1, arg2) = args
         val result = f(c1.decode(arg1), c2.decode(arg2))
@@ -71,8 +72,8 @@ internal class BackendFunction3<A, B, C, R>(
 ) : BackendFunction {
     override suspend fun invoke(
         args: List<Entity>,
-        codingScope: CodingScope
-    ): Entity = codingScope.run {
+        context: CodingContext
+    ): Entity = withContext(context) {
         require(args.size == 3) { "${args.size} != 3" }
         val (arg1, arg2, arg3) = args
         val result = f(c1.decode(arg1), c2.decode(arg2), c3.decode(arg3))

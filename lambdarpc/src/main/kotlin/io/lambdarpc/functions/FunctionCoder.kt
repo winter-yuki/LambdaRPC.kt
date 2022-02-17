@@ -9,27 +9,31 @@ import io.lambdarpc.functions.frontend.BoundFunction
 import io.lambdarpc.functions.frontend.ChannelFunction
 import io.lambdarpc.functions.frontend.FreeFunction
 import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.transport.grpc.ExecuteRequest
 import io.lambdarpc.transport.grpc.FunctionPrototype
 import io.lambdarpc.transport.serialization.FunctionPrototype
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Contains information that is needed to encode functions.
  */
-internal class FunctionEncodingScope(
+internal class FunctionEncodingContext(
     val functionRegistry: FunctionRegistry
 )
 
 /**
  * Contains information that is needed to decode functions.
  */
-internal class FunctionDecodingScope
+internal class FunctionDecodingContext(
+    val executeRequests: MutableSharedFlow<ExecuteRequest>
+)
 
 internal abstract class AbstractFunctionCoder<F> : FunctionEncoder<F>, FunctionDecoder<F> {
-    override fun encode(f: F, scope: FunctionEncodingScope): FunctionPrototype =
+    override fun encode(f: F, context: FunctionEncodingContext): FunctionPrototype =
         if (f is FrontendFunction) {
             when (f) {
                 is ChannelFunction -> {
-                    val name = scope.functionRegistry.register(f.toBackendFunction())
+                    val name = context.functionRegistry.register(f.toBackendFunction())
                     FunctionPrototype(name)
                 }
                 is FreeFunction, is BoundFunction -> {
@@ -37,13 +41,13 @@ internal abstract class AbstractFunctionCoder<F> : FunctionEncoder<F>, FunctionD
                 }
             }
         } else {
-            val name = scope.functionRegistry.register(f.toBackendFunction())
+            val name = context.functionRegistry.register(f.toBackendFunction())
             FunctionPrototype(name)
         }
 
     protected abstract fun F.toBackendFunction(): BackendFunction
 
-    override fun decode(p: FunctionPrototype, scope: FunctionDecodingScope): F = p.run {
+    override fun decode(p: FunctionPrototype, context: FunctionDecodingContext): F = p.run {
         when {
             hasChannelFunction() -> {
                 TODO()

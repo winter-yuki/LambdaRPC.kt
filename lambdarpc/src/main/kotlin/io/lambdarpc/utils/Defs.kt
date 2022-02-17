@@ -43,14 +43,3 @@ val UUID.sid: ServiceId
     get() = ServiceId(this)
 
 fun String.toSid() = ServiceId(UUID.fromString(this))
-
-
-@JvmInline
-value class ServiceInstanceId(private val id: UUID) {
-    override fun toString(): String = id.toString()
-}
-
-val UUID.siid: ServiceInstanceId
-    get() = ServiceInstanceId(this)
-
-fun String.toSiid() = ServiceInstanceId(UUID.fromString(this))

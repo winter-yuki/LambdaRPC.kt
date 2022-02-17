@@ -1,7 +1,7 @@
 package io.lambdarpc.coders
 
-import io.lambdarpc.functions.FunctionDecodingScope
-import io.lambdarpc.functions.FunctionEncodingScope
+import io.lambdarpc.functions.FunctionDecodingContext
+import io.lambdarpc.functions.FunctionEncodingContext
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.serialization.Entity
 import io.lambdarpc.transport.serialization.rd
@@ -9,14 +9,11 @@ import io.lambdarpc.transport.serialization.rd
 /**
  * Scope in which encoding and decoding of data and functions works same.
  */
-internal class CodingScope(
-    private val encodingScope: FunctionEncodingScope,
-    private val decodingScope: FunctionDecodingScope
-) {
+internal class CodingScope(private val context: CodingContext) {
     fun <T> Encoder<T>.encode(value: T): Entity =
         when (this) {
             is DataEncoder -> Entity(encode(value))
-            is FunctionEncoder -> Entity(encode(value, encodingScope))
+            is FunctionEncoder -> Entity(encode(value, context.encoding))
         }
 
     fun <T> Decoder<T>.decode(entity: Entity): T =
@@ -27,7 +24,15 @@ internal class CodingScope(
             }
             is FunctionDecoder -> {
                 require(entity.hasFunction()) { "Function required" }
-                decode(entity.function, decodingScope)
+                decode(entity.function, context.decoding)
             }
         }
 }
+
+internal class CodingContext(
+    val encoding: FunctionEncodingContext,
+    val decoding: FunctionDecodingContext
+)
+
+internal inline fun <R> withContext(context: CodingContext, block: CodingScope.() -> R): R =
+    CodingScope(context).block()
