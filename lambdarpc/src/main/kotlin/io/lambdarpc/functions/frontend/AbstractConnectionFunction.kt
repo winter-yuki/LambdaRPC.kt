@@ -34,6 +34,9 @@ internal abstract class AbstractConnectionFunction<I> : KLoggable {
     abstract val accessName: AccessName
     abstract val serviceId: ServiceId
 
+    protected abstract val serviceIdProvider: ConnectionProvider<ServiceId>
+    protected abstract val endpointProvider: ConnectionProvider<Endpoint>
+
     protected suspend fun invoke(
         connectionProvider: ConnectionProvider<I>,
         connectionId: I,
@@ -81,7 +84,7 @@ internal abstract class AbstractConnectionFunction<I> : KLoggable {
     private fun context(functionRegistry: FunctionRegistry, executeRequests: MutableSharedFlow<ExecuteRequest>) =
         CodingContext(
             FunctionEncodingContext(functionRegistry),
-            FunctionDecodingContext(executeRequests)
+            FunctionDecodingContext(serviceIdProvider, endpointProvider, executeRequests)
         )
 
     protected inline fun <R> scope(block: CodingScope.(FunctionRegistry, MutableSharedFlow<ExecuteRequest>) -> R): R {
