@@ -1,5 +1,6 @@
 package io.lambdarpc.utils
 
+import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.reflect.KProperty
 
@@ -29,3 +30,6 @@ fun unreachable(explanation: String): Nothing = error("Unreachable code reached:
 
 operator fun <V> AtomicReference<V>.getValue(_owner: Any?, property: KProperty<*>): V = get()
 operator fun <V> AtomicReference<V>.setValue(_owner: Any?, property: KProperty<*>, value: V) = set(value)
+
+suspend inline fun <T> Flow<T>.collectApply(crossinline block: T.() -> Unit) =
+    collect { it.block() }
