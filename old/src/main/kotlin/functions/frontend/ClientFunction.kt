@@ -1,9 +1,10 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package io.lambdarpc.functions.frontend
+package functions.frontend
 
+import coders.*
 import io.lambdarpc.coders.*
-import io.lambdarpc.exceptions.UnknownMessageType
+import exceptions.UnknownMessageType
 import io.lambdarpc.transport.ServiceIdConnector
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.*
@@ -72,18 +73,6 @@ internal abstract class AbstractClientFunction<R>(
             else -> throw UnknownMessageType("execute result")
         }
     }
-
-    private fun initialRequest(entities: Iterable<Entity>): InMessage =
-        inMessage {
-            initialRequest = initialRequest {
-                serviceId = this@AbstractClientFunction.serviceId.encode()
-                executeRequest = executeRequest {
-                    accessName = name.n
-                    executionId = ExecutionId.random().encode()
-                    args.addAll(entities)
-                }
-            }
-        }
 
     private fun CoroutineScope.processExecuteRequest(
         outMessage: OutMessage,

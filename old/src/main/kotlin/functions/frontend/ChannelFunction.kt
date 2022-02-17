@@ -1,7 +1,11 @@
-package io.lambdarpc.functions.frontend
+package functions.frontend
 
+import coders.CodingScope
+import coders.Decoder
+import coders.Encoder
+import coders.RequestExecutionChannel
 import io.lambdarpc.coders.*
-import io.lambdarpc.exceptions.UnknownMessageType
+import exceptions.UnknownMessageType
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.utils.AccessName
 

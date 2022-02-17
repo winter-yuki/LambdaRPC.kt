@@ -1,5 +1,6 @@
-package io.lambdarpc.dsl
+package dsl
 
+import coders.*
 import io.lambdarpc.coders.*
 
 inline fun <reified T> d(): DefaultDataCoder<T> = DefaultDataCoder()

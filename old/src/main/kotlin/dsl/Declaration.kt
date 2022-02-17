@@ -1,5 +1,12 @@
-package io.lambdarpc.dsl
+package dsl
 
+import functions.frontend.*
+import functions.frontend.ClientFunction0
+import functions.frontend.ClientFunction1
+import functions.frontend.ClientFunction2
+import functions.frontend.ClientFunction3
+import functions.frontend.ClientFunction4
+import functions.frontend.ClientFunction5
 import io.lambdarpc.coders.Coder
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.utils.AccessName

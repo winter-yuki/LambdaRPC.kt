@@ -1,4 +1,4 @@
-package io.lambdarpc.exceptions
+package exceptions
 
 open class LambdaRpcException(message: String) : RuntimeException(message)
 

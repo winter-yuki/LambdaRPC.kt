@@ -1,4 +1,4 @@
-package io.lambdarpc.dsl
+package dsl
 
 import io.lambdarpc.coders.Coder
 import io.lambdarpc.utils.AccessName
