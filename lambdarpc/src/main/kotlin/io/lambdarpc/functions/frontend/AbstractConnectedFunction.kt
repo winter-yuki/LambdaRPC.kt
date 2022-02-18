@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 
-internal abstract class AbstractConnectionFunction<I> : KLoggable {
+internal abstract class AbstractConnectedFunction : KLoggable {
     override val logger: KLogger = this.logger()
 
     abstract val accessName: AccessName
@@ -37,7 +37,7 @@ internal abstract class AbstractConnectionFunction<I> : KLoggable {
     protected abstract val serviceIdProvider: ConnectionProvider<ServiceId>
     protected abstract val endpointProvider: ConnectionProvider<Endpoint>
 
-    protected suspend fun invoke(
+    protected suspend fun <I> invoke(
         connectionProvider: ConnectionProvider<I>,
         connectionId: I,
         functionRegistry: FunctionRegistry,

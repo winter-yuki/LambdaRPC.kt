@@ -18,7 +18,7 @@ internal class FreeFunction0<R>(
     override val serviceIdProvider: ConnectionProvider<ServiceId>,
     override val endpointProvider: ConnectionProvider<Endpoint>,
     private val rc: Decoder<R>,
-) : AbstractConnectionFunction<ServiceId>(), FreeFunction, suspend () -> R {
+) : AbstractConnectedFunction(), FreeFunction, suspend () -> R {
     override suspend operator fun invoke(): R = scope { functionRegistry, executeRequests ->
         rc.decode(
             invoke(
@@ -35,7 +35,7 @@ internal class FreeFunction1<A, R>(
     override val endpointProvider: ConnectionProvider<Endpoint>,
     private val c1: Encoder<A>,
     private val rc: Decoder<R>,
-) : AbstractConnectionFunction<ServiceId>(), FreeFunction, suspend (A) -> R {
+) : AbstractConnectedFunction(), FreeFunction, suspend (A) -> R {
     override suspend operator fun invoke(a1: A): R = scope { functionRegistry, executeRequests ->
         rc.decode(
             invoke(
@@ -54,7 +54,7 @@ internal class FreeFunction2<A, B, R>(
     private val c1: Encoder<A>,
     private val c2: Encoder<B>,
     private val rc: Decoder<R>,
-) : AbstractConnectionFunction<ServiceId>(), FreeFunction, suspend (A, B) -> R {
+) : AbstractConnectedFunction(), FreeFunction, suspend (A, B) -> R {
     override suspend operator fun invoke(a1: A, a2: B): R = scope { functionRegistry, executeRequests ->
         rc.decode(
             invoke(
@@ -74,7 +74,7 @@ internal class FreeFunction3<A, B, C, R>(
     private val c2: Encoder<B>,
     private val c3: Encoder<C>,
     private val rc: Decoder<R>,
-) : AbstractConnectionFunction<ServiceId>(), FreeFunction, suspend (A, B, C) -> R {
+) : AbstractConnectedFunction(), FreeFunction, suspend (A, B, C) -> R {
     override suspend operator fun invoke(a1: A, a2: B, a3: C): R = scope { functionRegistry, executeRequests ->
         rc.decode(
             invoke(
