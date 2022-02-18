@@ -11,8 +11,8 @@ import io.lambdarpc.transport.grpc.Entity
  */
 internal interface BackendFunction {
     suspend operator fun invoke(
-        args: List<Entity>,
-        context: CodingContext
+        context: CodingContext,
+        args: List<Entity>
     ): Entity
 }
 
@@ -21,8 +21,8 @@ internal class BackendFunction0<R>(
     private val rs: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
-        args: List<Entity>,
-        context: CodingContext
+        context: CodingContext,
+        args: List<Entity>
     ): Entity = withContext(context) {
         require(args.isEmpty()) { "${args.size} != 0" }
         val result = f()
@@ -36,8 +36,8 @@ internal class BackendFunction1<A, R>(
     private val rc: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
-        args: List<Entity>,
-        context: CodingContext
+        context: CodingContext,
+        args: List<Entity>
     ): Entity = withContext(context) {
         require(args.size == 1) { "${args.size} != 1" }
         val (arg1) = args
@@ -53,8 +53,8 @@ internal class BackendFunction2<A, B, R>(
     private val rc: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
-        args: List<Entity>,
-        context: CodingContext
+        context: CodingContext,
+        args: List<Entity>
     ): Entity = withContext(context) {
         require(args.size == 2) { "${args.size} != 2" }
         val (arg1, arg2) = args
@@ -71,8 +71,8 @@ internal class BackendFunction3<A, B, C, R>(
     private val rc: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
-        args: List<Entity>,
-        context: CodingContext
+        context: CodingContext,
+        args: List<Entity>
     ): Entity = withContext(context) {
         require(args.size == 3) { "${args.size} != 3" }
         val (arg1, arg2, arg3) = args
