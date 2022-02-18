@@ -2,7 +2,7 @@ package io.lambdarpc.transport.grpc
 
 import io.grpc.ManagedChannel
 
-typealias Stub = LibServiceGrpcKt.LibServiceCoroutineStub
+internal typealias Stub = LibServiceGrpcKt.LibServiceCoroutineStub
 
-val ManagedChannel.stub: Stub
+internal val ManagedChannel.stub: Stub
     get() = Stub(this)

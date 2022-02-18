@@ -3,6 +3,7 @@ package io.lambdarpc.transport.serialization
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ExecutionId
+import io.lambdarpc.utils.HeadExecutionId
 import io.lambdarpc.utils.ServiceId
 
 internal fun InitialRequest(
@@ -20,11 +21,15 @@ internal val InitialRequest.inMessage: InMessage
 internal fun ExecuteRequest(
     accessName: AccessName,
     executionId: ExecutionId,
-    args: Iterable<Entity>
+    headExecutionId: HeadExecutionId?,
+    args: Iterable<Entity>,
 ): ExecuteRequest =
     executeRequest {
         this.accessName = accessName.encode()
         this.executionId = executionId.encode()
+        if (headExecutionId != null) {
+            this.headExecutionId = headExecutionId.encode()
+        }
         this.args.addAll(args)
     }
 

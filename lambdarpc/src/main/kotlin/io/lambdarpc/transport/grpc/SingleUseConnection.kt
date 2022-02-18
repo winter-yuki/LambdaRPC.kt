@@ -7,6 +7,9 @@ import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * gRPC connection that shutdowns on close.
+ */
 internal class SingleUseConnection(
     private val channel: ManagedChannel,
     private val stub: Stub = channel.stub
