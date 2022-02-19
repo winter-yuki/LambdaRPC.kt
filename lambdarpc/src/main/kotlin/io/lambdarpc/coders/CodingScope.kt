@@ -6,6 +6,9 @@ import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.serialization.Entity
 import io.lambdarpc.transport.serialization.rd
 
+/**
+ * Contains all needed information and state for encoding and decoding.
+ */
 internal class CodingContext(
     val encoding: FunctionEncodingContext,
     val decoding: FunctionDecodingContext
