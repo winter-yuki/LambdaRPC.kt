@@ -21,10 +21,9 @@ message BoundFunctionPrototype {
 }
 
 message FunctionPrototype {
-  bool cached = 1;
   oneof function {
-    ChannelFunctionPrototype channelFunction = 2;
-    FreeFunctionPrototype freeFunction = 3;
-    BoundFunctionPrototype boundFunction = 4;
+    ChannelFunctionPrototype channelFunction = 1;
+    FreeFunctionPrototype freeFunction = 2;
+    BoundFunctionPrototype boundFunction = 3;
   }
 }

@@ -27,14 +27,6 @@ fun String.toEid() = ExecutionId(UUID.fromString(this))
 
 
 @JvmInline
-value class HeadExecutionId(private val id: ExecutionId) {
-    override fun toString(): String = id.toString()
-}
-
-fun ExecutionId.toHead() = HeadExecutionId(this)
-
-
-@JvmInline
 value class ServiceId(private val id: UUID) {
     override fun toString(): String = id.toString()
 }

@@ -10,6 +10,5 @@ import "Entity.proto";
 message ExecuteRequest {
   string accessName = 1;
   string executionId = 2;
-  optional string headExecutionId = 3;
-  repeated Entity args = 4;
+  repeated Entity args = 3;
 }
