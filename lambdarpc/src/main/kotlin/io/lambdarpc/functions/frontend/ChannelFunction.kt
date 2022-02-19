@@ -9,7 +9,7 @@ import io.lambdarpc.utils.AccessName
 
 /**
  * [ChannelFunction] is a [FrontendFunction] that uses existing bidirectional connection
- * to communication with its backend part.
+ * to communicate with its backend part.
  */
 internal interface ChannelFunction : FrontendFunction {
     val accessName: AccessName

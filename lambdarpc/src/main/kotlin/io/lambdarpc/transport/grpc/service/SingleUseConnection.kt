@@ -1,9 +1,11 @@
-package io.lambdarpc.transport.grpc
+package io.lambdarpc.transport.grpc.service
 
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.lambdarpc.transport.Connection
 import io.lambdarpc.transport.ConnectionProvider
+import io.lambdarpc.transport.grpc.InMessage
+import io.lambdarpc.transport.grpc.OutMessage
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.flow.Flow
 

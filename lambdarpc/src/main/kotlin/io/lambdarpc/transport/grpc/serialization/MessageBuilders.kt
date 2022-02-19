@@ -1,4 +1,4 @@
-package io.lambdarpc.transport.serialization
+package io.lambdarpc.transport.grpc.serialization
 
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName

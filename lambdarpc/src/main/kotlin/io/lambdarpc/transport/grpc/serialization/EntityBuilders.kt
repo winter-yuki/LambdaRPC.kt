@@ -1,4 +1,4 @@
-package io.lambdarpc.transport.serialization
+package io.lambdarpc.transport.grpc.serialization
 
 import io.lambdarpc.functions.frontend.BoundFunction
 import io.lambdarpc.functions.frontend.ChannelFunction

@@ -3,7 +3,7 @@ package io.lambdarpc.functions.frontend
 import io.lambdarpc.exceptions.LambdaRpcException
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
-import io.lambdarpc.transport.serialization.ExecuteRequest
+import io.lambdarpc.transport.grpc.serialization.ExecuteRequest
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ExecutionId
 import kotlinx.coroutines.CompletableDeferred

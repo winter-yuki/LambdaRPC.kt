@@ -11,7 +11,7 @@ import io.lambdarpc.functions.backend.FunctionRegistry
 import io.lambdarpc.functions.backend.get
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.transport.serialization.*
+import io.lambdarpc.transport.grpc.serialization.*
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -25,6 +25,7 @@ import mu.KLogger
 
 /**
  * [ConnectedFunction] is a [FrontendFunction] that needs some network connection to be invoked.
+ * Such connections are provided by some [ConnectionProvider].
  */
 sealed interface ConnectedFunction : FrontendFunction
 
@@ -64,6 +65,10 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         }
     }
 
+    /**
+     * Partial application of the [AbstractConnectedFunction.invoke] to reduce
+     * boilerplate for the [AbstractConnectedFunction] implementations.
+     */
     protected inner class Invoker<I>(
         private val connectionProvider: ConnectionProvider<I>,
         private val connectionId: I,

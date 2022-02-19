@@ -1,11 +1,14 @@
-package io.lambdarpc.transport.serialization
+package io.lambdarpc.transport.grpc.serialization
 
 import com.google.protobuf.ByteString
 import io.lambdarpc.functions.frontend.BoundFunction
 import io.lambdarpc.functions.frontend.ChannelFunction
 import io.lambdarpc.functions.frontend.FreeFunction
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.utils.*
+import io.lambdarpc.utils.AccessName
+import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.ExecutionId
+import io.lambdarpc.utils.ServiceId
 
 internal fun AccessName.encode() = n
 

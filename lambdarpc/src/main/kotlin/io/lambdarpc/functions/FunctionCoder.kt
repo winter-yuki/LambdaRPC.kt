@@ -11,21 +11,21 @@ import io.lambdarpc.transport.grpc.BoundFunctionPrototype
 import io.lambdarpc.transport.grpc.ChannelFunctionPrototype
 import io.lambdarpc.transport.grpc.FreeFunctionPrototype
 import io.lambdarpc.transport.grpc.FunctionPrototype
-import io.lambdarpc.transport.serialization.FunctionPrototype
+import io.lambdarpc.transport.grpc.serialization.FunctionPrototype
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.toSid
 
 /**
- * Contains information that is needed to encode functions.
+ * Contains information and state that is needed to encode functions.
  */
 internal class FunctionEncodingContext(
     val functionRegistry: FunctionRegistry
 )
 
 /**
- * Contains information that is needed to decode functions.
+ * Contains information and state that is needed to decode functions.
  * @param executionChannelController For [ChannelFunction] creation.
  * @param serviceIdProvider For [FreeFunction] creation.
  * @param endpointProvider For [BoundFunction] creation.

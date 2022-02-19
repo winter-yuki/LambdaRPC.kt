@@ -1,6 +1,6 @@
 package io.lambdarpc.coders
 
-import io.lambdarpc.transport.serialization.RawData
+import io.lambdarpc.transport.grpc.serialization.RawData
 
 /**
  * Implement to define custom data encoder.

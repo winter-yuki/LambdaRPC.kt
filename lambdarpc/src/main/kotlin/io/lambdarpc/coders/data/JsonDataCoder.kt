@@ -3,8 +3,8 @@ package io.lambdarpc.coders.data
 import com.google.protobuf.ByteString
 import io.lambdarpc.coders.DataDecoder
 import io.lambdarpc.coders.DataEncoder
-import io.lambdarpc.transport.serialization.RawData
-import io.lambdarpc.transport.serialization.rd
+import io.lambdarpc.transport.grpc.serialization.RawData
+import io.lambdarpc.transport.grpc.serialization.rd
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer

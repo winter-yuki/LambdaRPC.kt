@@ -11,7 +11,8 @@ import io.lambdarpc.functions.frontend.BoundFunction
 import io.lambdarpc.functions.frontend.ChannelRegistry
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.transport.serialization.*
+import io.lambdarpc.transport.grpc.serialization.*
+import io.lambdarpc.transport.grpc.service.AbstractLibService
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,29 +57,13 @@ internal class LibServiceImpl(
                 )
                 requests.collectApply {
                     when {
-                        hasInitialRequest() -> {
-                            initialRequest.executeRequest.run {
-                                logger.info { "Initial request: name = $accessName, id = $executionId" }
-                            }
-                            processInitial(
-                                initialRequest, localFunctionRegistry,
-                                executeResponses, requestScope, codingContext
-                            )
-                        }
-                        hasExecuteRequest() -> {
-                            logger.info {
-                                "Execute request: name = ${executeRequest.accessName}, " +
-                                        "id = ${executeRequest.executionId}"
-                            }
-                            processRequest(
-                                executeRequest, localFunctionRegistry,
-                                executeResponses, requestScope, codingContext
-                            )
-                        }
-                        hasExecuteResponse() -> {
-                            logger.info { "Execute response: id = ${executeResponse.executionId}" }
-                            processResponse(executeResponse, controller)
-                        }
+                        hasInitialRequest() -> processInitial(
+                            initialRequest, localFunctionRegistry, executeResponses, codingContext
+                        )
+                        hasExecuteRequest() -> processRequest(
+                            executeRequest, localFunctionRegistry, executeResponses, codingContext
+                        )
+                        hasExecuteResponse() -> processResponse(executeResponse, controller)
                         else -> throw UnknownMessageType("in message")
                     }
                 }
@@ -91,67 +76,53 @@ internal class LibServiceImpl(
         )
     }
 
-    private suspend fun processInitial(
+    private fun CoroutineScope.processInitial(
         initialRequest: InitialRequest,
         localFunctionRegistry: FunctionRegistry,
         executeResponses: MutableSharedFlow<ExecuteResponse>,
-        requestScope: CoroutineScope,
         codingContext: CodingContext
     ) {
+        initialRequest.executeRequest.run {
+            logger.info { "Initial request: name = $accessName, id = $executionId" }
+        }
         val request = initialRequest.executeRequest
-        if (initialRequest.serviceId.toSid() != serviceId) {
+        val response = if (initialRequest.serviceId.toSid() == serviceId) null else {
             logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
             val error = ExecuteError(
                 ErrorType.WRONG_SERVICE_ERROR,
                 "Request for service ${initialRequest.serviceId} received at $serviceId"
             )
-            val response = ExecuteResponse(request.executionId.toEid(), error)
-            executeResponses.emit(response)
-            return
+            ExecuteResponse(request.executionId.toEid(), error)
         }
-        processRequest(
-            request, localFunctionRegistry,
-            executeResponses, requestScope, codingContext,
-            channelToBound = true
-        ).invokeOnCompletion {
-            requestScope.cancel()
+        launch {
+            executeResponses.emit(
+                response ?: evalRequest(
+                    request, localFunctionRegistry,
+                    codingContext, channelToBound = true
+                )
+            )
+            cancel()
         }
     }
 
-    private fun processRequest(
+    private fun CoroutineScope.processRequest(
         request: ExecuteRequest,
         localFunctionRegistry: FunctionRegistry,
         executeResponses: MutableSharedFlow<ExecuteResponse>,
-        requestScope: CoroutineScope,
-        codingContext: CodingContext,
-        channelToBound: Boolean = false
-    ) = requestScope.launch {
-        val response = try {
-            val f = localFunctionRegistry[request.accessName.an]
-            if (f != null) {
-                val result = f(codingContext, request.argsList)
-                ExecuteResponse(
-                    request.executionId.toEid(),
-                    if (channelToBound) result.channelToBound(localFunctionRegistry) else result
-                )
-            } else {
-                val error = ExecuteError(
-                    ErrorType.FUNCTION_NOT_FOUND_ERROR,
-                    "Function ${request.accessName} no found"
-                )
-                ExecuteResponse(request.executionId.toEid(), error)
-            }
-        } catch (e: Throwable) {
-            val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
-            ExecuteResponse(request.executionId.toEid(), error)
+        codingContext: CodingContext
+    ) {
+        logger.info { "Execute request: name = ${request.accessName}, id = ${request.executionId}" }
+        launch {
+            val response = evalRequest(request, localFunctionRegistry, codingContext)
+            executeResponses.emit(response)
         }
-        executeResponses.emit(response)
     }
 
     private fun processResponse(
         response: ExecuteResponse,
         controller: ChannelRegistry.ExecutionChannelController
     ) = response.run {
+        logger.info { "Execute response: id = ${response.executionId}" }
         when {
             hasResult() -> {
                 logger.info { "Complete result: id = $executionId" }
@@ -159,16 +130,50 @@ internal class LibServiceImpl(
             }
             hasError() -> {
                 logger.info { "Complete exceptionally: id = $executionId" }
-                // TODO match errors
                 controller.completeExceptionally(
                     executionId.toEid(),
-                    OtherException(error.message)
+                    OtherException(error.message) // TODO match errors
                 )
             }
             else -> throw UnknownMessageType("execute response")
         }
     }
 
+    /**
+     * Finds function in registry and executes it.
+     */
+    private suspend fun evalRequest(
+        request: ExecuteRequest,
+        localFunctionRegistry: FunctionRegistry,
+        codingContext: CodingContext,
+        channelToBound: Boolean = false
+    ): ExecuteResponse = try {
+        val f = localFunctionRegistry[request.accessName.an]
+        if (f != null) {
+            val result = f(codingContext, request.argsList)
+            ExecuteResponse(
+                request.executionId.toEid(),
+                if (!channelToBound) result else result.channelToBound(localFunctionRegistry)
+            )
+        } else {
+            val error = ExecuteError(
+                ErrorType.FUNCTION_NOT_FOUND_ERROR,
+                "Function ${request.accessName} no found"
+            )
+            ExecuteResponse(request.executionId.toEid(), error)
+        }
+    } catch (e: Throwable) {
+        val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
+        ExecuteResponse(request.executionId.toEid(), error) // TODO match errors
+    }
+
+    /**
+     * Functions during [execute] call are saved to the local [FunctionRegistry],
+     * but functions that libservice returns should live longer.
+     *
+     * [channelToBound] registers returned functions to the [functionRegistry] and
+     * changes its prototype type to the [BoundFunction].
+     */
     private fun Entity.channelToBound(localFunctionRegistry: FunctionRegistry): Entity =
         if (!hasFunction() || !function.hasChannelFunction()) this else {
             val oldName = function.channelFunction.accessName
