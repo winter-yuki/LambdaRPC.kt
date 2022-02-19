@@ -8,3 +8,6 @@ class UnknownMessageType(grpcMessageKind: String? = null) :
                 if (grpcMessageKind == null) "kind"
                 else "of kind ${grpcMessageKind.lowercase()}"
     )
+
+class OtherException(message: String) :
+    LambdaRpcException("Other execute exception: $message")
