@@ -3,20 +3,15 @@ package io.lambdarpc.functions.frontend
 import io.lambdarpc.coders.CodingContext
 import io.lambdarpc.coders.CodingScope
 import io.lambdarpc.coders.withContext
+import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.FunctionDecodingContext
 import io.lambdarpc.functions.FunctionEncodingContext
 import io.lambdarpc.functions.backend.FunctionRegistry
 import io.lambdarpc.functions.backend.get
 import io.lambdarpc.transport.ConnectionProvider
-import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.transport.grpc.ExecuteRequest
-import io.lambdarpc.transport.grpc.ExecuteResponse
-import io.lambdarpc.transport.grpc.InMessage
-import io.lambdarpc.transport.serialization.ExecuteRequest
-import io.lambdarpc.transport.serialization.ExecuteResponse
-import io.lambdarpc.transport.serialization.InitialRequest
-import io.lambdarpc.transport.serialization.inMessage
+import io.lambdarpc.transport.grpc.*
+import io.lambdarpc.transport.serialization.*
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -28,6 +23,15 @@ import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 
+/**
+ * [ConnectedFunction] is a [FrontendFunction] that needs some network connection to be invoked.
+ */
+sealed interface ConnectedFunction : FrontendFunction
+
+/**
+ * Implementation of the [invoke] method for the [FrontendFunction]s
+ * that communicate with service via connection.
+ */
 internal abstract class AbstractConnectedFunction : KLoggable {
     override val logger: KLogger = this.logger()
 
@@ -37,11 +41,49 @@ internal abstract class AbstractConnectedFunction : KLoggable {
     protected abstract val serviceIdProvider: ConnectionProvider<ServiceId>
     protected abstract val endpointProvider: ConnectionProvider<Endpoint>
 
-    protected suspend fun <I> invoke(
+    private val functionRegistry = FunctionRegistry()
+    private val channelRegistry = ChannelRegistry()
+
+    protected inline fun <I, R> codingScope(
         connectionProvider: ConnectionProvider<I>,
         connectionId: I,
-        functionRegistry: FunctionRegistry,
+        block: CodingScope.(Invoker<I>) -> R
+    ): R {
+        val executeRequests = MutableSharedFlow<ExecuteRequest>()
+        return channelRegistry.useController(executeRequests) { controller ->
+            val context = CodingContext(
+                FunctionEncodingContext(functionRegistry),
+                FunctionDecodingContext(
+                    controller,
+                    serviceIdProvider,
+                    endpointProvider
+                )
+            )
+            val invoker = Invoker(connectionProvider, connectionId, executeRequests, controller, context)
+            withContext(context) { block(invoker) }
+        }
+    }
+
+    protected inner class Invoker<I>(
+        private val connectionProvider: ConnectionProvider<I>,
+        private val connectionId: I,
+        private val executeRequests: MutableSharedFlow<ExecuteRequest>,
+        private val controller: ChannelRegistry.ExecutionChannelController,
+        private val context: CodingContext
+    ) {
+        suspend operator fun invoke(vararg entities: Entity): Entity =
+            invoke(
+                connectionProvider, connectionId, controller,
+                executeRequests, context, *entities
+            )
+    }
+
+    private suspend fun <I> invoke(
+        connectionProvider: ConnectionProvider<I>,
+        connectionId: I,
+        controller: ChannelRegistry.ExecutionChannelController,
         executeRequests: MutableSharedFlow<ExecuteRequest>,
+        context: CodingContext,
         vararg entities: Entity
     ): Entity = connectionProvider.withConnection(connectionId) { connection ->
         logger.info { "Invoke called on $accessName" }
@@ -66,32 +108,20 @@ internal abstract class AbstractConnectedFunction : KLoggable {
                         cancel()
                     }
                     hasExecuteRequest() -> processExecuteRequest(
-                        executeRequest, functionRegistry, executeRequests, executeResponses
+                        executeRequest, functionRegistry, executeResponses, context
                     )
-                    hasExecuteResponse() -> processExecuteResponse(executeResponse)
+                    hasExecuteResponse() -> processExecuteResponse(executeResponse, controller)
+                    else -> UnknownMessageType("out message")
                 }
             }
         }
         result?.run {
             when {
                 hasResult() -> this.result
-                hasError() -> TODO()
+                hasError() -> throw OtherException(error.message) // TODO error types
                 else -> throw UnknownMessageType("execute result")
             }
         } ?: error("No final response received for $accessName")
-    }
-
-    private fun context(functionRegistry: FunctionRegistry, executeRequests: MutableSharedFlow<ExecuteRequest>) =
-        CodingContext(
-            FunctionEncodingContext(functionRegistry),
-            FunctionDecodingContext(serviceIdProvider, endpointProvider, executeRequests)
-        )
-
-    protected inline fun <R> scope(block: CodingScope.(FunctionRegistry, MutableSharedFlow<ExecuteRequest>) -> R): R {
-        val functionRegistry = FunctionRegistry()
-        val executeRequests = MutableSharedFlow<ExecuteRequest>()
-        val context = context(functionRegistry, executeRequests)
-        return withContext(context) { block(functionRegistry, executeRequests) }
     }
 
     private fun initialRequest(entities: Iterable<Entity>): InMessage =
@@ -103,24 +133,43 @@ internal abstract class AbstractConnectedFunction : KLoggable {
     private fun CoroutineScope.processExecuteRequest(
         request: ExecuteRequest,
         functionRegistry: FunctionRegistry,
-        executeRequests: MutableSharedFlow<ExecuteRequest>,
-        executeResponses: MutableSharedFlow<ExecuteResponse>
+        executeResponses: MutableSharedFlow<ExecuteResponse>,
+        context: CodingContext,
     ) {
         logger.info { "$accessName: execute request: name = ${request.accessName}, id = ${request.executionId}" }
-        val f = functionRegistry[request.accessName.an] ?: TODO()
         launch {
-            try {
-                val result = f(request.argsList, context(functionRegistry, executeRequests))
-                val response = ExecuteResponse(request.executionId.toEid(), result)
-                executeResponses.emit(response)
+            val response = try {
+                val f = functionRegistry[request.accessName.an]
+                if (f != null) {
+                    val result = f(context, request.argsList)
+                    ExecuteResponse(request.executionId.toEid(), result)
+                } else {
+                    val error = ExecuteError(
+                        ErrorType.FUNCTION_NOT_FOUND_ERROR,
+                        "Function ${request.accessName} not found"
+                    )
+                    ExecuteResponse(request.executionId.toEid(), error)
+                }
+
             } catch (e: Throwable) {
-                TODO()
+                val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
+                ExecuteResponse(request.executionId.toEid(), error)
             }
+            executeResponses.emit(response)
         }
     }
 
-    private fun processExecuteResponse(response: ExecuteResponse) {
+    private fun processExecuteResponse(
+        response: ExecuteResponse,
+        controller: ChannelRegistry.ExecutionChannelController
+    ) = response.run {
         logger.info { "$accessName: execute response received: id = ${response.executionId}" }
-        TODO()
+        when {
+            hasResult() -> controller.complete(executionId.toEid(), result)
+            hasError() -> controller.completeExceptionally(
+                executionId.toEid(),
+                OtherException(error.message) // TODO match error type
+            )
+        }
     }
 }

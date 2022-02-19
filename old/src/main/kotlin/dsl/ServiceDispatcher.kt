@@ -1,4 +1,4 @@
-package dsl.client
+package dsl
 
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId

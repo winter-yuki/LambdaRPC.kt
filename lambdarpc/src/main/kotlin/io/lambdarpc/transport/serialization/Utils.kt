@@ -15,8 +15,6 @@ internal fun Endpoint.encode() = toString()
 
 internal fun ExecutionId.encode() = toString()
 
-internal fun HeadExecutionId.encode() = toString()
-
 internal fun RawData.encode(): ByteString = bytes
 
 internal fun ChannelFunction.encode(): ChannelFunctionPrototype =

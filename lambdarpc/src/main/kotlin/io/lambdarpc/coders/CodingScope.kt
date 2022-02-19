@@ -18,7 +18,7 @@ internal class CodingScope(val context: CodingContext) {
     fun <T> Encoder<T>.encode(value: T): Entity =
         when (this) {
             is DataEncoder -> Entity(encode(value))
-            is FunctionEncoder -> Entity(encode(value, context.encoding))
+            is FunctionEncoder -> Entity(encode(value, context))
         }
 
     fun <T> Decoder<T>.decode(entity: Entity): T =
@@ -29,7 +29,7 @@ internal class CodingScope(val context: CodingContext) {
             }
             is FunctionDecoder -> {
                 require(entity.hasFunction()) { "Entity should contain function prototype" }
-                decode(entity.function, context.decoding)
+                decode(entity.function, context)
             }
         }
 }

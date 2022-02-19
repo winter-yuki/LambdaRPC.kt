@@ -10,7 +10,7 @@ import io.lambdarpc.utils.ServiceId
 /**
  * [FrontendFunction] that is bounded to specific endpoint.
  */
-internal interface BoundFunction : FrontendFunction {
+internal interface BoundFunction : ConnectedFunction {
     val accessName: AccessName
     val serviceId: ServiceId
     val endpoint: Endpoint
@@ -24,12 +24,8 @@ internal class BoundFunction0<R>(
     override val endpointProvider: ConnectionProvider<Endpoint>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), BoundFunction, suspend () -> R {
-    override suspend operator fun invoke(): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                endpointProvider, endpoint, functionRegistry, executeRequests
-            )
-        )
+    override suspend operator fun invoke(): R = codingScope(endpointProvider, endpoint) {
+        rc.decode(it())
     }
 }
 
@@ -42,13 +38,8 @@ internal class BoundFunction1<A, R>(
     private val c1: Encoder<A>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), BoundFunction, suspend (A) -> R {
-    override suspend operator fun invoke(a1: A): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                endpointProvider, endpoint, functionRegistry, executeRequests,
-                c1.encode(a1)
-            )
-        )
+    override suspend operator fun invoke(a1: A): R = codingScope(endpointProvider, endpoint) {
+        rc.decode(it(c1.encode(a1)))
     }
 }
 
@@ -62,13 +53,8 @@ internal class BoundFunction2<A, B, R>(
     private val c2: Encoder<B>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), BoundFunction, suspend (A, B) -> R {
-    override suspend operator fun invoke(a1: A, a2: B): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                endpointProvider, endpoint, functionRegistry, executeRequests,
-                c1.encode(a1), c2.encode(a2)
-            )
-        )
+    override suspend operator fun invoke(a1: A, a2: B): R = codingScope(endpointProvider, endpoint) {
+        rc.decode(it(c1.encode(a1), c2.encode(a2)))
     }
 }
 
@@ -83,12 +69,7 @@ internal class BoundFunction3<A, B, C, R>(
     private val c3: Encoder<C>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), BoundFunction, suspend (A, B, C) -> R {
-    override suspend operator fun invoke(a1: A, a2: B, a3: C): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                endpointProvider, endpoint, functionRegistry, executeRequests,
-                c1.encode(a1), c2.encode(a2), c3.encode(a3)
-            )
-        )
+    override suspend operator fun invoke(a1: A, a2: B, a3: C): R = codingScope(endpointProvider, endpoint) {
+        rc.decode(it(c1.encode(a1), c2.encode(a2), c3.encode(a3)))
     }
 }

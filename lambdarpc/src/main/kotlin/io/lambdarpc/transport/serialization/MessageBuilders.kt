@@ -34,6 +34,12 @@ internal val ExecuteRequest.inMessage: InMessage
 internal val ExecuteRequest.outMessage: OutMessage
     get() = outMessage { executeRequest = this@outMessage }
 
+internal fun ExecuteError(type: ErrorType, msg: String): ExecuteError =
+    executeError {
+        this.type = type
+        this.message = msg
+    }
+
 internal fun ExecuteResponse(
     executionId: ExecutionId,
     result: Entity

@@ -7,7 +7,7 @@ import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 
-internal interface FreeFunction : FrontendFunction {
+internal interface FreeFunction : ConnectedFunction {
     val accessName: AccessName
     val serviceId: ServiceId
 }
@@ -19,12 +19,8 @@ internal class FreeFunction0<R>(
     override val endpointProvider: ConnectionProvider<Endpoint>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), FreeFunction, suspend () -> R {
-    override suspend operator fun invoke(): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                serviceIdProvider, serviceId, functionRegistry, executeRequests
-            )
-        )
+    override suspend operator fun invoke(): R = codingScope(serviceIdProvider, serviceId) {
+        rc.decode(it())
     }
 }
 
@@ -36,13 +32,8 @@ internal class FreeFunction1<A, R>(
     private val c1: Encoder<A>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), FreeFunction, suspend (A) -> R {
-    override suspend operator fun invoke(a1: A): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                serviceIdProvider, serviceId, functionRegistry, executeRequests,
-                c1.encode(a1)
-            )
-        )
+    override suspend operator fun invoke(a1: A): R = codingScope(serviceIdProvider, serviceId) {
+        rc.decode(it(c1.encode(a1)))
     }
 }
 
@@ -55,13 +46,8 @@ internal class FreeFunction2<A, B, R>(
     private val c2: Encoder<B>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), FreeFunction, suspend (A, B) -> R {
-    override suspend operator fun invoke(a1: A, a2: B): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                serviceIdProvider, serviceId, functionRegistry, executeRequests,
-                c1.encode(a1), c2.encode(a2)
-            )
-        )
+    override suspend operator fun invoke(a1: A, a2: B): R = codingScope(serviceIdProvider, serviceId) {
+        rc.decode(it(c1.encode(a1), c2.encode(a2)))
     }
 }
 
@@ -75,12 +61,7 @@ internal class FreeFunction3<A, B, C, R>(
     private val c3: Encoder<C>,
     private val rc: Decoder<R>,
 ) : AbstractConnectedFunction(), FreeFunction, suspend (A, B, C) -> R {
-    override suspend operator fun invoke(a1: A, a2: B, a3: C): R = scope { functionRegistry, executeRequests ->
-        rc.decode(
-            invoke(
-                serviceIdProvider, serviceId, functionRegistry, executeRequests,
-                c1.encode(a1), c2.encode(a2), c3.encode(a3)
-            )
-        )
+    override suspend operator fun invoke(a1: A, a2: B, a3: C): R = codingScope(serviceIdProvider, serviceId) {
+        rc.decode(it(c1.encode(a1), c2.encode(a2), c3.encode(a3)))
     }
 }
