@@ -1,8 +1,7 @@
 package io.lambdarpc.coders.data
 
 import com.google.protobuf.ByteString
-import io.lambdarpc.coders.DataDecoder
-import io.lambdarpc.coders.DataEncoder
+import io.lambdarpc.coders.DataCoder
 import io.lambdarpc.transport.grpc.serialization.RawData
 import io.lambdarpc.transport.grpc.serialization.rd
 import kotlinx.serialization.KSerializer
@@ -13,7 +12,7 @@ import java.nio.charset.Charset
 /**
  * [JsonDataCoder] uses `kotlinx.serialization` to serialize data to JSON.
  */
-class JsonDataCoder<T>(private val serializer: KSerializer<T>) : DataEncoder<T>, DataDecoder<T> {
+class JsonDataCoder<T>(private val serializer: KSerializer<T>) : DataCoder<T> {
     override fun encode(value: T): RawData {
         val string = Json.encodeToString(serializer, value)
         return ByteString.copyFrom(string, Charset.defaultCharset()).rd

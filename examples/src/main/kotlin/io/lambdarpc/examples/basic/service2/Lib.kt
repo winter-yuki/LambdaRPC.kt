@@ -1,6 +1,6 @@
-package basic.service2
+package io.lambdarpc.examples.basic.service2
 
-import basic.Point
+import io.lambdarpc.examples.basic.Point
 import kotlin.math.sqrt
 
 fun norm(): suspend (Point) -> Double = ::norm

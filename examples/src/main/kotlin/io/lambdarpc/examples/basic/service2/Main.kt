@@ -1,7 +1,7 @@
-package basic.service2
+package io.lambdarpc.examples.basic.service2
 
-import basic.endpoint2
-import basic.serviceId2
+import io.lambdarpc.examples.basic.endpoint2
+import io.lambdarpc.examples.basic.serviceId2
 import io.lambdarpc.dsl.LibService
 import io.lambdarpc.examples.basic.service2.facade.norm1
 import io.lambdarpc.examples.basic.service2.facade.norm2

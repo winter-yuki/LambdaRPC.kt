@@ -1,4 +1,4 @@
-package basic
+package io.lambdarpc.examples.basic
 
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.toSid

@@ -1,8 +1,12 @@
-package basic.service1
+package io.lambdarpc.examples.basic.service1
 
-import basic.Point
 import com.google.protobuf.ByteString
+import io.lambdarpc.coders.Coder
 import io.lambdarpc.coders.DataCoder
+import io.lambdarpc.examples.basic.Point
+import io.lambdarpc.functions.frontend.CallDisconnectedChannelFunction
+import io.lambdarpc.transport.grpc.serialization.RawData
+import io.lambdarpc.transport.grpc.serialization.rd
 import kotlin.math.sqrt
 
 fun add5(x: Int) = x + 5
@@ -11,9 +15,13 @@ suspend fun eval5(f: suspend (Int) -> Int): Int = f(5)
 
 fun specializeAdd(x: Int): suspend (Int) -> Int = { it + x }
 
-suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int {
-    val x = f(30)
-    return { x + it }
+suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int = {
+    val x = try {
+        f(3)
+    } catch (e: CallDisconnectedChannelFunction) {
+        30
+    }
+    x + it
 }
 
 fun distance(a: Point, b: Point): Double {
@@ -39,12 +47,12 @@ suspend fun normMap(xs: List<Point>, transformNorm: suspend (Norm) -> Norm): Lis
  */
 data class NumpyArray<T>(val x: T)
 
-object NumpyArrayIntCoder : DataCoder<NumpyArray<Int>> {
-    override fun encode(value: NumpyArray<Int>): ByteString =
-        ByteString.copyFrom(byteArrayOf(value.x.toByte()))
+object NumpyArrayIntCoder : Coder<NumpyArray<Int>>, DataCoder<NumpyArray<Int>> {
+    override fun encode(value: NumpyArray<Int>): RawData =
+        ByteString.copyFrom(byteArrayOf(value.x.toByte())).rd
 
-    override fun decode(data: ByteString): NumpyArray<Int> =
-        NumpyArray(data.toByteArray().first().toInt())
+    override fun decode(data: RawData): NumpyArray<Int> =
+        NumpyArray(data.bytes.toByteArray().first().toInt())
 }
 
 fun numpyAdd(x: Int, arr: NumpyArray<Int>) = NumpyArray(x + arr.x)

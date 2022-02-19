@@ -1,9 +1,9 @@
-package basic.service1
+package io.lambdarpc.examples.basic.service1
 
-import basic.endpoint1
-import basic.serviceId1
 import io.lambdarpc.dsl.LibService
+import io.lambdarpc.examples.basic.endpoint1
 import io.lambdarpc.examples.basic.service1.facade.*
+import io.lambdarpc.examples.basic.serviceId1
 
 fun main() {
     val service = LibService(serviceId1, endpoint1) {

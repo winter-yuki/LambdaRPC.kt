@@ -58,7 +58,7 @@ internal class LibServiceImpl(
                 requests.collectApply {
                     when {
                         hasInitialRequest() -> processInitial(
-                            initialRequest, localFunctionRegistry, executeResponses, codingContext
+                            initialRequest, localFunctionRegistry, outMessages, codingContext
                         )
                         hasExecuteRequest() -> processRequest(
                             executeRequest, localFunctionRegistry, executeResponses, codingContext
@@ -79,28 +79,27 @@ internal class LibServiceImpl(
     private fun CoroutineScope.processInitial(
         initialRequest: InitialRequest,
         localFunctionRegistry: FunctionRegistry,
-        executeResponses: MutableSharedFlow<ExecuteResponse>,
+        executeResponses: MutableSharedFlow<OutMessage>,
         codingContext: CodingContext
     ) {
         initialRequest.executeRequest.run {
             logger.info { "Initial request: name = $accessName, id = $executionId" }
         }
         val request = initialRequest.executeRequest
-        val response = if (initialRequest.serviceId.toSid() == serviceId) null else {
-            logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
-            val error = ExecuteError(
-                ErrorType.WRONG_SERVICE_ERROR,
-                "Request for service ${initialRequest.serviceId} received at $serviceId"
-            )
-            ExecuteResponse(request.executionId.toEid(), error)
-        }
         launch {
-            executeResponses.emit(
-                response ?: evalRequest(
-                    request, localFunctionRegistry,
-                    codingContext, channelToBound = true
+            val response = if (initialRequest.serviceId.toSid() != serviceId) {
+                logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
+                val error = ExecuteError(
+                    ErrorType.WRONG_SERVICE_ERROR,
+                    "Request for service ${initialRequest.serviceId} received at $serviceId"
                 )
-            )
+                ExecuteResponse(request.executionId.toEid(), error)
+            } else {
+                evalRequest(request, functionRegistry, codingContext) {
+                    it.channelToBound(localFunctionRegistry)
+                }
+            }
+            executeResponses.emit(response.outMessageFinal)
             cancel()
         }
     }
@@ -144,21 +143,21 @@ internal class LibServiceImpl(
      */
     private suspend fun evalRequest(
         request: ExecuteRequest,
-        localFunctionRegistry: FunctionRegistry,
+        registry: FunctionRegistry,
         codingContext: CodingContext,
-        channelToBound: Boolean = false
+        transformEntity: suspend (Entity) -> Entity = { it }
     ): ExecuteResponse = try {
-        val f = localFunctionRegistry[request.accessName.an]
+        val f = registry[request.accessName.an]
         if (f != null) {
             val result = f(codingContext, request.argsList)
             ExecuteResponse(
                 request.executionId.toEid(),
-                if (!channelToBound) result else result.channelToBound(localFunctionRegistry)
+                transformEntity(result)
             )
         } else {
             val error = ExecuteError(
                 ErrorType.FUNCTION_NOT_FOUND_ERROR,
-                "Function ${request.accessName} no found"
+                "Function ${request.accessName} not found"
             )
             ExecuteResponse(request.executionId.toEid(), error)
         }
@@ -177,7 +176,7 @@ internal class LibServiceImpl(
     private fun Entity.channelToBound(localFunctionRegistry: FunctionRegistry): Entity =
         if (!hasFunction() || !function.hasChannelFunction()) this else {
             val oldName = function.channelFunction.accessName
-            val f = localFunctionRegistry[oldName.an] ?: error("Function $oldName does not exist")
+            val f = localFunctionRegistry[oldName.an] ?: error("Function $oldName does not exist kek")
             val name = functionRegistry.register(f)
             Entity(FunctionPrototype(object : BoundFunction {
                 override val accessName: AccessName

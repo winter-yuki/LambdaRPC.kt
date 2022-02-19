@@ -15,3 +15,5 @@ interface DataEncoder<T> : Encoder<T> {
 interface DataDecoder<T> : Decoder<T> {
     fun decode(data: RawData): T
 }
+
+interface DataCoder<T> : Coder<T>, DataEncoder<T>, DataDecoder<T>

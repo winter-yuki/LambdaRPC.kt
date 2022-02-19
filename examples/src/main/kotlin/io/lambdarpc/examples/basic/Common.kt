@@ -1,4 +1,4 @@
-package basic
+package io.lambdarpc.examples.basic
 
 import kotlinx.serialization.Serializable
 

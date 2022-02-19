@@ -54,11 +54,7 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         return channelRegistry.useController(executeRequests) { controller ->
             val context = CodingContext(
                 FunctionEncodingContext(functionRegistry),
-                FunctionDecodingContext(
-                    controller,
-                    serviceIdProvider,
-                    endpointProvider
-                )
+                FunctionDecodingContext(controller, serviceIdProvider, endpointProvider)
             )
             val invoker = Invoker(connectionProvider, connectionId, executeRequests, controller, context)
             withContext(context) { block(invoker) }
@@ -105,18 +101,20 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            outMessages.collectApply {
-                when {
-                    hasFinalResponse() -> {
-                        logger.info { "${accessName}: final response received with id = ${finalResponse.executionId}" }
-                        result = finalResponse
-                        cancel()
+            launch {
+                outMessages.collectApply {
+                    when {
+                        hasFinalResponse() -> {
+                            logger.info { "${accessName}: final response received with id = ${finalResponse.executionId}" }
+                            result = finalResponse
+                            cancel()
+                        }
+                        hasExecuteRequest() -> processExecuteRequest(
+                            executeRequest, functionRegistry, executeResponses, context
+                        )
+                        hasExecuteResponse() -> processExecuteResponse(executeResponse, controller)
+                        else -> UnknownMessageType("out message")
                     }
-                    hasExecuteRequest() -> processExecuteRequest(
-                        executeRequest, functionRegistry, executeResponses, context
-                    )
-                    hasExecuteResponse() -> processExecuteResponse(executeResponse, controller)
-                    else -> UnknownMessageType("out message")
                 }
             }
         }

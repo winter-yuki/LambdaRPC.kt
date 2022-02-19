@@ -13,4 +13,4 @@ sealed interface Decoder<T>
 /**
  * Encodes and decodes data and functions.
  */
-sealed interface Coder<T> : Encoder<T>, Decoder<T>
+interface Coder<T> : Encoder<T>, Decoder<T>
