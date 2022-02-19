@@ -26,6 +26,18 @@ inline fun <T, K, V> Array<T>.associateRepeatable(
     return map
 }
 
+inline fun <T, K, V> Iterable<T>.associateRepeatable(
+    transform: (T) -> Pair<K, V>
+): MutableMap<K, out MutableList<V>> {
+    val map = mutableMapOf<K, MutableList<V>>()
+    forEach { t ->
+        val (k, v) = transform(t)
+        map.putIfAbsent(k, mutableListOf())
+        map.getValue(k).add(v)
+    }
+    return map
+}
+
 fun unreachable(explanation: String): Nothing = error("Unreachable code reached: $explanation")
 
 operator fun <V> AtomicReference<V>.getValue(_owner: Any?, property: KProperty<*>): V = get()

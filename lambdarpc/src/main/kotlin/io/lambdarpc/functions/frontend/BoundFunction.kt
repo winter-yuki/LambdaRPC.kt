@@ -10,7 +10,7 @@ import io.lambdarpc.utils.ServiceId
 /**
  * [FrontendFunction] that is bounded to specific endpoint.
  */
-internal interface BoundFunction : ConnectedFunction {
+interface BoundFunction : ConnectedFunction {
     val accessName: AccessName
     val serviceId: ServiceId
     val endpoint: Endpoint

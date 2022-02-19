@@ -11,7 +11,7 @@ import io.lambdarpc.utils.ServiceId
  * [FrontendFunction] that knows only [serviceId] of its backend part
  * and dynamically evaluates needed endpoint.
  */
-internal interface FreeFunction : ConnectedFunction {
+interface FreeFunction : ConnectedFunction {
     val accessName: AccessName
     val serviceId: ServiceId
 }
