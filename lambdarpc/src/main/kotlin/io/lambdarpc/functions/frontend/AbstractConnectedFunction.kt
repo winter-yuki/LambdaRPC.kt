@@ -150,7 +150,6 @@ internal abstract class AbstractConnectedFunction : KLoggable {
                     )
                     ExecuteResponse(request.executionId.toEid(), error)
                 }
-
             } catch (e: Throwable) {
                 val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
                 ExecuteResponse(request.executionId.toEid(), error)

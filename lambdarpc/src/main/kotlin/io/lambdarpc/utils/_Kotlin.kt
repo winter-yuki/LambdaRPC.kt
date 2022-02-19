@@ -31,5 +31,5 @@ fun unreachable(explanation: String): Nothing = error("Unreachable code reached:
 operator fun <V> AtomicReference<V>.getValue(_owner: Any?, property: KProperty<*>): V = get()
 operator fun <V> AtomicReference<V>.setValue(_owner: Any?, property: KProperty<*>, value: V) = set(value)
 
-suspend inline fun <T> Flow<T>.collectApply(crossinline block: T.() -> Unit) =
+suspend fun <T> Flow<T>.collectApply(block: suspend T.() -> Unit) =
     collect { it.block() }
