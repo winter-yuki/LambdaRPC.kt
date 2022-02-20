@@ -3,15 +3,7 @@ import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
-import org.gradle.kotlin.dsl.api
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.implementation
 import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.runtimeOnly
-import org.gradle.kotlin.dsl.testImplementation
-import org.gradle.kotlin.dsl.version
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -74,7 +66,7 @@ protobuf {
 detekt {
     buildUponDefaultConfig = true
     allRules = false // Activates all, even unstable rules
-    config = files("$rootDir/config/detekt.yml")
+    config = files("$projectDir/config/detekt.yml")
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
