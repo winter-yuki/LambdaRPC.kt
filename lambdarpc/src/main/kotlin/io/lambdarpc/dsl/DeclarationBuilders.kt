@@ -10,7 +10,7 @@ import kotlin.properties.ReadOnlyProperty
 class Configuration(val serviceId: ServiceId)
 
 fun <D> def(accessName: String?, definitionProvider: (AccessName) -> D) =
-    ReadOnlyProperty { _: Nothing?, property ->
+    ReadOnlyProperty { _: Any?, property ->
         definitionProvider(accessName?.an ?: property.name.an)
     }
 

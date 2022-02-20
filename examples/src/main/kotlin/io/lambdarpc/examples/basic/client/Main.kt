@@ -20,7 +20,7 @@ fun main(): Unit = runBlocking(serviceDispatcher) {
     val m = 3
     println("eval5 { it + m } = ${eval5 { it + m }}")
     println("specializeAdd(5)(37) = ${specializeAdd(5)(37)}")
-    println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it * 2 }(2)}")
+    println("executeAndAdd { it + 12 }(100) = ${evalAndReturn { it * 2 }(2)}")
     println(
         "distance(Point(9.0, 1.0), Point(5.0, 4.0)) = " +
                 "${distance(Point(9.0, 1.0), Point(5.0, 4.0))}"

@@ -33,7 +33,7 @@ fun main(): Unit = runBlocking(serviceDispatcher + newSingleThreadContext("name"
             println("specializeAdd(5)(37) = ${specializeAdd(5)(37)}")
         }
         launch {
-            println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it + 12 }(100)}")
+            println("executeAndAdd { it + 12 }(100) = ${evalAndReturn { it + 12 }(100)}")
         }
         val n = Random.nextInt(100)
         val rnd = Random(Random.nextInt())

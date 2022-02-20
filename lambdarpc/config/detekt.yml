@@ -22,7 +22,7 @@ style:
     active: false
   # Checking arguments list size in boilerplate implementations
   MagicNumber:
-    excludes: ['**/BackendFunction.kt']
+    excludes: ['**/BackendFunction.kt', '**/test/**']
 
 naming:
   # Does not always agree with IDEA default warnings

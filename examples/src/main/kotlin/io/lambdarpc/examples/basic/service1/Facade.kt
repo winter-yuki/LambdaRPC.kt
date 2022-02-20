@@ -16,7 +16,7 @@ val add5 by conf.def(j<Int>(), j<Int>())
 val eval5 by conf.def(f(j<Int>(), j<Int>()), j<Int>())
 
 val specializeAdd by conf.def(j<Int>(), f(j<Int>(), j<Int>()))
-val executeAndAdd by conf.def(f(j<Int>(), j<Int>()), f(j<Int>(), j<Int>()))
+val evalAndReturn by conf.def(f(j<Int>(), j<Int>()), f(j<Int>(), j<Int>()))
 
 val distance by conf.def(j<Point>(), j<Point>(), j<Double>())
 

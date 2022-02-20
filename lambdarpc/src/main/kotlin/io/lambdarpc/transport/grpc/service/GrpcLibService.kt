@@ -5,18 +5,22 @@ import io.grpc.ServerBuilder
 import io.lambdarpc.transport.LibService
 import io.lambdarpc.transport.grpc.LibServiceGrpcKt
 import io.lambdarpc.utils.Port
+import io.lambdarpc.utils.port
 
 /**
  * gRPC [LibService] implementation.
  */
 class GrpcLibService(
-    port: Port,
+    port: Port?,
     libService: LibServiceGrpcKt.LibServiceCoroutineImplBase
 ) : LibService {
     val service: Server = ServerBuilder
-        .forPort(port.p)
+        .forPort(port?.p ?: 0)
         .addService(libService)
         .build()
+
+    override val port: Port
+        get() = service.port.port
 
     override fun start() {
         service.start()
@@ -24,5 +28,9 @@ class GrpcLibService(
 
     override fun awaitTermination() {
         service.awaitTermination()
+    }
+
+    override fun shutdown() {
+        service.shutdown()
     }
 }

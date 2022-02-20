@@ -10,6 +10,7 @@ import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.service.GrpcLibService
 import io.lambdarpc.transport.grpc.service.SingleUseConnectionProvider
 import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.Port
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
@@ -23,7 +24,7 @@ class LibService(
     endpoint: Endpoint,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     builder: LibServiceDSL.() -> Unit
-) {
+) : io.lambdarpc.transport.LibService {
     private val endpointConnectionProvider = SingleUseConnectionProvider()
 
     private val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
@@ -44,17 +45,24 @@ class LibService(
         )
     )
 
-    fun start() {
+    override val port: Port
+        get() = service.port
+
+    override fun start() {
         service.start()
     }
 
-    fun awaitTermination() {
+    override fun awaitTermination() {
         service.awaitTermination()
+    }
+
+    override fun shutdown() {
+        service.shutdown()
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-class LibServiceDSL {
+class LibServiceDSL internal constructor() {
     internal val registry = FunctionRegistry()
 
     infix fun <R> (suspend CoroutineScope.() -> R).of(f: suspend () -> R) =

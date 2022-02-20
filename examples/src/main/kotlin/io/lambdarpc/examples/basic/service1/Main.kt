@@ -10,7 +10,7 @@ fun main() {
         add5 of ::add5
         eval5 of ::eval5
         specializeAdd of ::specializeAdd
-        executeAndAdd of ::executeAndAdd
+        evalAndReturn of ::evalAndReturn
         distance of ::distance
         normFilter of ::normFilter
         mapPoints of ::mapPoints

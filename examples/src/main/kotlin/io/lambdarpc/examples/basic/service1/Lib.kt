@@ -12,16 +12,13 @@ fun add5(x: Int) = x + 5
 
 suspend fun eval5(f: suspend (Int) -> Int): Int = f(5)
 
-/**
- * Specializes plus.
- */
 fun specializeAdd(x: Int): suspend (Int) -> Int = { it + x }
 
-suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int {
+suspend fun evalAndReturn(f: suspend (Int) -> Int): suspend (Int) -> Int {
     val x = f(5) // Works well, connection for executeAndAdd call is still alive
     return {
         val y = try {
-            f(10) // This lambda lives longer then executeAndAdd call connection
+            f(10) // This frontend function lives longer then evalAndReturn call connection
         } catch (e: CallDisconnectedChannelFunction) {
             30
         }
