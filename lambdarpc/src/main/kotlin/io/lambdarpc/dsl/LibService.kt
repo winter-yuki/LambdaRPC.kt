@@ -19,7 +19,8 @@ class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("
  * DSL class that creates libservice instance.
  */
 class LibService(
-    serviceId: ServiceId, endpoint: Endpoint,
+    serviceId: ServiceId,
+    endpoint: Endpoint,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     builder: LibServiceDSL.() -> Unit
 ) {

@@ -108,7 +108,6 @@ internal class FunctionCoder0<R>(
             rc
         )
     }
-
 }
 
 internal class FunctionCoder1<A, R>(

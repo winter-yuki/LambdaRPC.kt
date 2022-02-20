@@ -1,8 +1,6 @@
 package io.lambdarpc.utils
 
 import kotlinx.coroutines.flow.Flow
-import java.util.concurrent.atomic.AtomicReference
-import kotlin.reflect.KProperty
 
 operator fun <K, V> Map<out K, List<V>>.plus(
     map: Map<out K, List<V>>
@@ -39,9 +37,6 @@ inline fun <T, K, V> Iterable<T>.associateRepeatable(
 }
 
 fun unreachable(explanation: String): Nothing = error("Unreachable code reached: $explanation")
-
-operator fun <V> AtomicReference<V>.getValue(_owner: Any?, property: KProperty<*>): V = get()
-operator fun <V> AtomicReference<V>.setValue(_owner: Any?, property: KProperty<*>, value: V) = set(value)
 
 suspend fun <T> Flow<T>.collectApply(block: suspend T.() -> Unit) =
     collect { it.block() }

@@ -102,7 +102,9 @@ internal abstract class AbstractConnectedFunction : KLoggable {
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {
-                            logger.info { "${accessName}: final response received with id = ${finalResponse.executionId}" }
+                            logger.info {
+                                "$accessName: final response received with id = ${finalResponse.executionId}"
+                            }
                             result = finalResponse
                             cancel()
                         }

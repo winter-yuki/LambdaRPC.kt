@@ -5,5 +5,4 @@ import io.lambdarpc.transport.grpc.LibServiceGrpcKt
 /**
  * gRPC libservice abstract implementation.
  */
-internal abstract class AbstractLibService
-    : LibServiceGrpcKt.LibServiceCoroutineImplBase()
+internal abstract class AbstractLibService : LibServiceGrpcKt.LibServiceCoroutineImplBase()

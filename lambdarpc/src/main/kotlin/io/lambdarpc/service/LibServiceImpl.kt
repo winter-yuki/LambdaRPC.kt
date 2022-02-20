@@ -181,13 +181,14 @@ internal class LibServiceImpl(
             val oldName = function.channelFunction.accessName
             val f = localFunctionRegistry[oldName.an] ?: error("Function $oldName does not exist kek")
             val name = functionRegistry.register(f)
-            Entity(FunctionPrototype(object : BoundFunction {
+            val boundFunction = object : BoundFunction {
                 override val accessName: AccessName
                     get() = name
                 override val serviceId: ServiceId
                     get() = this@LibServiceImpl.serviceId
                 override val endpoint: Endpoint
                     get() = this@LibServiceImpl.endpoint
-            }))
+            }
+            Entity(FunctionPrototype(boundFunction))
         }
 }
