@@ -11,6 +11,7 @@ plugins {
     kotlin("plugin.serialization") version "1.6.10"
     id("com.google.protobuf") version "0.8.18"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 tasks.withType<KotlinCompile>().all {
@@ -36,6 +37,13 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 protobuf {

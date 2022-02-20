@@ -100,6 +100,21 @@ All of it makes multi-process communication smooth enough to recognize remote se
 * Load balancing: task is done, request new via client's lambda.
 * Stateful streaming computations: nodes provide theirs lambdas for a mapper.
 
+== Getting started
+
+.Run detekt
+[source,bash]
+----
+$ ./gradlew :lambdarpc:detekt
+----
+
+.Generate documentation
+[source,bash]
+----
+$ ./gradlew :lambdarpc:dokkaHtml
+$ cd ./lambdarpc/build/dokka/html
+----
+
 === Repository organization
 
 .examples
