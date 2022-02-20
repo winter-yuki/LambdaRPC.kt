@@ -1,13 +1,13 @@
 package io.lambdarpc.exceptions
 
-open class LambdaRpcException(message: String) : RuntimeException(message)
+open class LambdaRpcException internal constructor(message: String) : RuntimeException(message)
 
-class UnknownMessageType(grpcMessageKind: String? = null) :
+class UnknownMessageType internal constructor(grpcMessageKind: String? = null) :
     LambdaRpcException(
         "Unsupported message " +
                 if (grpcMessageKind == null) "kind"
                 else "of kind ${grpcMessageKind.lowercase()}"
     )
 
-class OtherException(message: String) :
-    LambdaRpcException("Other execute exception: $message")
+class OtherException internal constructor(message: String) :
+    LambdaRpcException(message)

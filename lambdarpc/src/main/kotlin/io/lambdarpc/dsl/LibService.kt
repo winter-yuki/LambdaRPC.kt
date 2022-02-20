@@ -13,7 +13,7 @@ import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
-class ServiceNotFound(id: ServiceId) : LambdaRpcException("Service not found: id = $id")
+class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("Service not found: id = $id")
 
 /**
  * DSL class that creates libservice instance.
