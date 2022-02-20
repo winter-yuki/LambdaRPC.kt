@@ -1,7 +1,6 @@
 package io.lambdarpc.examples.basic.service1
 
 import com.google.protobuf.ByteString
-import io.lambdarpc.coders.Coder
 import io.lambdarpc.coders.DataCoder
 import io.lambdarpc.examples.basic.Point
 import io.lambdarpc.functions.frontend.CallDisconnectedChannelFunction
@@ -13,15 +12,21 @@ fun add5(x: Int) = x + 5
 
 suspend fun eval5(f: suspend (Int) -> Int): Int = f(5)
 
+/**
+ * Specializes plus.
+ */
 fun specializeAdd(x: Int): suspend (Int) -> Int = { it + x }
 
-suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int = {
-    val x = try {
-        f(3)
-    } catch (e: CallDisconnectedChannelFunction) {
-        30
+suspend fun executeAndAdd(f: suspend (Int) -> Int): suspend (Int) -> Int {
+    val x = f(5) // Works well, connection for executeAndAdd call is still alive
+    return {
+        val y = try {
+            f(10) // This lambda lives longer then executeAndAdd call connection
+        } catch (e: CallDisconnectedChannelFunction) {
+            30
+        }
+        x + y + it
     }
-    x + it
 }
 
 fun distance(a: Point, b: Point): Double {
@@ -47,7 +52,7 @@ suspend fun normMap(xs: List<Point>, transformNorm: suspend (Norm) -> Norm): Lis
  */
 data class NumpyArray<T>(val x: T)
 
-object NumpyArrayIntCoder : Coder<NumpyArray<Int>>, DataCoder<NumpyArray<Int>> {
+object NumpyArrayIntCoder : DataCoder<NumpyArray<Int>> {
     override fun encode(value: NumpyArray<Int>): RawData =
         ByteString.copyFrom(byteArrayOf(value.x.toByte())).rd
 

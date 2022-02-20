@@ -10,7 +10,7 @@ import io.lambdarpc.examples.basic.Point
 import io.lambdarpc.examples.basic.service1.NumpyArrayIntCoder
 import io.lambdarpc.examples.basic.serviceId1
 
-val conf = Configuration(serviceId = serviceId1)
+private val conf = Configuration(serviceId = serviceId1)
 
 val add5 by conf.def(j<Int>(), j<Int>())
 val eval5 by conf.def(f(j<Int>(), j<Int>()), j<Int>())

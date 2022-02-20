@@ -86,6 +86,7 @@ internal class LibServiceImpl(
             logger.info { "Initial request: name = $accessName, id = $executionId" }
         }
         val request = initialRequest.executeRequest
+        val parentContext = coroutineContext
         launch {
             val response = if (initialRequest.serviceId.toSid() != serviceId) {
                 logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
@@ -100,7 +101,8 @@ internal class LibServiceImpl(
                 }
             }
             executeResponses.emit(response.outMessageFinal)
-            cancel()
+            parentContext.cancel()
+//            cancel()
         }
     }
 

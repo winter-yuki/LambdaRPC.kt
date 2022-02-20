@@ -20,18 +20,18 @@ fun main(): Unit = runBlocking(serviceDispatcher) {
     val m = 3
     println("eval5 { it + m } = ${eval5 { it + m }}")
     println("specializeAdd(5)(37) = ${specializeAdd(5)(37)}")
-//  TODO  println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it + 12 }(100)}")
-    println(
-        "distance(Point(9.0, 1.0), Point(5.0, 4.0)) = " +
-                "${distance(Point(9.0, 1.0), Point(5.0, 4.0))}"
-    )
-    val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
-    println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
-    println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
-    println("mapPoints(ps, norm()) = ${mapPoints(ps, ff(norm2))}")
-    println(
-        "normMap(normMap(listOf(Point(1.0, 1.5))) { norm -> { point -> sqrt(norm(point)) }} = " +
-                "${normMap(listOf(Point(1.0, 1.5))) { norm -> { point -> sqrt(norm(point)) } }}"
-    )
-    println("numpyAdd(2, NumpyArray(40)) = ${numpyAdd(2, NumpyArray(40))}")
+    println("executeAndAdd { it + 12 }(100) = ${executeAndAdd { it * 2 }(2)}")
+//    println(
+//        "distance(Point(9.0, 1.0), Point(5.0, 4.0)) = " +
+//                "${distance(Point(9.0, 1.0), Point(5.0, 4.0))}"
+//    )
+//    val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
+//    println("normFilter($ps) { p, norm -> 2 <= norm(p) } = ${normFilter(ps) { p, norm -> 2 <= norm(p) }}")
+//    println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
+//    println("mapPoints(ps, norm()) = ${mapPoints(ps, ff(norm2))}")
+//    println(
+//        "normMap(normMap(listOf(Point(1.0, 1.5))) { norm -> { point -> sqrt(norm(point)) }} = " +
+//                "${normMap(listOf(Point(1.0, 1.5))) { norm -> { point -> sqrt(norm(point)) } }}"
+//    )
+//    println("numpyAdd(2, NumpyArray(40)) = ${numpyAdd(2, NumpyArray(40))}")
 }
