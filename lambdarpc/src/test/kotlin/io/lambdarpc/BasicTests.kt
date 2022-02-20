@@ -69,7 +69,7 @@ class BasicTests {
             return {
                 val y = try {
                     f(10) // This frontend function lives longer then evalAndReturn call connection
-                } catch (e: CallDisconnectedChannelFunction) {
+                } catch (_: CallDisconnectedChannelFunction) {
                     30
                 }
                 x + y + it
