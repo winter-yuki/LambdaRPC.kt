@@ -15,7 +15,7 @@ internal class CodingContext(
 )
 
 /**
- * Scope in which encoding and decoding of data and functions works same.
+ * Scope in which encoding and decoding of data and functions looks same.
  *
  * Note: it will be better to check exhaustiveness automatically without [Coder] branch, but how?
  */
