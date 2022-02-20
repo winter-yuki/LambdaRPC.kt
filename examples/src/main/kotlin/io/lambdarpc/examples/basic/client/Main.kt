@@ -30,8 +30,8 @@ fun main(): Unit = runBlocking(serviceDispatcher) {
     println("mapPoints(ps, norm()) = ${mapPoints(ps, norm1())}")
     println("mapPoints(ps, norm()) = ${mapPoints(ps, bf(norm2))}")
     println(
-        "normMap(normMap(listOf(Point(1.0, 1.5), Point(2.0, 1.0))) { norm -> { point -> sqrt(norm(point)) }} = " +
-                "${normMap(listOf(Point(1.0, 1.5), Point(2.0, 1.0))) { norm -> { point -> sqrt(norm(point)) } }}"
+        "normMap(normMap(ps) { norm -> { point -> sqrt(norm(point)) }} = " +
+                "${normMap(ps) { norm -> { point -> sqrt(norm(point)) } }}"
     )
     println("numpyAdd(2, NumpyArray(40)) = ${numpyAdd(2, NumpyArray(40))}")
 }

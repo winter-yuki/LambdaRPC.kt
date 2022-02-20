@@ -102,7 +102,6 @@ internal class LibServiceImpl(
             }
             executeResponses.emit(response.outMessageFinal)
             parentContext.cancel()
-//            cancel()
         }
     }
 
@@ -157,6 +156,7 @@ internal class LibServiceImpl(
                 transformEntity(result)
             )
         } else {
+            logger.info { "Function ${request.accessName} not found" }
             val error = ExecuteError(
                 ErrorType.FUNCTION_NOT_FOUND_ERROR,
                 "Function ${request.accessName} not found"
@@ -164,6 +164,7 @@ internal class LibServiceImpl(
             ExecuteResponse(request.executionId.toEid(), error)
         }
     } catch (e: Throwable) {
+        logger.info { "Error caught: $e" }
         val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
         ExecuteResponse(request.executionId.toEid(), error) // TODO match errors
     }
