@@ -37,7 +37,7 @@ fun LibService(
         endpointConnectionProvider
     )
     val service = GrpcService(endpoint.port, libService)
-    libService.service = service
+    libService.initialize(service)
     return service
 }
 

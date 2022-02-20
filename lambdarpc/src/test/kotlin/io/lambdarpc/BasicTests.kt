@@ -26,10 +26,8 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 private typealias Norm = suspend (BasicTests.Point) -> Double
 
@@ -173,8 +171,7 @@ class BasicTests {
     fun `default structure encoding`() = runBlocking(serviceDispatcher) {
         val p1 = Point(9.0, 1.0)
         val p2 = Point(5.0, 4.0)
-        val d = distance(p1, p2)
-        assertTrue((d - 5).absoluteValue < 0.001)
+        assertEquals(Lib.distance(p1, p2), distance(p1, p2))
     }
 
     @Test

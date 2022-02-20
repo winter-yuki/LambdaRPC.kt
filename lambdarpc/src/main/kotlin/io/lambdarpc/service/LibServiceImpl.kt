@@ -29,8 +29,8 @@ import mu.KLogger
 /**
  * Implementation of the libservice.
  *
- * [LibServiceImpl] should be passed to the [Service], but it also needs a
- * [Service] instance to determine its own port. So [service] is a mutable late-init property.
+ * [LibServiceImpl] should be passed to the [Service], but it also needs a [Service] instance
+ * to determine its own port. So [initialize] should be called after object creation.
  */
 internal class LibServiceImpl(
     private val serviceId: ServiceId,
@@ -41,14 +41,15 @@ internal class LibServiceImpl(
 ) : AbstractLibService(), KLoggable {
     override val logger: KLogger = logger()
 
-    lateinit var service: Service
-
     private val channelRegistry = ChannelRegistry()
+
+    private lateinit var service: Service
     private val endpoint: Endpoint
         get() = Endpoint(address, service.port)
 
-    init {
-        logger.info { "Lib service $serviceId started on $endpoint" }
+    fun initialize(service: Service) {
+        this.service = service
+        logger.info { "Lib service started with id = $serviceId" }
     }
 
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
