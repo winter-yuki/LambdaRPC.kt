@@ -10,6 +10,7 @@ import io.lambdarpc.functions.backend.get
 import io.lambdarpc.functions.frontend.BoundFunction
 import io.lambdarpc.functions.frontend.ChannelRegistry
 import io.lambdarpc.transport.ConnectionProvider
+import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.serialization.*
 import io.lambdarpc.transport.grpc.service.AbstractLibService
@@ -27,17 +28,24 @@ import mu.KLogger
 
 /**
  * Implementation of the libservice.
+ *
+ * [LibServiceImpl] should be passed to the [Service], but it also needs a
+ * [Service] instance to determine its own port. So [service] is a mutable late-init property.
  */
 internal class LibServiceImpl(
     private val serviceId: ServiceId,
-    private val endpoint: Endpoint,
+    private val address: Address,
     private val functionRegistry: FunctionRegistry,
     private val serviceIdProvider: ConnectionProvider<ServiceId>,
     private val endpointProvider: ConnectionProvider<Endpoint>
 ) : AbstractLibService(), KLoggable {
     override val logger: KLogger = logger()
 
+    lateinit var service: Service
+
     private val channelRegistry = ChannelRegistry()
+    private val endpoint: Endpoint
+        get() = Endpoint(address, service.port)
 
     init {
         logger.info { "Lib service $serviceId started on $endpoint" }

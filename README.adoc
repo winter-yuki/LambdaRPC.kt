@@ -102,10 +102,10 @@ All of it makes multi-process communication smooth enough to recognize remote se
 
 == Getting started
 
-.Run detekt
+.Run both `:detekt` and `:test` tasks
 [source,bash]
 ----
-$ ./gradlew :lambdarpc:detekt
+$ ./gradlew :lambdarpc:check
 ----
 
 .Generate documentation

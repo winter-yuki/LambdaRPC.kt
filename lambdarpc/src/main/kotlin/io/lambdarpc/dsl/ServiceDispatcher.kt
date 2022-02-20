@@ -10,7 +10,7 @@ import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.associateRepeatable
 import io.lambdarpc.utils.sid
 import kotlinx.coroutines.CoroutineScope
-import java.util.UUID
+import java.util.*
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 

@@ -2,18 +2,18 @@ package io.lambdarpc.transport.grpc.service
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
-import io.lambdarpc.transport.LibService
+import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.grpc.LibServiceGrpcKt
 import io.lambdarpc.utils.Port
 import io.lambdarpc.utils.port
 
 /**
- * gRPC [LibService] implementation.
+ * gRPC [Service] implementation.
  */
-class GrpcLibService(
+class GrpcService(
     port: Port?,
     libService: LibServiceGrpcKt.LibServiceCoroutineImplBase
-) : LibService {
+) : Service {
     val service: Server = ServerBuilder
         .forPort(port?.p ?: 0)
         .addService(libService)

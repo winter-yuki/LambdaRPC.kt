@@ -3,62 +3,42 @@ package io.lambdarpc.dsl
 import io.lambdarpc.exceptions.LambdaRpcException
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.service.LibServiceImpl
-import io.lambdarpc.transport.Connection
-import io.lambdarpc.transport.ConnectionProvider
-import io.lambdarpc.transport.MapServiceRegistry
-import io.lambdarpc.transport.ServiceRegistry
-import io.lambdarpc.transport.grpc.service.GrpcLibService
+import io.lambdarpc.transport.*
+import io.lambdarpc.transport.grpc.service.GrpcService
 import io.lambdarpc.transport.grpc.service.SingleUseConnectionProvider
 import io.lambdarpc.utils.Endpoint
-import io.lambdarpc.utils.Port
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
 class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("Service not found: id = $id")
 
 /**
- * DSL class that creates libservice instance.
+ * DSL function that creates libservice instance.
  */
-class LibService(
+@Suppress("FunctionName")
+fun LibService(
     serviceId: ServiceId,
     endpoint: Endpoint,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     builder: LibServiceDSL.() -> Unit
-) : io.lambdarpc.transport.LibService {
-    private val endpointConnectionProvider = SingleUseConnectionProvider()
-
-    private val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
+): Service {
+    val endpointConnectionProvider = SingleUseConnectionProvider()
+    val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
         @Suppress("NAME_SHADOWING")
         override suspend fun <R> withConnection(connectionId: ServiceId, block: suspend (Connection) -> R): R {
             val endpoint = serviceRegistry.get(connectionId) ?: throw ServiceNotFound(connectionId)
             return endpointConnectionProvider.withConnection(endpoint, block)
         }
     }
-
-    private val service = GrpcLibService(
-        endpoint.port,
-        LibServiceImpl(
-            serviceId, endpoint,
-            LibServiceDSL().apply(builder).registry,
-            serviceIdConnectionProvider,
-            endpointConnectionProvider
-        )
+    val libService = LibServiceImpl(
+        serviceId, endpoint.address,
+        LibServiceDSL().apply(builder).registry,
+        serviceIdConnectionProvider,
+        endpointConnectionProvider
     )
-
-    override val port: Port
-        get() = service.port
-
-    override fun start() {
-        service.start()
-    }
-
-    override fun awaitTermination() {
-        service.awaitTermination()
-    }
-
-    override fun shutdown() {
-        service.shutdown()
-    }
+    val service = GrpcService(endpoint.port, libService)
+    libService.service = service
+    return service
 }
 
 @Suppress("UNCHECKED_CAST")

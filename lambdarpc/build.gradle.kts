@@ -3,6 +3,7 @@ import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
+import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -77,7 +78,7 @@ detekt {
     config = files("$projectDir/config/detekt.yml")
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+tasks.withType<Detekt>().configureEach {
     reports {
         xml.required.set(true)
         html.required.set(true)
@@ -85,3 +86,8 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         sarif.required.set(true)
     }
 }
+
+//tasks.named("check").configure {
+//    dependsOn("detekt")
+//    dependsOn("test")
+//}

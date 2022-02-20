@@ -14,7 +14,7 @@ import io.lambdarpc.BasicTests.Facade.specializeAdd
 import io.lambdarpc.coders.DataCoder
 import io.lambdarpc.dsl.*
 import io.lambdarpc.functions.frontend.CallDisconnectedChannelFunction
-import io.lambdarpc.transport.LibService
+import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.grpc.serialization.RawData
 import io.lambdarpc.transport.grpc.serialization.rd
 import io.lambdarpc.utils.Endpoint
@@ -105,7 +105,11 @@ class BasicTests {
 
         val distance by conf.def(j<Point>(), j<Point>(), j<Double>())
 
-        val mapPoints by conf.def(j<List<Point>>(), f(j<Point>(), j<Double>()), j<List<Double>>())
+        val mapPoints by conf.def(
+            j<List<Point>>(),
+            f(j<Point>(), j<Double>()),
+            j<List<Double>>()
+        )
 
         private val norm = f(j<Point>(), j<Double>())
         val normMap by conf.def(j<List<Point>>(), f(norm, norm), j<List<Double>>())
@@ -113,12 +117,12 @@ class BasicTests {
         val numpyAdd by conf.def(j<Int>(), NumpyArrayIntCoder, NumpyArrayIntCoder)
     }
 
-    private lateinit var service: LibService
+    private lateinit var service: Service
     private lateinit var serviceDispatcher: ServiceDispatcher
 
     @BeforeAll
     fun before() {
-        service = io.lambdarpc.dsl.LibService(
+        service = LibService(
             serviceId, Endpoint("localhost", 0)
         ) {
             add5 of Lib::add5

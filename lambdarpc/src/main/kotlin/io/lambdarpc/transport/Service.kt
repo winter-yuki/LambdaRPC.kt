@@ -3,9 +3,9 @@ package io.lambdarpc.transport
 import io.lambdarpc.utils.Port
 
 /**
- * Represents libservice.
+ * Represents service.
  */
-interface LibService {
+interface Service {
     val port: Port
 
     fun start()
