@@ -29,7 +29,7 @@ To transform the code to a service just add a facade declaration and a `main` fu
 [source,kotlin]
 ----
 val conf = Configuration(mlServiceId)
-val loader = f(j<Data>) // Coder for the function: suspend () -> Data
+val loader = f(j<Data>()) // Coder for the function: suspend () -> Data
 val fit by conf.def(
     j<Model>(), loader, f(j<Epoch>(), j<Loss>(), j<Boolean>()),
     j<Weights>()
@@ -110,6 +110,7 @@ All of it makes multi-process communication smooth enough to recognize remote se
 - Parallel execution of independent tasks.
 - Communication with code written in other languages.
 - Rerun subtasks in case of failures or resume them using some state snapshot.
+- Run tasks that live longer then single process.
 - Microservice architecture.
 
 == Some high order functions (HOF) possible use-cases
