@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
  * [ServiceDispatcher] is a Kotlin [CoroutineContext.Element] that contains
  * all necessary information for frontend functions invocation.
  */
-class ServiceDispatcher(private val registry: ServiceRegistry) : AbstractCoroutineContextElement(Key) {
+class ServiceDispatcher(internal val registry: ServiceRegistry) : AbstractCoroutineContextElement(Key) {
     internal val endpointConnectionProvider = SingleUseConnectionProvider()
 
     internal val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
