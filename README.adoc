@@ -6,53 +6,81 @@ Simple native RPC with high order functions support.
 
 λRPC allows using code with high-order functions as a service.
 
-.Suppose that we have a code
+== Example
+
+Let's suppose that we have a code that loads data and fits a machine learning model.
+It also calls a given function on each epoch and continues fitting while it returns true.
+
 [source,kotlin]
 ----
 @Serializable
-data class Point(val x: Double, val y: Double)
+data class Model(...)
 
-fun compute(ps: List<Point>, norm: suspend (Point) -> Double): Double = ...
+typealias DataLoader = suspend () -> Data
+
+suspend fun fit(
+    model: Model, loader: DataLoader,
+    continueFitting: (Epoch, Loss) -> Boolean
+): Weights
 ----
 
-.To transform it to a service just add a facade declaration and a `main` function
+To transform the code to a service just add a facade declaration and a `main` function:
+
 [source,kotlin]
 ----
-val conf = Configuration(serviceId)
-val compute by conf.def(d<List<Point>>(), f1<Point, Double>(), d<Double>())
+val conf = Configuration(mlServiceId)
+val loader = f(j<Data>) // Coder for the function: suspend () -> Data
+val fit by conf.def(
+    j<Model>(), loader, f(j<Epoch>(), j<Loss>(), j<Boolean>()),
+    j<Weights>()
+)
 
 fun main() {
-    val service = LibService(serviceId, endpoint) {
-        compute of ::compute // Bind declaration and implementation
+    val service = LibService(mlServiceId, mlEndpoint) {
+        fit of ::fit // Bind declaration and implementation
     }
     service.start()
     service.awaitTermination()
 }
 ----
 
-.To make calls from the client, add `serviceDispatcher` to the coroutine context and invoke declaration
+To make calls from the client, add a `ServiceDispatcher` to the coroutine context and just invoke the declaration:
+
 [source,kotlin]
 ----
-val serviceDispatcher = serviceDispatcher(
-    serviceId to endpoint
+val serviceDispatcher = ServiceDispatcher(
+    mlServiceId to mlEndpoint, // Endpoint of the service with GPU for fitting
+    dataServiceId to dataEndpoint // Service that provides the data
 )
 
 fun main() = runBlocking(serviceDispatcher) {
-    val ps = listOf(Point(9.0, 1.0), Point(5.0, 4.0))
-    val k = AtomicInteger(2)
-    val res = compute(ps) {
-        val k = k.getAndIncrement()
-        (it.x.pow(k) + it.y.pow(k)).pow(1.0 / k)
+    // Keep track of the loss function values
+    val history = mutableListOf<Loss>()
+    var lastEpoch = 0
+    val model = Model(...)
+    // Bind dataloader with its endpoint, so fit will communicate directly
+    // with the service on the dataEndpoint
+    val loader = bf(dataloaders.loader)
+    val weights = fit(model, loader) { epoch, loss ->
+        // Lambda will be executed on the client site
+        println("Epoch = $epoch, loss = $loss")
+        val continueFitting = if (epoch < 300) true else {
+            val max = history.takeLast(50).max()
+            loss < max
+        }
+        lastEpoch = epoch
+        history += loss
+        continueFitting
     }
-    println(res)
+    println("Learning finished! Epoch = $lastEpoch, loss = ${history.last()}")
+    weights.save(path)
 }
 ----
 
-Note that we pass to `compute` closure that captures and changes state.
-It is possible because λRPC does not serialize lambdas and execute them on the client site.
+λRPC does not serialize lambdas and execute them on the client site.
 Thus, closures can be passed even to the services written in other languages.
 
-For instance, for this code, the call diagram is the following:
+.For instance, for this code, the call diagram is the following:
 [source,kotlin]
 ----
 // Service
@@ -74,17 +102,17 @@ Functions can receive and return other functions as first-class objects.
 Provided lambdas are executed on the client side,
 so they can easily capture state and be "sent" to the other language process.
 
-All of it makes multi-process communication smooth enough to recognize remote service as a common library.
+All of it makes multi-process communication smooth enough to recognize remote service just as a common library.
 
 == Service-decomposition purposes
 
 - Code execution in different containers or on various hardware (GPU for instance).
 - Parallel execution of independent tasks.
-- Communication with code written in other language.
-- Rerun subtasks in case of failures or resume using some state snapshot.
+- Communication with code written in other languages.
+- Rerun subtasks in case of failures or resume them using some state snapshot.
 - Microservice architecture.
 
-== High order functions (HOF) use-cases
+== Some high order functions (HOF) possible use-cases
 
 * Communication protocol simplification:
 ** Service function can easily request additional information in some cases.
@@ -95,10 +123,21 @@ All of it makes multi-process communication smooth enough to recognize remote se
 ** Send closures operating on the sensitive data instead of the data itself.
 ** Provide computational resources as a library of functions that are parametrized by client lambdas instead of
    receiving client's code and executing it.
-* Choose dynamically computation location: compute something using amount of data on a client or send data to the server and
+* Choose dynamically computation location: compute something that uses a large amount of data on a client or send data to the server and
   compute there.
 * Load balancing: task is done, request new via client's lambda.
 * Stateful streaming computations: nodes provide theirs lambdas for a mapper.
+
+== λRPC functions
+
+.λRPC functions consist of two parts: backend and frontend.
+* The backend part contains the programming language closure and serializers
+(coders) for the arguments and for the result types.
+* The frontend one is a callable proxy object that communicates
+with its backend part on call and awaits for the result.
+
+Frontend functions can be sent to other services and λRPC provides
+efficient communication with the corresponding backend parts.
 
 == Getting started
 
@@ -140,14 +179,14 @@ $ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
 .lambdarpc
 * `dsl` -- domain-specific language for λRPC library users.
 * `exceptions` -- base λRPC exception classes.
-* `functions` -- each λRPC function consists of two parts: `backend` that holds original function and decodes data
-  for it, and `frontend` which is a callable proxy object that being called on the client side encodes arguments,
-  sends them to the backend function and awaits result from it.
+* `functions` -- λRPC functions: backend and frontend parts.
 * `coders` -- data coder (serializer) and function coder.
-** Default data coder uses `kotlinx.serialization` to serialize data to JSON.
-** Function encoding saves function as backend function to some registry and returns its `access name`.
+** λRPC provides some default data coders based on `kotlinx.serialization`, but users can also implement thier own.
+** Default data coder uses  to serialize data to JSON.
+** Function encoding saves language closure as backend function to the registry with some `access name`.
 Function decoding creates frontend function that is able to communicate with the corresponding backend function.
-* `service` -- lib service implementation and `Connection`.
+* `service` -- libservice implementation.
+* `transport` -- extensions and interfaces related to the gRPC backend.
 * `utils` -- some useful utils.
 
 == Links
