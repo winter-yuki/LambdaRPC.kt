@@ -1,0 +1,26 @@
+= Ecosystem
+
+== λRPC
+
+* Client DSL
+* Service DSL
+* HOF support
+* Coders <- extension point
+
+== Kotvis
+
+Kotlin plugin that generates λRPC facade and main.
+
+== Plateau
+
+Platform that consists of Repository and Scheduler.
+Invokes libservices functions in a serverless way.
+
+== Daevo -- data evolution framework
+
+Builds lazy pipeline on functions invocations and tracks the data evolution extending default coders.
+Uses Plateau to execute graphs.
+
+== Daevo IDE Plugin
+
+Controls lambdas lifetime.

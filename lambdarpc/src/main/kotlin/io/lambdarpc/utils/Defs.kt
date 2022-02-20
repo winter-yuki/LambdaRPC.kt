@@ -3,18 +3,15 @@ package io.lambdarpc.utils
 import java.util.*
 
 @JvmInline
-value class ServiceId(val id: UUID) {
-    override fun toString(): String = id.toString()
+value class AccessName(val n: String) {
+    override fun toString(): String = n
 }
 
-val UUID.sid: ServiceId
-    get() = ServiceId(this)
-
-fun String.toSid() = ServiceId(UUID.fromString(this))
-
+val String.an: AccessName
+    get() = AccessName(this)
 
 @JvmInline
-value class ExecutionId(val id: UUID) {
+value class ExecutionId(private val id: UUID) {
     override fun toString(): String = id.toString()
 
     companion object {
@@ -27,11 +24,12 @@ val UUID.eid: ExecutionId
 
 fun String.toEid() = ExecutionId(UUID.fromString(this))
 
-
 @JvmInline
-value class AccessName(val n: String) {
-    override fun toString(): String = n
+value class ServiceId(private val id: UUID) {
+    override fun toString(): String = id.toString()
 }
 
-val String.an: AccessName
-    get() = AccessName(this)
+val UUID.sid: ServiceId
+    get() = ServiceId(this)
+
+fun String.toSid() = ServiceId(UUID.fromString(this))

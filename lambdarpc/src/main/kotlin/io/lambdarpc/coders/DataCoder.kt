@@ -1,36 +1,19 @@
 package io.lambdarpc.coders
 
-import com.google.protobuf.ByteString
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
-import java.nio.charset.Charset
+import io.lambdarpc.transport.grpc.serialization.RawData
 
 /**
- * To implement custom data coder, implement [DataCoder] interface.
- *
- * It is no need to split concrete encoders and decoders because
- * there is no case when only one of them is implemented.
- * Backend function always use one of them and frontend one -- another.
+ * Implement to define custom data encoder.
  */
-interface DataCoder<T> : Coder<T> {
-    fun encode(value: T): ByteString
-    fun decode(data: ByteString): T
+interface DataEncoder<T> : Encoder<T> {
+    fun encode(value: T): RawData
 }
 
 /**
- * [DefaultDataCoder] uses `kotlinx.serialization` to encode data to JSON.
+ * Implement to define custom data decoder.
  */
-class DefaultDataCoder<T>(private val serializer: KSerializer<T>) : DataCoder<T> {
-    override fun encode(value: T): ByteString {
-        val string = Json.encodeToString(serializer, value)
-        return ByteString.copyFrom(string, Charset.defaultCharset())
-    }
-
-    override fun decode(data: ByteString): T {
-        val string = data.toString(Charset.defaultCharset())
-        return Json.decodeFromString(serializer, string)
-    }
+interface DataDecoder<T> : Decoder<T> {
+    fun decode(data: RawData): T
 }
 
-inline fun <reified T> DefaultDataCoder() = DefaultDataCoder<T>(serializer())
+interface DataCoder<T> : Coder<T>, DataEncoder<T>, DataDecoder<T>

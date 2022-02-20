@@ -1,40 +1,49 @@
 package io.lambdarpc.dsl
 
-import io.grpc.Server
-import io.grpc.ServerBuilder
-import io.lambdarpc.coders.FunctionRegistry
+import io.lambdarpc.exceptions.LambdaRpcException
 import io.lambdarpc.functions.backend.*
-import io.lambdarpc.service.LibService
+import io.lambdarpc.service.LibServiceImpl
+import io.lambdarpc.transport.*
+import io.lambdarpc.transport.grpc.service.GrpcService
+import io.lambdarpc.transport.grpc.service.SingleUseConnectionProvider
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
+class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("Service not found: id = $id")
+
 /**
- * Object that represents libservice.
+ * DSL function that creates libservice instance.
  */
-class LibService(serviceId: ServiceId, endpoint: Endpoint, builder: LibServiceDSL.() -> Unit) {
-    val service: Server = ServerBuilder
-        .forPort(endpoint.port.p)
-        .addService(
-            LibService(
-                serviceId, endpoint,
-                LibServiceDSL().apply(builder).registry
-            )
-        )
-        .build()
-
-    fun start() {
-        service.start()
+@Suppress("FunctionName")
+fun LibService(
+    serviceId: ServiceId,
+    endpoint: Endpoint,
+    serviceRegistry: ServiceRegistry = MapServiceRegistry(),
+    builder: LibServiceDSL.() -> Unit
+): Service {
+    val endpointConnectionProvider = SingleUseConnectionProvider()
+    val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
+        @Suppress("NAME_SHADOWING")
+        override suspend fun <R> withConnection(connectionId: ServiceId, block: suspend (Connection) -> R): R {
+            val endpoint = serviceRegistry.get(connectionId) ?: throw ServiceNotFound(connectionId)
+            return endpointConnectionProvider.withConnection(endpoint, block)
+        }
     }
-
-    fun awaitTermination() {
-        service.awaitTermination()
-    }
+    val libService = LibServiceImpl(
+        serviceId, endpoint.address,
+        LibServiceDSL().apply(builder).registry,
+        serviceIdConnectionProvider,
+        endpointConnectionProvider
+    )
+    val service = GrpcService(endpoint.port, libService)
+    libService.initialize(service)
+    return service
 }
 
 @Suppress("UNCHECKED_CAST")
-class LibServiceDSL {
-    val registry = FunctionRegistry()
+class LibServiceDSL internal constructor() {
+    internal val registry = FunctionRegistry()
 
     infix fun <R> (suspend CoroutineScope.() -> R).of(f: suspend () -> R) =
         (this as Declaration0<R>).run {
@@ -54,15 +63,5 @@ class LibServiceDSL {
     infix fun <A, B, C, R> (suspend CoroutineScope.(A, B, C) -> R).of(f: suspend (A, B, C) -> R) =
         (this as Declaration3<A, B, C, R>).run {
             registry.register(name, BackendFunction3(f, c1, c2, c3, rc))
-        }
-
-    infix fun <A, B, C, D, R> (suspend CoroutineScope.(A, B, C, D) -> R).of(f: suspend (A, B, C, D) -> R) =
-        (this as Declaration4<A, B, C, D, R>).run {
-            registry.register(name, BackendFunction4(f, c1, c2, c3, c4, rc))
-        }
-
-    infix fun <A, B, C, D, E, R> (suspend CoroutineScope.(A, B, C, D, E) -> R).of(f: suspend (A, B, C, D, E) -> R) =
-        (this as Declaration5<A, B, C, D, E, R>).run {
-            registry.register(name, BackendFunction5(f, c1, c2, c3, c4, c5, rc))
         }
 }

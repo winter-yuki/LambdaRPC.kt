@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "io.lambdarpc.transport.grpc";
+package io.lambdarpc.transport.grpc;
+
+message ChannelFunctionPrototype {
+  string accessName = 1;
+}
+
+message FreeFunctionPrototype {
+  string accessName = 1;
+  string serviceId = 2;
+}
+
+message BoundFunctionPrototype {
+  string accessName = 1;
+  string serviceId = 2;
+  string endpoint = 3;
+}
+
+message FunctionPrototype {
+  oneof function {
+    ChannelFunctionPrototype channelFunction = 1;
+    FreeFunctionPrototype freeFunction = 2;
+    BoundFunctionPrototype boundFunction = 3;
+  }
+}

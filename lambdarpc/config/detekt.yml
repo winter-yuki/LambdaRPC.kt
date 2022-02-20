@@ -1,0 +1,33 @@
+complexity:
+  # Functions boilerplate for multiple args
+  LongParameterList:
+    excludes: [ '**/functions/frontend/**' ]
+
+exceptions:
+  # Temporal, proper error handling should be implemented
+  TooGenericExceptionCaught:
+    excludes: [ '**/LibServiceImpl.kt', '**/AbstractConnectedFunction.kt' ]
+
+formatting:
+  # IDEA automatically folds imports by default
+  NoWildcardImports:
+    active: false
+  # Does not agree with default formatting
+  Indentation:
+    excludes: ['**/exceptions/Exceptions.kt']
+
+style:
+  # IDEA automatically folds imports by default
+  WildcardImport:
+    active: false
+  # Checking arguments list size in boilerplate implementations
+  MagicNumber:
+    excludes: ['**/BackendFunction.kt', '**/test/**']
+
+naming:
+  # Does not always agree with IDEA default warnings
+  FunctionNaming:
+    active: false
+  # Is not suitable for DSL
+  MatchingDeclarationName:
+    excludes: ['**/dsl/**']

@@ -1,15 +1,15 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_generic_services = true; // For julia client
+option java_generic_services = true;
 option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
-import "Function.proto";
+import "FunctionPrototype.proto";
 
 message Entity {
   oneof content {
     bytes data = 1;
-    Function function = 2;
+    FunctionPrototype function = 2;
   }
 }

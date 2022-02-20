@@ -3,21 +3,16 @@ import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
-import org.gradle.kotlin.dsl.api
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.implementation
+import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.kotlin
-import org.gradle.kotlin.dsl.runtimeOnly
-import org.gradle.kotlin.dsl.testImplementation
-import org.gradle.kotlin.dsl.version
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm")
     kotlin("plugin.serialization") version "1.6.10"
     id("com.google.protobuf") version "0.8.18"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 tasks.withType<KotlinCompile>().all {
@@ -38,7 +33,18 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.slf4j:slf4j-simple:1.7.35")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+
     testImplementation(kotlin("test"))
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 protobuf {
@@ -65,3 +71,23 @@ protobuf {
         }
     }
 }
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false // Activates all, even unstable rules
+    config = files("$projectDir/config/detekt.yml")
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+    }
+}
+
+//tasks.named("check").configure {
+//    dependsOn("detekt")
+//    dependsOn("test")
+//}
