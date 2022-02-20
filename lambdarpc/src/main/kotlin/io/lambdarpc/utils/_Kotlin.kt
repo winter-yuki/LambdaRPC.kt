@@ -6,7 +6,7 @@ import kotlin.reflect.KProperty
 
 operator fun <K, V> Map<out K, List<V>>.plus(
     map: Map<out K, List<V>>
-): MutableMap<K, MutableList<V>> =
+): MutableMap<K, out MutableList<V>> =
     mutableMapOf<K, MutableList<V>>().apply {
         putAll(this)
         map.forEach { (k, vs) ->

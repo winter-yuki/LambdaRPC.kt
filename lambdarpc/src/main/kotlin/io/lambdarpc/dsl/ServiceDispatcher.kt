@@ -37,10 +37,25 @@ fun ServiceDispatcher(vararg endpoints: Pair<ServiceId, Endpoint>): ServiceDispa
     return ServiceDispatcher(registry)
 }
 
+@JvmName("ListServiceDispatcher")
+fun ServiceDispatcher(vararg endpoints: Pair<ServiceId, List<Endpoint>>): ServiceDispatcher {
+    val registry = MapServiceRegistry(endpoints.associate { it })
+    return ServiceDispatcher(registry)
+}
+
 @JvmName("RawServiceDispatcher")
 fun ServiceDispatcher(vararg endpoints: Pair<UUID, String>): ServiceDispatcher {
     val map = endpoints.associateRepeatable { (uuid, endpoint) ->
         uuid.sid to Endpoint(endpoint)
+    }
+    val registry = MapServiceRegistry(map)
+    return ServiceDispatcher(registry)
+}
+
+@JvmName("RawListServiceDispatcher")
+fun ServiceDispatcher(vararg endpoints: Pair<UUID, List<String>>): ServiceDispatcher {
+    val map = endpoints.associate { (uuid, endpoints) ->
+        uuid.sid to endpoints.map { Endpoint(it) }
     }
     val registry = MapServiceRegistry(map)
     return ServiceDispatcher(registry)

@@ -56,7 +56,7 @@ tasks.register<JavaExec>("lazy.client") {
     mainClass.set("$lazy.client.ClientKt")
 }
 
-tasks.register<JavaExec>("example.lazy.service") {
+tasks.register<JavaExec>("lazy.service") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.service.ServiceKt")

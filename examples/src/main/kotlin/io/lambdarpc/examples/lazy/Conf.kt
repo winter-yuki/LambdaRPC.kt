@@ -1,5 +1,5 @@
-//package lazy
-//
-//import io.lambdarpc.utils.toSid
-//
-//val serviceId = "d5ec2813-4468-4deb-b156-aeba87b91bd6".toSid()
+package io.lambdarpc.examples.lazy
+
+import io.lambdarpc.utils.toSid
+
+val serviceId = "d5ec2813-4468-4deb-b156-aeba87b91bd6".toSid()

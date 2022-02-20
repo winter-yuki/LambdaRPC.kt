@@ -1,21 +1,21 @@
-//package lazy.client
-//
-//import io.lambdarpc.dsl.ServiceDispatcher
-//import io.lambdarpc.utils.Endpoint
-//import kotlinx.coroutines.runBlocking
-//import lazy.service.*
-//import lazy.serviceId
-//
-//fun main(args: Array<String>) = runBlocking(
-//    ServiceDispatcher(serviceId to args.map {
-//        Endpoint("localhost", it.toInt())
-//    })
-//) {
-//    val s = ss()
-//    val a = aa(s)
-//    val b = List(10) { bb }.fold(a) { b, f -> f(b) }
-//    val c = cc(s, 2)
-//    val d = dd(c)
-//    val e = ee(b, d)
-//    println("The answer is: ${e()}")
-//}
+package io.lambdarpc.examples.lazy.client
+
+import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.examples.lazy.service.*
+import io.lambdarpc.examples.lazy.serviceId
+import io.lambdarpc.utils.Endpoint
+import kotlinx.coroutines.runBlocking
+
+fun main(args: Array<String>) = runBlocking(
+    ServiceDispatcher(serviceId to args.map {
+        Endpoint("localhost", it.toInt())
+    })
+) {
+    val s = s()
+    val a = a(s)
+    val b = List(10) { b }.fold(a) { b, f -> f(b) }
+    val c = c(s, 2)
+    val d = d(c)
+    val e = e(b, d)
+    println("The answer is: ${e()}")
+}
