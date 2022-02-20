@@ -182,14 +182,13 @@ $ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
 * `functions` -- λRPC functions: backend and frontend parts.
 * `coders` -- data coder (serializer) and function coder.
 ** λRPC provides some default data coders based on `kotlinx.serialization`, but users can also implement thier own.
-** Default data coder uses  to serialize data to JSON.
 ** Function encoding saves language closure as backend function to the registry with some `access name`.
 Function decoding creates frontend function that is able to communicate with the corresponding backend function.
 * `service` -- libservice implementation.
-* `transport` -- extensions and interfaces related to the gRPC backend.
+* `transport` -- service and connection interfaces, extensions and implementations related to the gRPC backend.
 * `utils` -- some useful utils.
 
 == Links
 
-* See more information https://github.com/winter-yuki/LambdaRPC.kt/tree/main/docs[here].
+* See more information in https://github.com/winter-yuki/LambdaRPC.kt/tree/main/docs[docs].
 * Basic Julia lang https://github.com/winter-yuki/LambdaRPC.jl[prototype].
