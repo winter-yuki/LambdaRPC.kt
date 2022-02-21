@@ -86,8 +86,3 @@ tasks.withType<Detekt>().configureEach {
         sarif.required.set(true)
     }
 }
-
-//tasks.named("check").configure {
-//    dependsOn("detekt")
-//    dependsOn("test")
-//}
