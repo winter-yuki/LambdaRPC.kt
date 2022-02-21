@@ -7,7 +7,7 @@ Simple native RPC with high order functions support.
 == Service as a library
 
 λRPC does not use standalone declarations (https://en.wikipedia.org/wiki/Interface_description_language[IDL]) 
-and code generation (so λRPC declarations are native for the users code). 
+and code generation (so λRPC declarations are native for the user's code). 
 λRPC uses library-specific data structures and default or custom serializers instead.
 
 Functions can receive and return other functions as first-class objects.
