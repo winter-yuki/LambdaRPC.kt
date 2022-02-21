@@ -20,7 +20,7 @@ typealias DataLoader = suspend () -> Data
 
 suspend fun fit(
     model: Model, loader: DataLoader,
-    continueFitting: (Epoch, Loss) -> Boolean
+    continueFitting: suspend (Epoch, Loss) -> Boolean
 ): Weights
 ----
 
