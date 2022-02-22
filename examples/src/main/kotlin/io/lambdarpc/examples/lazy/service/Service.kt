@@ -1,6 +1,5 @@
 package io.lambdarpc.examples.lazy.service
 
-import io.lambdarpc.dsl.Configuration
 import io.lambdarpc.dsl.LibService
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.j
@@ -10,14 +9,12 @@ import io.lambdarpc.examples.lazy.p
 import io.lambdarpc.examples.lazy.serviceId
 import io.lambdarpc.utils.Endpoint
 
-val conf = Configuration(serviceId)
-
-val s by conf.def(p<Int>())
-val a by conf.def(p<Int>(), p<Int>())
-val b by conf.def(p<Int>(), p<Int>())
-val c by conf.def(p<Int>(), j<Int>(), p<Int>())
-val d by conf.def(p<Int>(), p<Int>())
-val e by conf.def(p<Int>(), p<Int>(), p<Int>())
+val s by serviceId.def(p<Int>())
+val a by serviceId.def(p<Int>(), p<Int>())
+val b by serviceId.def(p<Int>(), p<Int>())
+val c by serviceId.def(p<Int>(), j<Int>(), p<Int>())
+val d by serviceId.def(p<Int>(), p<Int>())
+val e by serviceId.def(p<Int>(), p<Int>(), p<Int>())
 
 private object Lib {
     fun s(): Int = 1
