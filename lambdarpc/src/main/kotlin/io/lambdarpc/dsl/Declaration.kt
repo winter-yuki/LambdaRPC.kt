@@ -1,6 +1,7 @@
 package io.lambdarpc.dsl
 
 import io.lambdarpc.coders.Coder
+import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ServiceId
@@ -8,10 +9,10 @@ import kotlinx.coroutines.CoroutineScope
 
 /**
  * Function declaration that can be converted to the [FreeFunction] or [BoundFunction]
- * on the client side and to the BackendFunction on the server side.
+ * on the client side and to the [BackendFunction] on the server side.
  *
- * To invoke a [Declaration] implementation in a coroutine scope,
- * cast it to the functional type with [CoroutineScope] as a receiver.
+ * To invoke a [Declaration] in the coroutine scope, cast it to the functional type
+ * with [CoroutineScope] as a receiver.
  */
 interface Declaration {
     val name: AccessName

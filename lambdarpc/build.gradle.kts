@@ -1,8 +1,5 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.id
+import com.google.protobuf.gradle.*
 import com.google.protobuf.gradle.plugins
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
 import io.gitlab.arturbosch.detekt.Detekt
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -31,13 +28,21 @@ dependencies {
     api("com.google.protobuf:protobuf-kotlin:3.19.4")
     api("io.grpc:grpc-kotlin-stub:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-    implementation("org.slf4j:slf4j-simple:1.7.35")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
 
     testImplementation(kotlin("test"))
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDirs += File("$projectDir/src/main/proto")
+        }
+    }
 }
 
 tasks.withType<Test> {

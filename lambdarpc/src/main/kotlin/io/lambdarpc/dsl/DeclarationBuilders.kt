@@ -7,43 +7,27 @@ import io.lambdarpc.utils.an
 import kotlinx.coroutines.CoroutineScope
 import kotlin.properties.ReadOnlyProperty
 
-class Configuration(val serviceId: ServiceId)
-
-fun <D> def(accessName: String?, definitionProvider: (AccessName) -> D) =
-    ReadOnlyProperty { _: Any?, property ->
-        definitionProvider(accessName?.an ?: property.name.an)
+fun <R> ServiceId.def(rc: Coder<R>, accessName: String? = null) =
+    def<suspend CoroutineScope.() -> R>(accessName) { name ->
+        Declaration0(name, this, rc)
     }
 
-inline fun <reified R> Configuration.def(
-    rc: Coder<R>,
-    accessName: String? = null
-) = def<suspend CoroutineScope.() -> R>(accessName) { name ->
-    Declaration0(name, serviceId, rc)
-}
+fun <A, R> ServiceId.def(c1: Coder<A>, rc: Coder<R>, accessName: String? = null) =
+    def<suspend CoroutineScope.(A) -> R>(accessName) { name ->
+        Declaration1(name, this, c1, rc)
+    }
 
-inline fun <reified A, reified R> Configuration.def(
-    c1: Coder<A>,
-    rc: Coder<R>,
-    accessName: String? = null
-) = def<suspend CoroutineScope.(A) -> R>(accessName) { name ->
-    Declaration1(name, serviceId, c1, rc)
-}
+fun <A, B, R> ServiceId.def(c1: Coder<A>, c2: Coder<B>, rc: Coder<R>, accessName: String? = null) =
+    def<suspend CoroutineScope.(A, B) -> R>(accessName) { name ->
+        Declaration2(name, this, c1, c2, rc)
+    }
 
-inline fun <reified A, reified B, reified R> Configuration.def(
-    c1: Coder<A>,
-    c2: Coder<B>,
-    rc: Coder<R>,
-    accessName: String? = null
-) = def<suspend CoroutineScope.(A, B) -> R>(accessName) { name ->
-    Declaration2(name, serviceId, c1, c2, rc)
-}
+fun <A, B, C, R> ServiceId.def(c1: Coder<A>, c2: Coder<B>, c3: Coder<C>, rc: Coder<R>, accessName: String? = null) =
+    def<suspend CoroutineScope.(A, B, C) -> R>(accessName) { name ->
+        Declaration3(name, this, c1, c2, c3, rc)
+    }
 
-inline fun <reified A, reified B, reified C, reified R> Configuration.def(
-    c1: Coder<A>,
-    c2: Coder<B>,
-    c3: Coder<C>,
-    rc: Coder<R>,
-    accessName: String? = null
-) = def<suspend CoroutineScope.(A, B, C) -> R>(accessName) { name ->
-    Declaration3(name, serviceId, c1, c2, c3, rc)
-}
+private fun <D> def(accessName: String?, declarationProvider: (AccessName) -> D) =
+    ReadOnlyProperty { _: Any?, property ->
+        declarationProvider(accessName?.an ?: property.name.an)
+    }

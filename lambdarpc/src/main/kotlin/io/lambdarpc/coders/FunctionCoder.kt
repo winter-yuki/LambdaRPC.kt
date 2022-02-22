@@ -19,8 +19,4 @@ internal sealed interface FunctionDecoder<F> : Decoder<F> {
     fun decode(p: FunctionPrototype, context: CodingContext): F
 }
 
-/**
- * It is easier to implement both [FunctionCoder] and [FunctionDecoder] at ones,
- * it reduces FunctionCoderM boilerplate.
- */
 internal interface FunctionCoder<F> : Coder<F>, FunctionEncoder<F>, FunctionDecoder<F>

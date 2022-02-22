@@ -1,8 +1,6 @@
 package io.lambdarpc.functions
 
-import io.lambdarpc.coders.Coder
-import io.lambdarpc.coders.CodingContext
-import io.lambdarpc.coders.FunctionCoder
+import io.lambdarpc.coders.*
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
@@ -18,26 +16,24 @@ import io.lambdarpc.utils.an
 import io.lambdarpc.utils.toSid
 
 /**
- * Contains information and state that is needed to encode functions.
- */
-internal class FunctionEncodingContext(
-    val functionRegistry: FunctionRegistry
-)
-
-/**
- * Contains information and state that is needed to decode functions.
+ * Contains information and state that is needed to encode and decode functions.
  * @param executionChannelController For [ChannelFunction] creation.
  * @param serviceIdProvider For [FreeFunction] creation.
  * @param endpointProvider For [BoundFunction] creation.
  */
-internal class FunctionDecodingContext(
+internal class FunctionCodingContext(
+    val functionRegistry: FunctionRegistry,
     val executionChannelController: ChannelRegistry.ExecutionChannelController,
     val serviceIdProvider: ConnectionProvider<ServiceId>,
     val endpointProvider: ConnectionProvider<Endpoint>,
 )
 
+/**
+ * It is easier to implement both [FunctionEncoder] and [FunctionDecoder] at ones as [FunctionCoder]
+ * to reduce FunctionCoderN boilerplate.
+ */
 internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
-    override fun encode(f: F, context: CodingContext): FunctionPrototype = context.encoding.run {
+    override fun encode(f: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
         if (f is FrontendFunction) {
             when (f) {
                 is ChannelFunction -> {
@@ -75,7 +71,7 @@ internal class FunctionCoder0<R>(
 
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
-    ): suspend () -> R = context.decoding.run {
+    ): suspend () -> R = context.functionContext.run {
         ChannelFunction0(
             accessName = accessName.an,
             executionChannel = executionChannelController.createChannel(),
@@ -86,7 +82,7 @@ internal class FunctionCoder0<R>(
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
-    ): suspend () -> R = context.decoding.run {
+    ): suspend () -> R = context.functionContext.run {
         FreeFunction0(
             accessName.an,
             serviceId.toSid(),
@@ -98,7 +94,7 @@ internal class FunctionCoder0<R>(
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
-    ): suspend () -> R = context.decoding.run {
+    ): suspend () -> R = context.functionContext.run {
         BoundFunction0(
             accessName.an,
             serviceId.toSid(),
@@ -118,7 +114,7 @@ internal class FunctionCoder1<A, R>(
 
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
-    ): suspend (A) -> R = context.decoding.run {
+    ): suspend (A) -> R = context.functionContext.run {
         ChannelFunction1(
             accessName = accessName.an,
             executionChannel = executionChannelController.createChannel(),
@@ -129,7 +125,7 @@ internal class FunctionCoder1<A, R>(
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
-    ): suspend (A) -> R = context.decoding.run {
+    ): suspend (A) -> R = context.functionContext.run {
         FreeFunction1(
             accessName.an,
             serviceId.toSid(),
@@ -141,7 +137,7 @@ internal class FunctionCoder1<A, R>(
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
-    ): suspend (A) -> R = context.decoding.run {
+    ): suspend (A) -> R = context.functionContext.run {
         BoundFunction1(
             accessName.an,
             serviceId.toSid(),
@@ -162,7 +158,7 @@ internal class FunctionCoder2<A, B, R>(
 
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
-    ): suspend (A, B) -> R = context.decoding.run {
+    ): suspend (A, B) -> R = context.functionContext.run {
         ChannelFunction2(
             accessName = accessName.an,
             executionChannel = executionChannelController.createChannel(),
@@ -173,7 +169,7 @@ internal class FunctionCoder2<A, B, R>(
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
-    ): suspend (A, B) -> R = context.decoding.run {
+    ): suspend (A, B) -> R = context.functionContext.run {
         FreeFunction2(
             accessName.an,
             serviceId.toSid(),
@@ -185,7 +181,7 @@ internal class FunctionCoder2<A, B, R>(
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
-    ): suspend (A, B) -> R = context.decoding.run {
+    ): suspend (A, B) -> R = context.functionContext.run {
         BoundFunction2(
             accessName.an,
             serviceId.toSid(),
@@ -207,7 +203,7 @@ internal class FunctionCoder3<A, B, C, R>(
 
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
-    ): suspend (A, B, C) -> R = context.decoding.run {
+    ): suspend (A, B, C) -> R = context.functionContext.run {
         ChannelFunction3(
             accessName = accessName.an,
             executionChannel = executionChannelController.createChannel(),
@@ -218,7 +214,7 @@ internal class FunctionCoder3<A, B, C, R>(
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
-    ): suspend (A, B, C) -> R = context.decoding.run {
+    ): suspend (A, B, C) -> R = context.functionContext.run {
         FreeFunction3(
             accessName.an,
             serviceId.toSid(),
@@ -230,7 +226,7 @@ internal class FunctionCoder3<A, B, C, R>(
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
-    ): suspend (A, B, C) -> R = context.decoding.run {
+    ): suspend (A, B, C) -> R = context.functionContext.run {
         BoundFunction3(
             accessName.an,
             serviceId.toSid(),

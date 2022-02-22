@@ -12,7 +12,10 @@ import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.numpyAdd
 import io.lambdarpc.Facade.specializeAdd
 import io.lambdarpc.coders.DataCoder
-import io.lambdarpc.dsl.*
+import io.lambdarpc.dsl.LibServiceDSL
+import io.lambdarpc.dsl.def
+import io.lambdarpc.dsl.f
+import io.lambdarpc.dsl.j
 import io.lambdarpc.functions.frontend.CallDisconnectedChannelFunction
 import io.lambdarpc.transport.grpc.serialization.RawData
 import io.lambdarpc.transport.grpc.serialization.rd
@@ -77,32 +80,30 @@ object Lib {
 }
 
 object Facade {
-    private val conf = Configuration(serviceId)
+    val add5 by serviceId.def(j<Int>(), j<Int>())
+    val add by serviceId.def(j<Int>(), j<Int>(), j<Int>())
 
-    val add5 by conf.def(j<Int>(), j<Int>())
-    val add by conf.def(j<Int>(), j<Int>(), j<Int>())
+    val eval5 by serviceId.def(f(j<Int>(), j<Int>()), j<Int>())
+    val eval by serviceId.def(j<Int>(), f(j<Int>(), j<Int>()), j<Int>())
 
-    val eval5 by conf.def(f(j<Int>(), j<Int>()), j<Int>())
-    val eval by conf.def(j<Int>(), f(j<Int>(), j<Int>()), j<Int>())
+    val specializeAdd by serviceId.def(j<Int>(), f(j<Int>(), j<Int>()))
+    val evalAndReturn by serviceId.def(f(j<Int>(), j<Int>()), f(j<Int>(), j<Int>()))
 
-    val specializeAdd by conf.def(j<Int>(), f(j<Int>(), j<Int>()))
-    val evalAndReturn by conf.def(f(j<Int>(), j<Int>()), f(j<Int>(), j<Int>()))
+    val distance by serviceId.def(j<Point>(), j<Point>(), j<Double>())
 
-    val distance by conf.def(j<Point>(), j<Point>(), j<Double>())
-
-    val mapPoints by conf.def(
+    val mapPoints by serviceId.def(
         j<List<Point>>(),
         f(j<Point>(), j<Double>()),
         j<List<Double>>()
     )
 
     private val norm = f(j<Point>(), j<Double>())
-    val normMap by conf.def(j<List<Point>>(), f(norm, norm), j<List<Double>>())
+    val normMap by serviceId.def(j<List<Point>>(), f(norm, norm), j<List<Double>>())
 
-    val numpyAdd by conf.def(j<Int>(), NumpyArrayIntCoder, NumpyArrayIntCoder)
+    val numpyAdd by serviceId.def(j<Int>(), NumpyArrayIntCoder, NumpyArrayIntCoder)
 }
 
-fun LibServiceDSL.builder() {
+fun LibServiceDSL.bindings() {
     add5 of Lib::add5
     add of Lib::add
 

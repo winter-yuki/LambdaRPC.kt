@@ -1,5 +1,7 @@
 package io.lambdarpc.dsl
 
+import io.lambdarpc.exceptions.ServiceNotFound
+import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.transport.Connection
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.MapServiceRegistry
@@ -15,8 +17,8 @@ import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
 /**
- * [ServiceDispatcher] is a Kotlin [CoroutineContext.Element] that contains
- * all necessary information for frontend functions invocation.
+ * [ServiceDispatcher] is a Kotlin [CoroutineContext.Element] that is needed to convert [Declaration]
+ * into some [FrontendFunction] invocations.
  */
 class ServiceDispatcher(internal val registry: ServiceRegistry) : AbstractCoroutineContextElement(Key) {
     internal val endpointConnectionProvider = SingleUseConnectionProvider()

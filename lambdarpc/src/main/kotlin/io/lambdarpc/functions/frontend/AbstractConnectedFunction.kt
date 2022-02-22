@@ -5,8 +5,7 @@ import io.lambdarpc.coders.CodingScope
 import io.lambdarpc.coders.withContext
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.functions.FunctionDecodingContext
-import io.lambdarpc.functions.FunctionEncodingContext
+import io.lambdarpc.functions.FunctionCodingContext
 import io.lambdarpc.functions.backend.FunctionRegistry
 import io.lambdarpc.functions.backend.get
 import io.lambdarpc.transport.ConnectionProvider
@@ -22,12 +21,12 @@ import mu.KLogger
 
 /**
  * [ConnectedFunction] is a [FrontendFunction] that needs some network connection to be invoked.
- * Such connections are provided by some [ConnectionProvider].
+ * Such connections are provided by [connection providers][ConnectionProvider].
  */
 sealed interface ConnectedFunction : FrontendFunction
 
 /**
- * Implementation of the [invoke] method for the [FrontendFunction]s
+ * Implementation of the [invoke] method for the [connected functions][ConnectedFunction]s
  * that communicate with service via connection.
  */
 internal abstract class AbstractConnectedFunction : KLoggable {
@@ -49,10 +48,8 @@ internal abstract class AbstractConnectedFunction : KLoggable {
     ): R {
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         return channelRegistry.useController(executeRequests) { controller ->
-            val context = CodingContext(
-                FunctionEncodingContext(functionRegistry),
-                FunctionDecodingContext(controller, serviceIdProvider, endpointProvider)
-            )
+            val fc = FunctionCodingContext(functionRegistry, controller, serviceIdProvider, endpointProvider)
+            val context = CodingContext(functionContext = fc)
             val invoker = Invoker(connectionProvider, connectionId, executeRequests, controller, context)
             withContext(context) { block(invoker) }
         }
@@ -98,7 +95,7 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            launch(Job()) { // TODO
+            launch {
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {
