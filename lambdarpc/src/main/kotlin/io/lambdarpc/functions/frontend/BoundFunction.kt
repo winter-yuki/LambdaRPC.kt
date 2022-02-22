@@ -8,7 +8,7 @@ import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 
 /**
- * [FrontendFunction] that is bounded to specific endpoint.
+ * [FrontendFunction] that is bound to the specific endpoint.
  */
 interface BoundFunction : ConnectedFunction {
     val accessName: AccessName

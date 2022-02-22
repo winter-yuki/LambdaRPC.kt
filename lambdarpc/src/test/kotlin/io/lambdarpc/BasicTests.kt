@@ -32,7 +32,7 @@ class BasicTests {
     @BeforeAll
     fun before() {
         service = LibService(serviceId, Endpoint("localhost", 0)) {
-            builder()
+            bindings()
         }
         service.start()
         serviceDispatcher = ServiceDispatcher(

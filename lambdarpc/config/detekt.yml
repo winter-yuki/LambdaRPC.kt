@@ -14,15 +14,18 @@ formatting:
     active: false
   # Does not agree with default formatting
   Indentation:
-    excludes: ['**/exceptions/Exceptions.kt']
+    excludes: [ '**/exceptions/Exceptions.kt' ]
 
 style:
   # IDEA automatically folds imports by default
   WildcardImport:
     active: false
-  # Checking arguments list size in boilerplate implementations
+
   MagicNumber:
-    excludes: ['**/BackendFunction.kt', '**/test/**']
+    excludes:
+      # Checking arguments list size in boilerplate implementations
+      - '**/BackendFunction.kt'
+      - '**/test/**'
 
 naming:
   # Does not always agree with IDEA default warnings
@@ -30,4 +33,4 @@ naming:
     active: false
   # Is not suitable for DSL
   MatchingDeclarationName:
-    excludes: ['**/dsl/**']
+    excludes: [ '**/dsl/**' ]

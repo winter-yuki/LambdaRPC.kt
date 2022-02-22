@@ -3,8 +3,7 @@ package io.lambdarpc.service
 import io.lambdarpc.coders.CodingContext
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.functions.FunctionDecodingContext
-import io.lambdarpc.functions.FunctionEncodingContext
+import io.lambdarpc.functions.FunctionCodingContext
 import io.lambdarpc.functions.backend.FunctionRegistry
 import io.lambdarpc.functions.backend.get
 import io.lambdarpc.functions.frontend.BoundFunction
@@ -30,7 +29,8 @@ import mu.KLogger
  * Implementation of the libservice.
  *
  * [LibServiceImpl] should be passed to the [Service], but it also needs a [Service] instance
- * to determine its own port. So [initialize] should be called after object creation.
+ * to determine its own port (port is can be determined by the service on start). So [initialize]
+ * should be called after object creation.
  */
 internal class LibServiceImpl(
     private val serviceId: ServiceId,
@@ -40,10 +40,10 @@ internal class LibServiceImpl(
     private val endpointProvider: ConnectionProvider<Endpoint>
 ) : AbstractLibService(), KLoggable {
     override val logger: KLogger = logger()
-
     private val channelRegistry = ChannelRegistry()
-
     private lateinit var service: Service
+
+    // Port is not available before service start
     private val endpoint: Endpoint
         get() = Endpoint(address, service.port)
 
@@ -60,10 +60,8 @@ internal class LibServiceImpl(
         val requestScope = CoroutineScope(Dispatchers.Default)
         requestScope.launch {
             channelRegistry.useController(executeRequests) { controller ->
-                val codingContext = CodingContext(
-                    FunctionEncodingContext(localFunctionRegistry),
-                    FunctionDecodingContext(controller, serviceIdProvider, endpointProvider)
-                )
+                val fc = FunctionCodingContext(localFunctionRegistry, controller, serviceIdProvider, endpointProvider)
+                val codingContext = CodingContext(fc)
                 requests.collectApply {
                     when {
                         hasInitialRequest() -> processInitial(

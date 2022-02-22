@@ -48,7 +48,7 @@ internal class ChannelRegistry {
     ): R = ExecutionChannelController(executeRequests).use(block)
 
     /**
-     * Allows creating [ExecutionChannel] and controls its lifetime.
+     * Allows creating [execution channels][ExecutionChannel] with limited lifetime.
      */
     inner class ExecutionChannelController(executeRequests: MutableSharedFlow<ExecuteRequest>) : Closeable {
         private val channelId = ExecutionChannelId.random()

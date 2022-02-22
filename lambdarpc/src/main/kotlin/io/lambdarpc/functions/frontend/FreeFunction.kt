@@ -9,7 +9,7 @@ import io.lambdarpc.utils.ServiceId
 
 /**
  * [FrontendFunction] that knows only [serviceId] of its backend part
- * and dynamically evaluates needed endpoint.
+ * and dynamically receives via the [ConnectionProvider] needed endpoint.
  */
 interface FreeFunction : ConnectedFunction {
     val accessName: AccessName

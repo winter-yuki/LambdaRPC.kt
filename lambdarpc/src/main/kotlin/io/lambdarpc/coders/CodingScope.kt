@@ -1,7 +1,6 @@
 package io.lambdarpc.coders
 
-import io.lambdarpc.functions.FunctionDecodingContext
-import io.lambdarpc.functions.FunctionEncodingContext
+import io.lambdarpc.functions.FunctionCodingContext
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.serialization.Entity
 import io.lambdarpc.transport.grpc.serialization.rd
@@ -10,8 +9,7 @@ import io.lambdarpc.transport.grpc.serialization.rd
  * Contains all needed information and state for encoding and decoding.
  */
 internal class CodingContext(
-    val encoding: FunctionEncodingContext,
-    val decoding: FunctionDecodingContext
+    val functionContext: FunctionCodingContext
 )
 
 /**

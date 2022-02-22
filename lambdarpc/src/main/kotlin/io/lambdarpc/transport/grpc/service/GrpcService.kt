@@ -10,7 +10,7 @@ import io.lambdarpc.utils.port
 /**
  * gRPC [Service] implementation.
  */
-class GrpcService(
+internal class GrpcService(
     port: Port?,
     libService: LibServiceGrpcKt.LibServiceCoroutineImplBase
 ) : Service {

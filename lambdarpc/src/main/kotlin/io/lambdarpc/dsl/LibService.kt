@@ -1,6 +1,6 @@
 package io.lambdarpc.dsl
 
-import io.lambdarpc.exceptions.LambdaRpcException
+import io.lambdarpc.exceptions.ServiceNotFound
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.service.LibServiceImpl
 import io.lambdarpc.transport.*
@@ -10,8 +10,6 @@ import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
 
-class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("Service not found: id = $id")
-
 /**
  * DSL function that creates libservice instance.
  */
@@ -20,8 +18,9 @@ fun LibService(
     serviceId: ServiceId,
     endpoint: Endpoint,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
-    builder: LibServiceDSL.() -> Unit
+    bindings: LibServiceDSL.() -> Unit
 ): Service {
+    // TODO contracts
     val endpointConnectionProvider = SingleUseConnectionProvider()
     val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
         @Suppress("NAME_SHADOWING")
@@ -32,7 +31,7 @@ fun LibService(
     }
     val libService = LibServiceImpl(
         serviceId, endpoint.address,
-        LibServiceDSL().apply(builder).registry,
+        LibServiceDSL().apply(bindings).registry,
         serviceIdConnectionProvider,
         endpointConnectionProvider
     )
