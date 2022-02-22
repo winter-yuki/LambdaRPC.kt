@@ -12,7 +12,7 @@ and code generation (so λRPC declarations are native for the user's code).
 Instead it allows working with library-specific data structures and default or custom serializers.
 * λRPC functions can receive and return other functions as first-class objects.
 Passed lambda will be executed on the client-side, so it can easily capture the state (even mutable) 
-and be "sent" to the other language process.
+and be "sent" to the other language's process.
 
 == Example
 
@@ -121,15 +121,14 @@ image::https://user-images.githubusercontent.com/25281147/153264790-74784fb7-3be
 * Communication protocol simplification:
 ** Service function can easily request additional information in some cases.
 ** Reduce service code duplication: make HOF and receive specific operations from the client.
-* Interactive computations: receive client lambda, provide information about computation (loss function value for
-  instance), and lambda cancels computation (machine learning process) if something is not good.
+* Interactive computations: computing function receives closure as a parameter and calls it periodically, providing computation status information and receiving further directives.
 * Security:
 ** Send closures operating on the sensitive data instead of the data itself.
 ** Provide computational resources as a library of functions that are parametrized by client lambdas instead of
    receiving the client's code and executing it.
 * Choose dynamically computation location: compute something that uses a large amount of data on a client or send data to the server and
   compute there.
-* Load balancing: a task is done, request new via client's lambda.
+* Load balancing: once a task is finished, request new via client's lambda.
 * Stateful streaming computations: nodes provide their lambdas for a mapper.
 
 == λRPC functions
@@ -139,7 +138,7 @@ image::https://user-images.githubusercontent.com/25281147/153264790-74784fb7-3be
 * The frontend one is a callable proxy object that communicates
 with its backend part on call and waits for the result.
 
-Frontend functions can be sent to other services and λRPC provides
+Frontend functions can be sent to other services while λRPC provides
 efficient communication with the corresponding backend parts.
 
 == Getting started
