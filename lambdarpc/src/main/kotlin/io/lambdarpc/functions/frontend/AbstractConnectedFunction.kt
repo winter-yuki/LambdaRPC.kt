@@ -95,7 +95,7 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            launch {
+            launch(Job()) {
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {
