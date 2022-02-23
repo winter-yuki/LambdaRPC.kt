@@ -6,8 +6,10 @@ import io.lambdarpc.dsl.j
 import io.lambdarpc.examples.lazy.Promise
 import io.lambdarpc.examples.lazy.lazify
 import io.lambdarpc.examples.lazy.p
-import io.lambdarpc.examples.lazy.serviceId
 import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.toSid
+
+val serviceId = "d5ec2813-4468-4deb-b156-aeba87b91bd6".toSid()
 
 val s by serviceId.def(p<Int>())
 val a by serviceId.def(p<Int>(), p<Int>())

@@ -22,32 +22,6 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
 }
 
-val basic = "io.lambdarpc.examples.basic"
-
-tasks.register<JavaExec>("basic.service1") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$basic.service1.MainKt")
-}
-
-tasks.register<JavaExec>("basic.service2") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$basic.service2.MainKt")
-}
-
-tasks.register<JavaExec>("basic.client") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$basic.client.MainKt")
-}
-
-tasks.register<JavaExec>("basic.stress") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$basic.stress.MainKt")
-}
-
 val lazy = "io.lambdarpc.examples.lazy"
 
 tasks.register<JavaExec>("lazy.client") {
