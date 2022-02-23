@@ -46,9 +46,17 @@ sourceSets {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("slow")
+    }
     testLogging {
         events("passed", "skipped", "failed")
+    }
+}
+
+tasks.register<Test>("slow") {
+    useJUnitPlatform {
+        includeTags("slow")
     }
 }
 
