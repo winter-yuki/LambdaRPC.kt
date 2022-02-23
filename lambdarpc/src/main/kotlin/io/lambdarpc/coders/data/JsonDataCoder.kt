@@ -1,9 +1,8 @@
 package io.lambdarpc.coders.data
 
-import com.google.protobuf.ByteString
 import io.lambdarpc.coders.DataCoder
 import io.lambdarpc.transport.grpc.serialization.RawData
-import io.lambdarpc.transport.grpc.serialization.rd
+import io.lambdarpc.transport.grpc.serialization.toString
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
@@ -15,11 +14,11 @@ import java.nio.charset.Charset
 class JsonDataCoder<T>(private val serializer: KSerializer<T>) : DataCoder<T> {
     override fun encode(value: T): RawData {
         val string = Json.encodeToString(serializer, value)
-        return ByteString.copyFrom(string, Charset.defaultCharset()).rd
+        return RawData.copyFrom(string, Charset.defaultCharset())
     }
 
     override fun decode(data: RawData): T {
-        val string = data.bytes.toString(Charset.defaultCharset())
+        val string = data.toString(Charset.defaultCharset())
         return Json.decodeFromString(serializer, string)
     }
 }

@@ -25,7 +25,7 @@ typealias DataLoader = suspend () -> Data
 
 suspend fun fit(
     model: Model, loader: DataLoader,
-    continueFitting: suspend (Epoch, Loss) -> Boolean
+    continueLearning: suspend (Epoch, Metric) -> Boolean
 ): Model
 ----
 
@@ -38,7 +38,7 @@ Coder itself is a generalization of data serializer and a specific way the λRPC
 val loader = f( // Coder for the function: suspend () -> Data
     j<Data>() // kotlinx.serialization JSON coder for the @Serializable Data 
 ) 
-val fit by mlServiceId.def( // Define declaration for suspend (Epoch, Loss) -> Boolean
+val fit by mlServiceId.def( // Define declaration for suspend (Epoch, Metric) -> Boolean
     ModelCoder, // Model may not be @Serializable, so λRPC allows writing custom data coders
     loader, f(j<Epoch>(), j<Loss>(), j<Boolean>()),
     ModelCoder
@@ -59,7 +59,7 @@ To make calls from the client, add a `ServiceDispatcher` to the coroutine contex
 [source,kotlin]
 ----
 // Import libservice facade like a common library
-import org.fitservice.facade.fit
+import org.mlservice.facade.fit
 import org.dataservice.facade.dataloader
 
 val serviceDispatcher = ServiceDispatcher(
@@ -69,25 +69,25 @@ val serviceDispatcher = ServiceDispatcher(
 
 fun main() = runBlocking(serviceDispatcher) {
     // Keep track of the loss function values
-    val history = mutableListOf<Loss>()
+    val history = mutableListOf<Metric>()
     var lastEpoch = 0
-    val model = Model(...)
-    // Bind dataloader with dataEndpoint, so fitservice will communicate directly
+    val rawModel = Model(...)
+    // Bind dataloader with dataEndpoint, so mlservice will communicate directly
     // with the dataservice on the dataEndpoint without client in the middle
     val boundLoader = bf(dataloader)
-    val weights = fit(model, boundLoader) { epoch, loss ->
+    val model = fit(rawModel, boundLoader) { epoch, metric ->
         // Lambda will be executed on the client site -- the λRPC magic
-        println("Epoch = $epoch, loss = $loss")
-        val continueFitting = if (epoch < 300) true else {
-            val max = history.takeLast(50).max()
+        println("Epoch = $epoch, metric = $metric")
+        val continueLearning = if (epoch < 300) true else {
+            val max = history.takeLast(50).maxOf { it }
             loss < max
         }
         lastEpoch = epoch
-        history += loss
-        continueFitting
+        history += metric
+        continueLearning
     }
-    println("Learning finished! Epoch = $lastEpoch, loss = ${history.last()}")
-    weights.save(path)
+    println("Learning finished! Epoch = $lastEpoch, metric = ${history.last()}")
+    model.save("my/experiments")
 }
 ----
 
@@ -149,6 +149,12 @@ efficient communication with the corresponding backend parts.
 $ ./gradlew :lambdarpc:check
 ----
 
+.Run stress tests
+[source,bash]
+----
+$ ./gradlew :lambdarpc:slow
+----
+
 .Generate documentation
 [source,bash]
 ----
@@ -159,13 +165,13 @@ $ cd ./lambdarpc/build/dokka/html
 === Repository organization
 
 .examples
-* `basic` -- examples that demonstrate usage of basic λRPC functionality.
+* `ml` -- readme example.
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
-$ ./gradlew :examples:basic.service1
-$ ./gradlew :examples:basic.service2
-$ ./gradlew :examples:basic.client  # or :examples:basic.stress
+$ ./gradlew :examples:ml.dataservice
+$ ./gradlew :examples:ml.mlservice
+$ ./gradlew :examples:ml.client
 ----
 * `lazy` -- an interesting example that shows the possibility to build lazy
 data processing pipelines using common λRPC functionality.

@@ -24,14 +24,34 @@ dependencies {
 
 val lazy = "io.lambdarpc.examples.lazy"
 
+tasks.register<JavaExec>("lazy.service") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("$lazy.service.ServiceKt")
+}
+
 tasks.register<JavaExec>("lazy.client") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.client.ClientKt")
 }
 
-tasks.register<JavaExec>("lazy.service") {
+val ml = "io.lambdarpc.examples.ml"
+
+tasks.register<JavaExec>("ml.dataservice") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$lazy.service.ServiceKt")
+    mainClass.set("$ml.dataservice.ServiceKt")
+}
+
+tasks.register<JavaExec>("ml.mlservice") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("$ml.mlservice.ServiceKt")
+}
+
+tasks.register<JavaExec>("ml.client") {
+    dependsOn("classes")
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("$ml.client.ClientKt")
 }
