@@ -17,7 +17,7 @@ and be "sent" to the other language's process.
 == Example
 
 Let's suppose that we have a code that loads data and fits a machine learning model (represented in https://onnx.ai/[ONNX] format for example).
-It also calls a given function on each epoch and continues fitting while it returns true.
+It also calls a given function on each epoch and continues learning while it returns true.
 
 [source,kotlin]
 ----
