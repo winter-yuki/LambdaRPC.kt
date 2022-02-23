@@ -40,7 +40,7 @@ val loader = f( // Coder for the function: suspend () -> Data
 ) 
 val fit by mlServiceId.def( // Define declaration for suspend (Epoch, Metric) -> Boolean
     ModelCoder, // Model may not be @Serializable, so λRPC allows writing custom data coders
-    loader, f(j<Epoch>(), j<Loss>(), j<Boolean>()),
+    loader, f(j<Epoch>(), j<Metric>(), j<Boolean>()),
     ModelCoder
 )
 
