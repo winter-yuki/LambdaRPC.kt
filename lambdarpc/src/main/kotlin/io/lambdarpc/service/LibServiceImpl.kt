@@ -57,15 +57,15 @@ internal class LibServiceImpl(
         val outMessages = MutableSharedFlow<OutMessage>(replay = 1)
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         val executeResponses = MutableSharedFlow<ExecuteResponse>()
-        val requestScope = CoroutineScope(Dispatchers.Default)
-        requestScope.launch {
+        val executeScope = CoroutineScope(Dispatchers.Default)
+        executeScope.launch {
             channelRegistry.useController(executeRequests) { controller ->
                 val fc = FunctionCodingContext(localFunctionRegistry, controller, serviceIdProvider, endpointProvider)
                 val codingContext = CodingContext(fc)
                 requests.collectApply {
                     when {
                         hasInitialRequest() -> processInitial(
-                            initialRequest, localFunctionRegistry, outMessages, codingContext
+                            initialRequest, localFunctionRegistry, outMessages, codingContext, executeScope
                         )
                         hasExecuteRequest() -> processRequest(
                             executeRequest, localFunctionRegistry, executeResponses, codingContext
@@ -83,18 +83,18 @@ internal class LibServiceImpl(
         )
     }
 
-    private fun CoroutineScope.processInitial(
+    private fun processInitial(
         initialRequest: InitialRequest,
         localFunctionRegistry: FunctionRegistry,
         executeResponses: MutableSharedFlow<OutMessage>,
-        codingContext: CodingContext
+        codingContext: CodingContext,
+        executeScope: CoroutineScope,
     ) {
         initialRequest.executeRequest.run {
             logger.info { "Initial request: name = $accessName, id = $executionId" }
         }
         val request = initialRequest.executeRequest
-        val parentContext = coroutineContext
-        launch {
+        executeScope.launch {
             val response = if (initialRequest.serviceId.toSid() != serviceId) {
                 logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
                 val error = ExecuteError(
@@ -108,7 +108,7 @@ internal class LibServiceImpl(
                 }
             }
             executeResponses.emit(response.outMessageFinal)
-            parentContext.cancel()
+            executeScope.cancel()
         }
     }
 

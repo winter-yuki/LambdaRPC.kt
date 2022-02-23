@@ -9,10 +9,14 @@ import io.lambdarpc.transport.grpc.service.SingleUseConnectionProvider
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlinx.coroutines.CoroutineScope
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * DSL function that creates libservice instance.
  */
+@OptIn(ExperimentalContracts::class)
 @Suppress("FunctionName")
 fun LibService(
     serviceId: ServiceId,
@@ -20,7 +24,7 @@ fun LibService(
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
 ): Service {
-    // TODO contracts
+    contract { callsInPlace(bindings, InvocationKind.EXACTLY_ONCE) }
     val endpointConnectionProvider = SingleUseConnectionProvider()
     val serviceIdConnectionProvider = object : ConnectionProvider<ServiceId> {
         @Suppress("NAME_SHADOWING")
