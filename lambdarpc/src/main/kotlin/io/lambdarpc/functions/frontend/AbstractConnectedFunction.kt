@@ -12,13 +12,10 @@ import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.serialization.*
 import io.lambdarpc.utils.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 
@@ -98,7 +95,7 @@ internal abstract class AbstractConnectedFunction : KLoggable {
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            launch {
+            launch(Job()) {
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {
