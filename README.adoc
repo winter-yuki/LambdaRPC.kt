@@ -135,11 +135,11 @@ image::https://user-images.githubusercontent.com/25281147/153264790-74784fb7-3be
 
 .λRPC functions consist of two parts: backend and frontend.
 * The backend part contains the programming language closure coders for the arguments and the result.
-* The frontend one is a callable proxy object that communicates
-with its backend part on call and waits for the result.
+* The frontend one is a callable proxy object that communicates with its backend part on call and waits for the result.
 
-Frontend functions can be sent to other services while λRPC provides
-efficient communication with the corresponding backend parts.
+Frontend function is fully described by serializable _prototype_ object.
+So frontend function can be sent to other services as a prototype to be recreated there as a callable proxy.
+Then λRPC provides efficient communication with the corresponding backend part.
 
 == Getting started
 
