@@ -1,4 +1,3 @@
 rootProject.name = "lambdarpc-kt"
-include("lambdarpc")
+include("lambdarpc-core")
 include("examples")
-include("old")

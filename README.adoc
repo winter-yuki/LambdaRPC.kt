@@ -143,22 +143,22 @@ Then λRPC provides efficient communication with the corresponding backend part.
 
 == Getting started
 
-.Run both `:detekt` and `:test` tasks
+.Build and run fast tests and checks
 [source,bash]
 ----
-$ ./gradlew :lambdarpc:check
+$ ./gradlew :lambdarpc-core:build
 ----
 
 .Run stress tests
 [source,bash]
 ----
-$ ./gradlew :lambdarpc:slow
+$ ./gradlew :lambdarpc-core:slow
 ----
 
 .Generate documentation
 [source,bash]
 ----
-$ ./gradlew :lambdarpc:dokkaHtml
+$ ./gradlew :lambdarpc-core:dokkaHtml
 $ cd ./lambdarpc/build/dokka/html
 ----
 

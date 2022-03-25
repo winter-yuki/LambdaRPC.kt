@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 operator fun <K, V> Map<out K, List<V>>.plus(
     map: Map<out K, List<V>>
-): MutableMap<K, out MutableList<V>> =
+): MutableMap<K, MutableList<V>> =
     mutableMapOf<K, MutableList<V>>().apply {
         putAll(this)
         map.forEach { (k, vs) ->
@@ -14,7 +14,7 @@ operator fun <K, V> Map<out K, List<V>>.plus(
 
 inline fun <T, K, V> Array<T>.associateRepeatable(
     transform: (T) -> Pair<K, V>
-): MutableMap<K, out MutableList<V>> {
+): MutableMap<K, MutableList<V>> {
     val map = mutableMapOf<K, MutableList<V>>()
     forEach { t ->
         val (k, v) = transform(t)
@@ -26,7 +26,7 @@ inline fun <T, K, V> Array<T>.associateRepeatable(
 
 inline fun <T, K, V> Iterable<T>.associateRepeatable(
     transform: (T) -> Pair<K, V>
-): MutableMap<K, out MutableList<V>> {
+): MutableMap<K, MutableList<V>> {
     val map = mutableMapOf<K, MutableList<V>>()
     forEach { t ->
         val (k, v) = transform(t)
@@ -35,8 +35,6 @@ inline fun <T, K, V> Iterable<T>.associateRepeatable(
     }
     return map
 }
-
-fun unreachable(explanation: String): Nothing = error("Unreachable code reached: $explanation")
 
 suspend fun <T> Flow<T>.collectApply(block: suspend T.() -> Unit) =
     collect { it.block() }
