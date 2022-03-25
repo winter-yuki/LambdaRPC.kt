@@ -45,7 +45,7 @@ class StressTest {
     @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun `stress test`() = runBlocking(serviceDispatcher + newSingleThreadContext("main")) {
-        repeat(1000) {
+        repeat(5000) {
             launch {
                 assertEquals(42, specializeAdd(5)(37))
             }
