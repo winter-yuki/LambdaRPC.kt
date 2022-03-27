@@ -4,6 +4,10 @@ import java.util.*
 
 @JvmInline
 value class AccessName(val n: String) {
+    init {
+        require(n.isNotBlank())
+    }
+
     override fun toString(): String = n
 }
 
@@ -11,7 +15,7 @@ val String.an: AccessName
     get() = AccessName(this)
 
 @JvmInline
-value class ExecutionId(private val id: UUID) {
+internal value class ExecutionId(private val id: UUID) {
     override fun toString(): String = id.toString()
 
     companion object {
@@ -19,10 +23,10 @@ value class ExecutionId(private val id: UUID) {
     }
 }
 
-val UUID.eid: ExecutionId
+internal val UUID.eid: ExecutionId
     get() = ExecutionId(this)
 
-fun String.toEid() = ExecutionId(UUID.fromString(this))
+internal fun String.toEid() = ExecutionId(UUID.fromString(this))
 
 @JvmInline
 value class ServiceId(private val id: UUID) {

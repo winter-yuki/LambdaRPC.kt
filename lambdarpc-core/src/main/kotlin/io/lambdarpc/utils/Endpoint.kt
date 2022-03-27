@@ -1,13 +1,21 @@
 package io.lambdarpc.utils
 
 @JvmInline
-value class Address(val a: String)
+value class Address(val a: String) {
+    init {
+        require(a.isNotBlank())
+    }
+}
 
 val String.addr: Address
     get() = Address(this)
 
 @JvmInline
-value class Port(val p: Int)
+value class Port(val p: Int) {
+    init {
+        require(p >= 0)
+    }
+}
 
 val Int.port: Port
     get() = Port(this)

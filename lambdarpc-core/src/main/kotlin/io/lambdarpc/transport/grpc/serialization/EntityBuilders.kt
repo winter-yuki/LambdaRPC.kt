@@ -7,7 +7,7 @@ import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
-fun Entity(data: RawData): Entity =
+internal fun Entity(data: RawData): Entity =
     entity { this.data = data.encode() }
 
 internal fun Entity(f: FunctionPrototype): Entity =

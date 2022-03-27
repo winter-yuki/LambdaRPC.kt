@@ -2,7 +2,7 @@ package io.lambdarpc.utils
 
 import kotlinx.coroutines.flow.Flow
 
-operator fun <K, V> Map<out K, List<V>>.plus(
+internal operator fun <K, V> Map<out K, List<V>>.plus(
     map: Map<out K, List<V>>
 ): MutableMap<K, MutableList<V>> =
     mutableMapOf<K, MutableList<V>>().apply {
@@ -12,7 +12,7 @@ operator fun <K, V> Map<out K, List<V>>.plus(
         }
     }
 
-inline fun <T, K, V> Array<T>.associateRepeatable(
+internal inline fun <T, K, V> Array<T>.associateRepeatable(
     transform: (T) -> Pair<K, V>
 ): MutableMap<K, MutableList<V>> {
     val map = mutableMapOf<K, MutableList<V>>()
@@ -24,7 +24,7 @@ inline fun <T, K, V> Array<T>.associateRepeatable(
     return map
 }
 
-inline fun <T, K, V> Iterable<T>.associateRepeatable(
+internal inline fun <T, K, V> Iterable<T>.associateRepeatable(
     transform: (T) -> Pair<K, V>
 ): MutableMap<K, MutableList<V>> {
     val map = mutableMapOf<K, MutableList<V>>()
@@ -36,5 +36,5 @@ inline fun <T, K, V> Iterable<T>.associateRepeatable(
     return map
 }
 
-suspend fun <T> Flow<T>.collectApply(block: suspend T.() -> Unit) =
+internal suspend fun <T> Flow<T>.collectApply(block: suspend T.() -> Unit) =
     collect { it.block() }
