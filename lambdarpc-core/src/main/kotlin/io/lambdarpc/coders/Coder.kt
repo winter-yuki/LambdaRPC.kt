@@ -1,14 +1,20 @@
 package io.lambdarpc.coders
 
+import io.lambdarpc.transport.grpc.Entity
+
 /**
  * Encodes data and functions.
  */
-sealed interface Encoder<T>
+interface Encoder<T> {
+    fun encode(value: T, context: CodingContext): Entity
+}
 
 /**
  * Decodes data and functions.
  */
-sealed interface Decoder<T>
+interface Decoder<T> {
+    fun decode(entity: Entity, context: CodingContext): T
+}
 
 /**
  * Encodes and decodes data and functions.
