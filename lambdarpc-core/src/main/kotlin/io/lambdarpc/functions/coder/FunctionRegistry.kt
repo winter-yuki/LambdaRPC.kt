@@ -1,4 +1,4 @@
-package io.lambdarpc.functions.coders
+package io.lambdarpc.functions.coder
 
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.utils.AccessName

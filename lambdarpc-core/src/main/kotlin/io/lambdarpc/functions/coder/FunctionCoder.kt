@@ -1,39 +1,26 @@
-package io.lambdarpc.functions
+package io.lambdarpc.functions.coder
 
 import io.lambdarpc.coders.*
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
+import io.lambdarpc.functions.frontend.invokers.*
 import io.lambdarpc.transport.ConnectionProvider
-import io.lambdarpc.transport.grpc.*
+import io.lambdarpc.transport.grpc.BoundFunctionPrototype
+import io.lambdarpc.transport.grpc.ChannelFunctionPrototype
+import io.lambdarpc.transport.grpc.FreeFunctionPrototype
+import io.lambdarpc.transport.grpc.FunctionPrototype
 import io.lambdarpc.transport.grpc.serialization.FunctionPrototype
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.toSid
 
-//internal interface FunctionEncoder<F> : Encoder<F> {
-
-//    fun encodeF(f: F, context: CodingContext): FunctionPrototype
-//
-//    override fun encode(value: F, context: CodingContext): Entity {
-//        TODO("Not yet implemented")
-//    }
-//}
-//
-//internal sealed interface FunctionDecoder<F> : Decoder<F> {
-
-//    fun decode(p: FunctionPrototype, context: CodingContext): F
-//}
-//
-//internal interface FunctionCoder<F> : Coder<F>, FunctionEncoder<F>, FunctionDecoder<F>
-
-
 /**
  * Contains information and state that is needed to encode and decode functions.
- * @param executionChannelController For [ChannelFunction] creation.
+ * @param executionChannelController For [ChannelInvoker] creation.
  * @param serviceIdProvider For [FreeInvoker] creation.
- * @param endpointProvider For [BoundFunction] creation.
+ * @param endpointProvider For [BoundInvoker] creation.
  */
 internal class FunctionCodingContext(
     val functionRegistry: FunctionRegistry,
@@ -42,29 +29,25 @@ internal class FunctionCodingContext(
     val endpointProvider: ConnectionProvider<Endpoint>,
 )
 
-/**
- * It is easier to implement both [FunctionEncoder] and [FunctionDecoder] at ones as [FunctionCoder]
- * to reduce FunctionCoderN boilerplate.
- */
 internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
-    override fun encode(f: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
-        if (f is FrontendFunction) {
-            when (f) {
-                is ChannelFunction -> {
-                    val name = functionRegistry.register(f.toBackendFunction())
+    override fun encode(function: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
+        if (function is FrontendFunction<*>) {
+            when (function.invoker) {
+                is ChannelInvoker -> {
+                    val name = functionRegistry.register(function.toBackendFunction())
                     FunctionPrototype(name)
                 }
-                is ConnectedFunction -> FunctionPrototype(f)
+                is FreeInvoker, is BoundInvoker -> FunctionPrototype(function)
             }
         } else {
-            val name = functionRegistry.register(f.toBackendFunction())
+            val name = functionRegistry.register(function.toBackendFunction())
             FunctionPrototype(name)
         }
     }
 
     protected abstract fun F.toBackendFunction(): BackendFunction
 
-    override fun decode(p: FunctionPrototype, context: CodingContext): F = p.run {
+    override fun decode(prototype: FunctionPrototype, context: CodingContext): F = prototype.run {
         when {
             hasChannelFunction() -> channelFunction.toChannelFunction(context)
             hasFreeFunction() -> freeFunction.toFreeFunction(context)
@@ -86,37 +69,49 @@ internal class FunctionCoder0<R>(
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
     ): suspend () -> R = context.functionContext.run {
-        ChannelFunction0(
-            accessName = accessName.an,
-            executionChannel = executionChannelController.createChannel(),
-            context = context,
-            rc = rc
-        )
+        object : FrontendFunction0<ChannelInvoker, R> {
+            override val invoker: ChannelInvoker
+                get() = ChannelInvokerImpl(
+                    accessName = accessName.an,
+                    context = context,
+                    executionChannel = executionChannelController.createChannel()
+                )
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder0.rc
+        }
     }
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend () -> R = context.functionContext.run {
-        FreeFunction0(
-            accessName.an,
-            serviceId.toSid(),
-            serviceIdProvider,
-            endpointProvider,
-            rc
-        )
+        object : FrontendFunction0<FreeInvoker, R> {
+            override val invoker: FreeInvoker
+                get() = FreeInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder0.rc
+        }
     }
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
     ): suspend () -> R = context.functionContext.run {
-        BoundFunction0(
-            accessName.an,
-            serviceId.toSid(),
-            Endpoint(endpoint),
-            serviceIdProvider,
-            endpointProvider,
-            rc
-        )
+        object : FrontendFunction0<BoundInvoker, R> {
+            override val invoker: BoundInvoker
+                get() = BoundInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    endpoint = Endpoint(endpoint),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder0.rc
+        }
     }
 }
 
@@ -129,37 +124,55 @@ internal class FunctionCoder1<A, R>(
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
     ): suspend (A) -> R = context.functionContext.run {
-        ChannelFunction1(
-            accessName = accessName.an,
-            executionChannel = executionChannelController.createChannel(),
-            context = context,
-            c1 = c1, rc = rc
-        )
+        object : FrontendFunction1<ChannelInvoker, A, R> {
+            override val invoker: ChannelInvoker
+                get() = ChannelInvokerImpl(
+                    accessName = accessName.an,
+                    context = context,
+                    executionChannel = executionChannelController.createChannel(),
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder1.c1
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder1.rc
+        }
     }
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A) -> R = context.functionContext.run {
-        FreeFunction1(
-            accessName.an,
-            serviceId.toSid(),
-            serviceIdProvider,
-            endpointProvider,
-            c1, rc
-        )
+        object : FrontendFunction1<FreeInvoker, A, R> {
+            override val invoker: FreeInvoker
+                get() = FreeInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder1.c1
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder1.rc
+        }
     }
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
     ): suspend (A) -> R = context.functionContext.run {
-        BoundFunction1(
-            accessName.an,
-            serviceId.toSid(),
-            Endpoint(endpoint),
-            serviceIdProvider,
-            endpointProvider,
-            c1, rc
-        )
+        object : FrontendFunction1<BoundInvoker, A, R> {
+            override val invoker: BoundInvoker
+                get() = BoundInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    endpoint = Endpoint(endpoint),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder1.c1
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder1.rc
+        }
     }
 }
 
@@ -173,37 +186,61 @@ internal class FunctionCoder2<A, B, R>(
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
     ): suspend (A, B) -> R = context.functionContext.run {
-        ChannelFunction2(
-            accessName = accessName.an,
-            executionChannel = executionChannelController.createChannel(),
-            context = context,
-            c1 = c1, c2 = c2, rc = rc
-        )
+        object : FrontendFunction2<ChannelInvoker, A, B, R> {
+            override val invoker: ChannelInvoker
+                get() = ChannelInvokerImpl(
+                    accessName = accessName.an,
+                    context = context,
+                    executionChannel = executionChannelController.createChannel(),
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder2.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder2.c2
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder2.rc
+        }
     }
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A, B) -> R = context.functionContext.run {
-        FreeFunction2(
-            accessName.an,
-            serviceId.toSid(),
-            serviceIdProvider,
-            endpointProvider,
-            c1, c2, rc
-        )
+        object : FrontendFunction2<FreeInvoker, A, B, R> {
+            override val invoker: FreeInvoker
+                get() = FreeInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder2.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder2.c2
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder2.rc
+        }
     }
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
     ): suspend (A, B) -> R = context.functionContext.run {
-        BoundFunction2(
-            accessName.an,
-            serviceId.toSid(),
-            Endpoint(endpoint),
-            serviceIdProvider,
-            endpointProvider,
-            c1, c2, rc
-        )
+        object : FrontendFunction2<BoundInvoker, A, B, R> {
+            override val invoker: BoundInvoker
+                get() = BoundInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    endpoint = Endpoint(endpoint),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder2.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder2.c2
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder2.rc
+        }
     }
 }
 
@@ -218,36 +255,66 @@ internal class FunctionCoder3<A, B, C, R>(
     override fun ChannelFunctionPrototype.toChannelFunction(
         context: CodingContext
     ): suspend (A, B, C) -> R = context.functionContext.run {
-        ChannelFunction3(
-            accessName = accessName.an,
-            executionChannel = executionChannelController.createChannel(),
-            context = context,
-            c1 = c1, c2 = c2, c3 = c3, rc = rc
-        )
+        object : FrontendFunction3<ChannelInvoker, A, B, C, R> {
+            override val invoker: ChannelInvoker
+                get() = ChannelInvokerImpl(
+                    accessName = accessName.an,
+                    context = context,
+                    executionChannel = executionChannelController.createChannel(),
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder3.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder3.c2
+            override val c3: Encoder<C>
+                get() = this@FunctionCoder3.c3
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder3.rc
+        }
     }
 
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A, B, C) -> R = context.functionContext.run {
-        FreeFunction3(
-            accessName.an,
-            serviceId.toSid(),
-            serviceIdProvider,
-            endpointProvider,
-            c1, c2, c3, rc
-        )
+        object : FrontendFunction3<FreeInvoker, A, B, C, R> {
+            override val invoker: FreeInvoker
+                get() = FreeInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder3.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder3.c2
+            override val c3: Encoder<C>
+                get() = this@FunctionCoder3.c3
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder3.rc
+        }
     }
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
     ): suspend (A, B, C) -> R = context.functionContext.run {
-        BoundFunction3(
-            accessName.an,
-            serviceId.toSid(),
-            Endpoint(endpoint),
-            serviceIdProvider,
-            endpointProvider,
-            c1, c2, c3, rc
-        )
+        object : FrontendFunction3<BoundInvoker, A, B, C, R> {
+            override val invoker: BoundInvoker
+                get() = BoundInvokerImpl(
+                    accessName = accessName.an,
+                    serviceId = serviceId.toSid(),
+                    endpoint = Endpoint(endpoint),
+                    serviceIdProvider = serviceIdProvider,
+                    endpointProvider = endpointProvider
+                )
+            override val c1: Encoder<A>
+                get() = this@FunctionCoder3.c1
+            override val c2: Encoder<B>
+                get() = this@FunctionCoder3.c2
+            override val c3: Encoder<C>
+                get() = this@FunctionCoder3.c3
+            override val rc: Decoder<R>
+                get() = this@FunctionCoder3.rc
+        }
     }
 }

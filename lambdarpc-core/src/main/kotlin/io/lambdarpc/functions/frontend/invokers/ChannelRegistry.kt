@@ -1,4 +1,4 @@
-package io.lambdarpc.functions.frontend
+package io.lambdarpc.functions.frontend.invokers
 
 import io.lambdarpc.exceptions.LambdaRpcException
 import io.lambdarpc.transport.grpc.Entity
@@ -13,19 +13,16 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Is thrown when [ChannelFunction] is called after its connection is already closed.
+ * Is thrown when [ChannelInvoker] is called after its connection is already closed.
  */
 class CallDisconnectedChannelFunction :
     LambdaRpcException("Unable to call invalidated ChannelFunction.")
 
 /**
- * Allows [ChannelFunction] to communicate with its backend function.
+ * Allows [ChannelInvoker] to communicate with its backend function.
  */
 internal fun interface ExecutionChannel {
-    suspend fun execute(
-        accessName: AccessName,
-        entities: Iterable<Entity>
-    ): Entity
+    suspend fun execute(accessName: AccessName, entities: Iterable<Entity>): Entity
 }
 
 @Suppress("unused")
