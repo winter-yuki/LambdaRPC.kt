@@ -1,6 +1,6 @@
-package io.lambdarpc.coders.basic
+package io.lambdarpc.coding.coders
 
-import io.lambdarpc.coders.*
+import io.lambdarpc.coding.*
 import io.lambdarpc.dsl.j
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.FunctionPrototype

@@ -1,9 +1,9 @@
 package io.lambdarpc.functions.backend
 
-import io.lambdarpc.coders.CodingContext
-import io.lambdarpc.coders.Decoder
-import io.lambdarpc.coders.Encoder
-import io.lambdarpc.coders.withContext
+import io.lambdarpc.coding.CodingContext
+import io.lambdarpc.coding.Decoder
+import io.lambdarpc.coding.Encoder
+import io.lambdarpc.coding.withContext
 import io.lambdarpc.transport.grpc.Entity
 
 /**

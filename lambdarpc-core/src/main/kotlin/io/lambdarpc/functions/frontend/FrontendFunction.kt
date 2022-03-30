@@ -1,7 +1,7 @@
 package io.lambdarpc.functions.frontend
 
-import io.lambdarpc.coders.Decoder
-import io.lambdarpc.coders.Encoder
+import io.lambdarpc.coding.Decoder
+import io.lambdarpc.coding.Encoder
 import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.functions.frontend.invokers.FrontendInvoker
 

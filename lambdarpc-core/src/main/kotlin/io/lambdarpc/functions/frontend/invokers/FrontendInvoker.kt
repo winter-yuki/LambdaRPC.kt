@@ -1,6 +1,6 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.coders.CodingScope
+import io.lambdarpc.coding.CodingScope
 import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.transport.grpc.Entity
 

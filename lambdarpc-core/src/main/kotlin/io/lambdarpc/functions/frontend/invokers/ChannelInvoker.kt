@@ -1,7 +1,7 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.coders.CodingContext
-import io.lambdarpc.coders.CodingScope
+import io.lambdarpc.coding.CodingContext
+import io.lambdarpc.coding.CodingScope
 import io.lambdarpc.utils.AccessName
 
 /**

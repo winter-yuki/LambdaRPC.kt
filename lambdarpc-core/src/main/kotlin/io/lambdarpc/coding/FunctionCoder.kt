@@ -1,4 +1,4 @@
-package io.lambdarpc.coders
+package io.lambdarpc.coding
 
 import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.transport.grpc.FunctionPrototype

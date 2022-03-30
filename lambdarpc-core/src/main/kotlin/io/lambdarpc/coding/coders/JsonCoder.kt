@@ -1,7 +1,7 @@
-package io.lambdarpc.coders.basic
+package io.lambdarpc.coding.coders
 
-import io.lambdarpc.coders.Coder
-import io.lambdarpc.coders.CodingContext
+import io.lambdarpc.coding.Coder
+import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.serialization.Entity
 import io.lambdarpc.transport.grpc.serialization.RawData

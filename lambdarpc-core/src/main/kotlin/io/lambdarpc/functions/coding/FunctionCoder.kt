@@ -1,6 +1,6 @@
-package io.lambdarpc.functions.coder
+package io.lambdarpc.functions.coding
 
-import io.lambdarpc.coders.*
+import io.lambdarpc.coding.*
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*

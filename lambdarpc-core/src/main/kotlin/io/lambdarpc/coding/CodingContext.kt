@@ -1,6 +1,6 @@
-package io.lambdarpc.coders
+package io.lambdarpc.coding
 
-import io.lambdarpc.functions.FunctionCodingContext
+import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.transport.grpc.Entity
 
 /**
@@ -13,10 +13,10 @@ class CodingContext internal constructor(
 /**
  * Scope in which encoding and decoding of data and functions looks same.
  */
-internal class CodingScope(val context: CodingContext) {
+class CodingScope(val context: CodingContext) {
     fun <T> Encoder<T>.encode(value: T): Entity = encode(value, context)
     fun <T> Decoder<T>.decode(entity: Entity): T = decode(entity, context)
 }
 
-internal inline fun <R> withContext(context: CodingContext, block: CodingScope.() -> R): R =
+inline fun <R> withContext(context: CodingContext, block: CodingScope.() -> R): R =
     CodingScope(context).block()

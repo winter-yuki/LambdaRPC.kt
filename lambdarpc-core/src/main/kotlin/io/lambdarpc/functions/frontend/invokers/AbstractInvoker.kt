@@ -1,12 +1,12 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.coders.CodingContext
-import io.lambdarpc.coders.CodingScope
+import io.lambdarpc.coding.CodingContext
+import io.lambdarpc.coding.CodingScope
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.functions.coder.FunctionCodingContext
-import io.lambdarpc.functions.coder.FunctionRegistry
-import io.lambdarpc.functions.coder.get
+import io.lambdarpc.functions.coding.FunctionCodingContext
+import io.lambdarpc.functions.coding.FunctionRegistry
+import io.lambdarpc.functions.coding.get
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.serialization.*
