@@ -5,20 +5,34 @@ import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.backend.*
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.transport.ConnectionProvider
-import io.lambdarpc.transport.grpc.BoundFunctionPrototype
-import io.lambdarpc.transport.grpc.ChannelFunctionPrototype
-import io.lambdarpc.transport.grpc.FreeFunctionPrototype
-import io.lambdarpc.transport.grpc.FunctionPrototype
+import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.serialization.FunctionPrototype
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.an
 import io.lambdarpc.utils.toSid
 
+//internal interface FunctionEncoder<F> : Encoder<F> {
+
+//    fun encodeF(f: F, context: CodingContext): FunctionPrototype
+//
+//    override fun encode(value: F, context: CodingContext): Entity {
+//        TODO("Not yet implemented")
+//    }
+//}
+//
+//internal sealed interface FunctionDecoder<F> : Decoder<F> {
+
+//    fun decode(p: FunctionPrototype, context: CodingContext): F
+//}
+//
+//internal interface FunctionCoder<F> : Coder<F>, FunctionEncoder<F>, FunctionDecoder<F>
+
+
 /**
  * Contains information and state that is needed to encode and decode functions.
  * @param executionChannelController For [ChannelFunction] creation.
- * @param serviceIdProvider For [FreeFunction] creation.
+ * @param serviceIdProvider For [FreeInvoker] creation.
  * @param endpointProvider For [BoundFunction] creation.
  */
 internal class FunctionCodingContext(

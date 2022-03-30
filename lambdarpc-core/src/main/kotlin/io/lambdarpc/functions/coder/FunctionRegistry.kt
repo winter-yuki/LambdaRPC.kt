@@ -1,5 +1,6 @@
-package io.lambdarpc.functions.backend
+package io.lambdarpc.functions.coders
 
+import io.lambdarpc.functions.backend.BackendFunction
 import io.lambdarpc.utils.AccessName
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

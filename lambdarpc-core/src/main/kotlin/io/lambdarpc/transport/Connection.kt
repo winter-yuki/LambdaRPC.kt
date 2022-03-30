@@ -13,11 +13,8 @@ internal interface Connection : Closeable {
 }
 
 /**
- * Provides [Connection] by its identity [I].
+ * Provides [Connection] by its identity [I] and makes cleanup.
  */
 internal interface ConnectionProvider<I> {
-    suspend fun <R> withConnection(
-        connectionId: I,
-        block: suspend (Connection) -> R
-    ): R
+    suspend fun <R> withConnection(connectionId: I, block: suspend (Connection) -> R): R
 }

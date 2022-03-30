@@ -1,9 +1,10 @@
 package io.lambdarpc.transport.grpc.serialization
 
 import com.google.protobuf.ByteString
-import io.lambdarpc.functions.frontend.BoundFunction
-import io.lambdarpc.functions.frontend.ChannelFunction
-import io.lambdarpc.functions.frontend.FreeFunction
+import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.functions.frontend.invokers.BoundInvoker
+import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
+import io.lambdarpc.functions.frontend.invokers.FreeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
@@ -20,20 +21,20 @@ internal fun ExecutionId.encode() = toString()
 
 internal fun RawData.encode(): ByteString = bytes
 
-internal fun ChannelFunction.encode(): ChannelFunctionPrototype =
+internal fun FrontendFunction<ChannelInvoker>.encode(): ChannelFunctionPrototype =
     channelFunctionPrototype {
-        accessName = this@encode.accessName.encode()
+        accessName = this@encode.invoker.accessName.encode()
     }
 
-internal fun FreeFunction.encode(): FreeFunctionPrototype =
+internal fun FrontendFunction<FreeInvoker>.encode(): FreeFunctionPrototype =
     freeFunctionPrototype {
-        accessName = this@encode.accessName.encode()
-        serviceId = this@encode.serviceId.encode()
+        accessName = this@encode.invoker.accessName.encode()
+        serviceId = this@encode.invoker.serviceId.encode()
     }
 
-internal fun BoundFunction.encode(): BoundFunctionPrototype =
+internal fun FrontendFunction<BoundInvoker>.encode(): BoundFunctionPrototype =
     boundFunctionPrototype {
-        accessName = this@encode.accessName.encode()
-        serviceId = this@encode.serviceId.encode()
-        endpoint = this@encode.endpoint.encode()
+        accessName = this@encode.invoker.accessName.encode()
+        serviceId = this@encode.invoker.serviceId.encode()
+        endpoint = this@encode.invoker.endpoint.encode()
     }

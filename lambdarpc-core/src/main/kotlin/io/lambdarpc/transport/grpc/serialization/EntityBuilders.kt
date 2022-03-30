@@ -1,9 +1,9 @@
 package io.lambdarpc.transport.grpc.serialization
 
-import io.lambdarpc.functions.frontend.BoundFunction
-import io.lambdarpc.functions.frontend.ChannelFunction
-import io.lambdarpc.functions.frontend.FreeFunction
 import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.functions.frontend.invokers.BoundInvoker
+import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
+import io.lambdarpc.functions.frontend.invokers.FreeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
@@ -20,18 +20,21 @@ internal fun FunctionPrototype(name: AccessName): FunctionPrototype =
         }
     }
 
-internal fun FunctionPrototype(f: ChannelFunction): FunctionPrototype =
+@JvmName("ChannelFunctionPrototype")
+internal fun FunctionPrototype(f: FrontendFunction<ChannelInvoker>): FunctionPrototype =
     functionPrototype { channelFunction = f.encode() }
 
-internal fun FunctionPrototype(f: FreeFunction): FunctionPrototype =
+@JvmName("FreeFunctionPrototype")
+internal fun FunctionPrototype(f: FrontendFunction<FreeInvoker>): FunctionPrototype =
     functionPrototype { freeFunction = f.encode() }
 
-internal fun FunctionPrototype(f: BoundFunction): FunctionPrototype =
+@JvmName("BoundFunctionPrototype")
+internal fun FunctionPrototype(f: FrontendFunction<BoundInvoker>): FunctionPrototype =
     functionPrototype { boundFunction = f.encode() }
 
-internal fun FunctionPrototype(f: FrontendFunction): FunctionPrototype =
-    when (f) {
-        is ChannelFunction -> FunctionPrototype(f)
-        is FreeFunction -> FunctionPrototype(f)
-        is BoundFunction -> FunctionPrototype(f)
+internal fun FunctionPrototype(f: FrontendFunction<*>): FunctionPrototype =
+    when (f.invoker) {
+        is ChannelInvoker -> FunctionPrototype(f)
+        is FreeInvoker -> FunctionPrototype(f)
+        is BoundInvoker -> FunctionPrototype(f)
     }

@@ -11,9 +11,7 @@ interface ServiceRegistry {
     suspend fun get(id: ServiceId): Endpoint?
 }
 
-class MapServiceRegistry(
-    private val endpoints: Map<ServiceId, List<Endpoint>>
-) : ServiceRegistry {
+class MapServiceRegistry(private val endpoints: Map<ServiceId, List<Endpoint>>) : ServiceRegistry {
     override suspend fun get(id: ServiceId): Endpoint? = endpoints[id]?.run {
         if (isEmpty()) null else random()
     }

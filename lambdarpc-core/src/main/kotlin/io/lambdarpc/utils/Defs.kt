@@ -2,10 +2,15 @@ package io.lambdarpc.utils
 
 import java.util.*
 
+/**
+ * Name of the libservice function.
+ */
 @JvmInline
 value class AccessName(val n: String) {
     init {
-        require(n.isNotBlank())
+        require(n.isNotBlank()) {
+            "Access name should not be blank"
+        }
     }
 
     override fun toString(): String = n
@@ -14,6 +19,9 @@ value class AccessName(val n: String) {
 val String.an: AccessName
     get() = AccessName(this)
 
+/**
+ * Represents identifier of the execution id.
+ */
 @JvmInline
 internal value class ExecutionId(private val id: UUID) {
     override fun toString(): String = id.toString()
@@ -28,6 +36,9 @@ internal val UUID.eid: ExecutionId
 
 internal fun String.toEid() = ExecutionId(UUID.fromString(this))
 
+/**
+ * Represents unique service id.
+ */
 @JvmInline
 value class ServiceId(private val id: UUID) {
     override fun toString(): String = id.toString()
