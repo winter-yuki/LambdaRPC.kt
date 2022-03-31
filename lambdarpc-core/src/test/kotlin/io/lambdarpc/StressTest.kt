@@ -5,14 +5,14 @@ import io.lambdarpc.Facade.evalAndReturn
 import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.specializeAdd
 import io.lambdarpc.dsl.LibService
-import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.transport.Service
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.addr
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.math.sqrt
@@ -44,7 +44,7 @@ class StressTest {
 
     @OptIn(DelicateCoroutinesApi::class)
     @Test
-    fun `stress test`() = runBlocking(serviceDispatcher + newSingleThreadContext("main")) {
+    fun `stress test`() = blockingConnectionPool(serviceDispatcher + newSingleThreadContext("main")) {
         repeat(1000) {
             launch {
                 assertEquals(42, specializeAdd(5)(37))

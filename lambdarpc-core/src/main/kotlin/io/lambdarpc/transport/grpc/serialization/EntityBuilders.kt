@@ -32,9 +32,10 @@ internal fun FunctionPrototype(f: FrontendFunction<FreeInvoker>): FunctionProtot
 internal fun FunctionPrototype(f: FrontendFunction<BoundInvoker>): FunctionPrototype =
     functionPrototype { boundFunction = f.encode() }
 
+@Suppress("UNCHECKED_CAST")
 internal fun FunctionPrototype(f: FrontendFunction<*>): FunctionPrototype =
     when (f.invoker) {
-        is ChannelInvoker -> FunctionPrototype(f)
-        is FreeInvoker -> FunctionPrototype(f)
-        is BoundInvoker -> FunctionPrototype(f)
+        is ChannelInvoker -> FunctionPrototype(f as FrontendFunction<ChannelInvoker>)
+        is FreeInvoker -> FunctionPrototype(f as FrontendFunction<FreeInvoker>)
+        is BoundInvoker -> FunctionPrototype(f as FrontendFunction<BoundInvoker>)
     }

@@ -11,11 +11,11 @@ import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.numpyAdd
 import io.lambdarpc.Facade.specializeAdd
 import io.lambdarpc.dsl.LibService
-import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.transport.Service
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.addr
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -41,36 +41,36 @@ class BasicTests {
     }
 
     @Test
-    fun `simple add`() = runBlocking(serviceDispatcher) {
+    fun `simple add`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(11, add5(6))
         assertEquals(11, add(5, 6))
     }
 
     @Test
-    fun `simple HOF eval`() = runBlocking(serviceDispatcher) {
+    fun `simple HOF eval`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(11, eval5 { it + 6 })
         assertEquals(11, eval(5) { it + 6 })
     }
 
     @Test
-    fun `return function`() = runBlocking(serviceDispatcher) {
+    fun `return function`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(11, specializeAdd(5)(6))
     }
 
     @Test
-    fun `closing execute channel`() = runBlocking(serviceDispatcher) {
+    fun `closing execute channel`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(42, evalAndReturn { it * 2 }(2))
     }
 
     @Test
-    fun `default structure encoding`() = runBlocking(serviceDispatcher) {
+    fun `default structure encoding`() = blockingConnectionPool(serviceDispatcher) {
         val p1 = Point(9.0, 1.0)
         val p2 = Point(5.0, 4.0)
         assertEquals(Lib.distance(p1, p2), distance(p1, p2))
     }
 
     @Test
-    fun `invoke frontend multiple times`() = runBlocking(serviceDispatcher) {
+    fun `invoke frontend multiple times`() = blockingConnectionPool(serviceDispatcher) {
         val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
         val expected = Lib.mapPoints(ps) { it.run { sqrt(x * x + y * y) } }
         val actual = mapPoints(ps) { it.run { sqrt(x * x + y * y) } }
@@ -78,7 +78,7 @@ class BasicTests {
     }
 
     @Test
-    fun `lambda returning lambda`() = runBlocking(serviceDispatcher) {
+    fun `lambda returning lambda`() = blockingConnectionPool(serviceDispatcher) {
         val ps = listOf(Point(0.0, 0.0), Point(2.0, 1.0), Point(1.0, 1.5))
         val expected = Lib.normMap(ps) { norm -> { point -> sqrt(norm(point)) } }
         val actual = normMap(ps) { norm -> { point -> sqrt(norm(point)) } }
@@ -86,7 +86,7 @@ class BasicTests {
     }
 
     @Test
-    fun `custom data coder`() = runBlocking(serviceDispatcher) {
+    fun `custom data coder`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(42, numpyAdd(2, NumpyArray(40)).x)
     }
 

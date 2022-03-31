@@ -1,9 +1,10 @@
 package io.lambdarpc.functions.frontend.invokers
 
+import io.lambdarpc.functions.context.ServiceDispatcher
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.utils.AccessName
-import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
+import kotlin.coroutines.coroutineContext
 
 /**
  * [FrontendInvoker] that knows only [serviceId] of its backend part
@@ -16,7 +17,11 @@ interface FreeInvoker : FrontendInvoker {
 
 internal class FreeInvokerImpl(
     override val accessName: AccessName,
-    override val serviceId: ServiceId,
-    override val serviceIdProvider: ConnectionProvider<ServiceId>,
-    override val endpointProvider: ConnectionProvider<Endpoint>
-) : AbstractInvoker<ServiceId>(serviceId, serviceIdProvider), FreeInvoker
+    override val serviceId: ServiceId
+) : AbstractInvoker<ServiceId>(serviceId), FreeInvoker {
+    override suspend fun getConnectionProvider(): ConnectionProvider<ServiceId> {
+        val serviceDispatcher = coroutineContext[ServiceDispatcher]
+            ?: error("Free invoker expects ServiceDispatcher to be in the coroutine context")
+        return serviceDispatcher.serviceIdConnectionProvider
+    }
+}

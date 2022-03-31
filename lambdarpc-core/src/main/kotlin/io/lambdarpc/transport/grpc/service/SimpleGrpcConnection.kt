@@ -3,7 +3,6 @@ package io.lambdarpc.transport.grpc.service
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.lambdarpc.transport.Connection
-import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.grpc.InMessage
 import io.lambdarpc.transport.grpc.OutMessage
 import io.lambdarpc.utils.Endpoint
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * gRPC connection that shutdowns on close.
  */
-internal class SingleUseConnection(
+internal class SimpleGrpcConnection(
     private val channel: ManagedChannel,
     private val stub: Stub = channel.stub
 ) : Connection {
@@ -24,19 +23,9 @@ internal class SingleUseConnection(
     }
 }
 
-internal fun SingleUseConnection(endpoint: Endpoint): SingleUseConnection {
+internal fun SimpleGrpcConnection(endpoint: Endpoint): SimpleGrpcConnection {
     val builder = ManagedChannelBuilder
         .forAddress(endpoint.address.a, endpoint.port.p)
-        .usePlaintext()
-    return SingleUseConnection(builder.build())
-}
-
-/**
- * Provides [SingleUseConnection] by its [Endpoint] to use and closes it.
- */
-internal class SingleUseConnectionProvider : ConnectionProvider<Endpoint> {
-    override suspend fun <R> withConnection(
-        connectionId: Endpoint,
-        block: suspend (Connection) -> R
-    ): R = SingleUseConnection(connectionId).use { block(it) }
+        .usePlaintext() // TODO remove
+    return SimpleGrpcConnection(builder.build())
 }

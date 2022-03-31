@@ -4,6 +4,7 @@ import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.coding.CodingScope
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
+import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
 import io.lambdarpc.functions.coding.get
@@ -18,17 +19,14 @@ import kotlinx.coroutines.flow.merge
 import mu.KLoggable
 import mu.KLogger
 
-internal abstract class AbstractInvoker<I>(
-    private val connectionId: I,
-    private val connectionProvider: ConnectionProvider<I>
-) : KLoggable {
+/**
+ * Helps to implement [BoundInvoker] and [FreeInvoker].
+ */
+internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : KLoggable {
     override val logger: KLogger = this.logger()
 
     abstract val accessName: AccessName
     abstract val serviceId: ServiceId
-
-    protected abstract val serviceIdProvider: ConnectionProvider<ServiceId>
-    protected abstract val endpointProvider: ConnectionProvider<Endpoint>
 
     private val functionRegistry = FunctionRegistry()
     private val channelRegistry = ChannelRegistry()
@@ -36,21 +34,28 @@ internal abstract class AbstractInvoker<I>(
     suspend operator fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R {
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         return channelRegistry.useController(executeRequests) { controller ->
-            val fc = FunctionCodingContext(functionRegistry, controller, serviceIdProvider, endpointProvider)
+            val fc = FunctionCodingContext(functionRegistry, controller)
             val context = CodingContext(functionContext = fc)
             val scope = CodingScope(context)
-            scope.block { args ->
+            // TODO
+            val invokable = Invokable { args ->
                 invoke(controller, executeRequests, context, args.asIterable())
             }
+            scope.block(invokable)
+//            scope.block { args ->
+//                invoke(controller, executeRequests, context, args.asIterable())
+//            }
         }
     }
+
+    protected abstract suspend fun getConnectionProvider(): ConnectionProvider<I>
 
     private suspend fun invoke(
         controller: ChannelRegistry.ExecutionChannelController,
         executeRequests: MutableSharedFlow<ExecuteRequest>,
         context: CodingContext,
         entities: Iterable<Entity>
-    ): Entity = connectionProvider.withConnection(connectionId) { connection ->
+    ): Entity = getConnectionProvider().withConnection(connectionId) { connection ->
         logger.info { "Invoke called on $accessName" }
         val inMessages = MutableSharedFlow<InMessage>(replay = 1).apply {
             emit(initialRequest(entities))
@@ -65,7 +70,7 @@ internal abstract class AbstractInvoker<I>(
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            launch(Job()) { // TODO remove job or explain
+            launch(Job()) { // TODO remove job or explain or move to utils
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {

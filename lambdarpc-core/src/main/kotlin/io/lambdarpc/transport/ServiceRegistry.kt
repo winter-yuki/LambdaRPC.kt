@@ -5,7 +5,7 @@ import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.associateRepeatable
 
 /**
- * Represents registry that provides service endpoints.
+ * Represents registry that maps [ServiceId] to [Endpoint].
  */
 interface ServiceRegistry {
     suspend fun get(id: ServiceId): Endpoint?

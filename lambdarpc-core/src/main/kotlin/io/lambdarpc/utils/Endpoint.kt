@@ -19,7 +19,7 @@ val String.addr: Address
 @JvmInline
 value class Port(val p: Int) {
     init {
-        require(p > 0)
+        require(p >= 0)
     }
 }
 

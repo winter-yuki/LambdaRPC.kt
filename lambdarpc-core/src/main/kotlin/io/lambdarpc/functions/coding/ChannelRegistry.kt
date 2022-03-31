@@ -1,6 +1,7 @@
-package io.lambdarpc.functions.frontend.invokers
+package io.lambdarpc.functions.coding
 
 import io.lambdarpc.exceptions.LambdaRpcException
+import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
 import io.lambdarpc.transport.grpc.serialization.ExecuteRequest

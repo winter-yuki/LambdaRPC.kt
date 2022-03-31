@@ -1,15 +1,19 @@
 package io.lambdarpc.service
 
-import io.lambdarpc.coders.CodingContext
+import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
-import io.lambdarpc.functions.FunctionCodingContext
-import io.lambdarpc.functions.backend.FunctionRegistry
-import io.lambdarpc.functions.backend.get
-import io.lambdarpc.functions.frontend.BoundFunction
-import io.lambdarpc.functions.frontend.ChannelRegistry
-import io.lambdarpc.transport.ConnectionProvider
+import io.lambdarpc.functions.coding.ChannelRegistry
+import io.lambdarpc.functions.coding.FunctionCodingContext
+import io.lambdarpc.functions.coding.FunctionRegistry
+import io.lambdarpc.functions.coding.get
+import io.lambdarpc.functions.context.ConnectionPool
+import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.functions.frontend.invokers.BoundInvoker
+import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl
 import io.lambdarpc.transport.Service
+import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.transport.grpc.serialization.*
 import io.lambdarpc.transport.grpc.service.AbstractLibService
@@ -24,6 +28,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
+import java.io.Closeable
 
 /**
  * Implementation of the libservice.
@@ -36,12 +41,12 @@ internal class LibServiceImpl(
     private val serviceId: ServiceId,
     private val address: Address,
     private val functionRegistry: FunctionRegistry,
-    private val serviceIdProvider: ConnectionProvider<ServiceId>,
-    private val endpointProvider: ConnectionProvider<Endpoint>
-) : AbstractLibService(), KLoggable {
+    private val serviceRegistry: ServiceRegistry
+) : AbstractLibService(), KLoggable, Closeable {
     override val logger: KLogger = logger()
     private val channelRegistry = ChannelRegistry()
     private lateinit var service: Service
+    private val connectionPool = ConnectionPool()
 
     // Port is not available before service start
     private val endpoint: Endpoint
@@ -52,15 +57,20 @@ internal class LibServiceImpl(
         logger.info { "Lib service started with id = $serviceId" }
     }
 
+    override fun close() {
+        connectionPool.close()
+    }
+
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
         val localFunctionRegistry = FunctionRegistry()
         val outMessages = MutableSharedFlow<OutMessage>(replay = 1)
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         val executeResponses = MutableSharedFlow<ExecuteResponse>()
-        val executeScope = CoroutineScope(Dispatchers.Default)
+        val serviceRegistry = ServiceDispatcher(serviceRegistry)
+        val executeScope = CoroutineScope(Dispatchers.Default + connectionPool + serviceRegistry)
         executeScope.launch {
             channelRegistry.useController(executeRequests) { controller ->
-                val fc = FunctionCodingContext(localFunctionRegistry, controller, serviceIdProvider, endpointProvider)
+                val fc = FunctionCodingContext(localFunctionRegistry, controller)
                 val codingContext = CodingContext(fc)
                 requests.collectApply {
                     when {
@@ -172,7 +182,8 @@ internal class LibServiceImpl(
         }
     } catch (e: Throwable) {
         logger.info { "Error caught: $e" }
-        val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
+        val message = e.message.orEmpty() + '\n' + e.stackTrace.joinToString("\n")
+        val error = ExecuteError(ErrorType.OTHER, message)
         ExecuteResponse(request.executionId.toEid(), error) // TODO match errors
     }
 
@@ -181,20 +192,20 @@ internal class LibServiceImpl(
      * but functions that libservice returns should live longer.
      *
      * [channelToBound] registers returned functions to the [functionRegistry] and
-     * changes its prototype type to the [BoundFunction].
+     * changes its prototype type to the [BoundInvoker].
      */
     private fun Entity.channelToBound(localFunctionRegistry: FunctionRegistry): Entity =
         if (!hasFunction() || !function.hasChannelFunction()) this else {
             val oldName = function.channelFunction.accessName
             val f = localFunctionRegistry[oldName.an] ?: error("Function $oldName does not exist kek")
             val name = functionRegistry.register(f)
-            val boundFunction = object : BoundFunction {
-                override val accessName: AccessName
-                    get() = name
-                override val serviceId: ServiceId
-                    get() = this@LibServiceImpl.serviceId
-                override val endpoint: Endpoint
-                    get() = this@LibServiceImpl.endpoint
+            val boundFunction = object : FrontendFunction<BoundInvoker> {
+                override val invoker: BoundInvoker
+                    get() = BoundInvokerImpl(
+                        accessName = name,
+                        serviceId = this@LibServiceImpl.serviceId,
+                        endpoint = this@LibServiceImpl.endpoint
+                    )
             }
             Entity(FunctionPrototype(boundFunction))
         }

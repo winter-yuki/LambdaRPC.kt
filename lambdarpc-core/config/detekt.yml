@@ -6,7 +6,7 @@ complexity:
 exceptions:
   # Temporal, proper error handling should be implemented
   TooGenericExceptionCaught:
-    excludes: [ '**/LibServiceImpl.kt', '**/AbstractConnectedFunction.kt' ]
+    excludes: [ '**/LibServiceImpl.kt', '**/AbstractInvoker.kt' ]
 
 formatting:
   # IDEA automatically folds imports by default

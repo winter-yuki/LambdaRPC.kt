@@ -11,13 +11,15 @@ import io.lambdarpc.Facade.mapPoints
 import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.numpyAdd
 import io.lambdarpc.Facade.specializeAdd
-import io.lambdarpc.coders.DataCoder
+import io.lambdarpc.coding.Coder
+import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.dsl.LibServiceDSL
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.f
 import io.lambdarpc.dsl.j
-import io.lambdarpc.functions.frontend.CallDisconnectedChannelFunction
-import io.lambdarpc.transport.grpc.serialization.RawData
+import io.lambdarpc.functions.coding.CallDisconnectedChannelFunction
+import io.lambdarpc.transport.grpc.Entity
+import io.lambdarpc.transport.grpc.serialization.Entity
 import io.lambdarpc.transport.grpc.serialization.rd
 import io.lambdarpc.utils.toSid
 import kotlinx.serialization.Serializable
@@ -33,12 +35,12 @@ data class Point(val x: Double, val y: Double)
  */
 data class NumpyArray<T>(val x: T)
 
-object NumpyArrayIntCoder : DataCoder<NumpyArray<Int>> {
-    override fun encode(value: NumpyArray<Int>): RawData =
-        ByteString.copyFrom(byteArrayOf(value.x.toByte())).rd
+object NumpyArrayIntCoder : Coder<NumpyArray<Int>> {
+    override fun encode(value: NumpyArray<Int>, context: CodingContext): Entity =
+        Entity(ByteString.copyFrom(byteArrayOf(value.x.toByte())).rd)
 
-    override fun decode(data: RawData): NumpyArray<Int> =
-        NumpyArray(data.bytes.toByteArray().first().toInt())
+    override fun decode(entity: Entity, context: CodingContext): NumpyArray<Int> =
+        NumpyArray(entity.data.toByteArray().first().toInt())
 }
 
 private typealias Norm = suspend (Point) -> Double

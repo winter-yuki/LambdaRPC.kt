@@ -11,10 +11,3 @@ import java.io.Closeable
 internal interface Connection : Closeable {
     fun execute(requests: Flow<InMessage>): Flow<OutMessage>
 }
-
-/**
- * Provides [Connection] by its identity [I] and makes cleanup.
- */
-internal interface ConnectionProvider<I> {
-    suspend fun <R> withConnection(connectionId: I, block: suspend (Connection) -> R): R
-}
