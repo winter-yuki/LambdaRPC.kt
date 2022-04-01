@@ -8,7 +8,7 @@ Simple native RPC with high order functions support.
 
 .λRPC makes multi-process communication smooth enough to recognize remote service like a common library. It is powered by two main ideas:
 * λRPC does not use standalone declarations (https://en.wikipedia.org/wiki/Interface_description_language[IDL]) and code generation (so λRPC declarations are native for the user's code).
-Instead it allows working with library-specific data structures and default or custom serializers.
+Instead, it allows working with library-specific data structures and default or custom serializers.
 * λRPC functions can receive and return other functions as first-class objects.
 Passed lambda will be executed on the client-side, so it can easily capture the state (even mutable) and be "sent" to the other language's process.
 
