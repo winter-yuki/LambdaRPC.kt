@@ -1,5 +1,7 @@
 package io.lambdarpc.examples.ml.client
 
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.toBound
 import io.lambdarpc.examples.ml.dataEndpoint
 import io.lambdarpc.examples.ml.dataservice.facade.dataLoader
@@ -9,8 +11,6 @@ import io.lambdarpc.examples.ml.mlservice.Metric
 import io.lambdarpc.examples.ml.mlservice.Model
 import io.lambdarpc.examples.ml.mlservice.facade.fit
 import io.lambdarpc.examples.ml.mlservice.facade.mlServiceId
-import io.lambdarpc.functions.context.ServiceDispatcher
-import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.transport.MapServiceRegistry
 
 /**

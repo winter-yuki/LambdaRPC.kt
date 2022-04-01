@@ -4,9 +4,9 @@ import io.lambdarpc.Facade.eval5
 import io.lambdarpc.Facade.evalAndReturn
 import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.specializeAdd
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.LibService
-import io.lambdarpc.functions.context.ServiceDispatcher
-import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.transport.Service
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.addr

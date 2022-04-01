@@ -1,6 +1,6 @@
 package io.lambdarpc.dsl
 
-import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl

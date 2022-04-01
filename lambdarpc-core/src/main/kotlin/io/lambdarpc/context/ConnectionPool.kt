@@ -1,4 +1,4 @@
-package io.lambdarpc.functions.context
+package io.lambdarpc.context
 
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.MultipleUseConnectionProvider

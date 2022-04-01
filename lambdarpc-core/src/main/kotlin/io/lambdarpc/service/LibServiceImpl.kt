@@ -1,14 +1,14 @@
 package io.lambdarpc.service
 
 import io.lambdarpc.coding.CodingContext
+import io.lambdarpc.context.ConnectionPool
+import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.exceptions.OtherException
 import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
 import io.lambdarpc.functions.coding.get
-import io.lambdarpc.functions.context.ConnectionPool
-import io.lambdarpc.functions.context.ServiceDispatcher
 import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl

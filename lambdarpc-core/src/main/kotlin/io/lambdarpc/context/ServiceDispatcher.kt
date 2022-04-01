@@ -1,4 +1,4 @@
-package io.lambdarpc.functions.context
+package io.lambdarpc.context
 
 import io.lambdarpc.exceptions.ServiceNotFound
 import io.lambdarpc.transport.*

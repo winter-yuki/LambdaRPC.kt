@@ -1,8 +1,8 @@
 package io.lambdarpc.examples.lazy.client
 
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.examples.lazy.service.*
-import io.lambdarpc.functions.context.ServiceDispatcher
-import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.utils.Endpoint
 
 fun main(args: Array<String>) = blockingConnectionPool(
