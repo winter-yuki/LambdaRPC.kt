@@ -90,6 +90,11 @@ class BasicTests {
         assertEquals(42, numpyAdd(2, NumpyArray(40)).x)
     }
 
+    @Test
+    fun `native invoker`() = blockingConnectionPool(serviceDispatcher) {
+        assertEquals(10, eval5(add5))
+    }
+
     @AfterAll
     fun after() {
         service.shutdown()

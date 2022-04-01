@@ -22,7 +22,7 @@ internal class ChannelInvokerImpl(
         val scope = CodingScope(context)
         // TODO
         val invokable = Invokable { args ->
-            executionChannel.execute(accessName, args.toList())
+            executionChannel.execute(accessName, args.asIterable())
         }
         return scope.block(invokable)
 //        return scope.block { args ->

@@ -57,6 +57,7 @@ tasks.withType<Test> {
 tasks.register<Test>("slow") {
     useJUnitPlatform {
         includeTags("slow")
+        maxHeapSize = "5000m"
     }
 }
 

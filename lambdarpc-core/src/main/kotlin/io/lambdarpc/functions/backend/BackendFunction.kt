@@ -17,7 +17,7 @@ internal interface BackendFunction {
 }
 
 internal class BackendFunction0<R>(
-    private val f: suspend () -> R,
+    internal val f: suspend () -> R,
     private val rs: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
@@ -31,7 +31,7 @@ internal class BackendFunction0<R>(
 }
 
 internal class BackendFunction1<A, R>(
-    private val f: suspend (A) -> R,
+    internal val f: suspend (A) -> R,
     private val c1: Decoder<A>,
     private val rc: Encoder<R>,
 ) : BackendFunction {
@@ -47,7 +47,7 @@ internal class BackendFunction1<A, R>(
 }
 
 internal class BackendFunction2<A, B, R>(
-    private val f: suspend (A, B) -> R,
+    internal val f: suspend (A, B) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
     private val rc: Encoder<R>,
@@ -64,7 +64,7 @@ internal class BackendFunction2<A, B, R>(
 }
 
 internal class BackendFunction3<A, B, C, R>(
-    private val f: suspend (A, B, C) -> R,
+    internal val f: suspend (A, B, C) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
     private val c3: Decoder<C>,

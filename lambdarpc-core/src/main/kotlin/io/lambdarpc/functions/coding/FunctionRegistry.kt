@@ -29,6 +29,8 @@ internal class FunctionRegistry {
     }
 }
 
+internal operator fun FunctionRegistry.contains(name: AccessName): Boolean = name in functions
+
 internal operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name]
 
 internal fun FunctionRegistry.getValue(name: AccessName): BackendFunction = functions.getValue(name)

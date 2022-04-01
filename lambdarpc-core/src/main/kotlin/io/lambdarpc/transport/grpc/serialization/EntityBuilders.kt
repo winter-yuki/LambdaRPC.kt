@@ -4,6 +4,7 @@ import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.functions.frontend.invokers.FreeInvoker
+import io.lambdarpc.functions.frontend.invokers.NativeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
@@ -34,8 +35,9 @@ internal fun FunctionPrototype(f: FrontendFunction<BoundInvoker>): FunctionProto
 
 @Suppress("UNCHECKED_CAST")
 internal fun FunctionPrototype(f: FrontendFunction<*>): FunctionPrototype =
-    when (f.invoker) {
+    when (val invoker = f.invoker) {
         is ChannelInvoker -> FunctionPrototype(f as FrontendFunction<ChannelInvoker>)
+        is NativeInvoker<*> -> FunctionPrototype(invoker.name)
         is FreeInvoker -> FunctionPrototype(f as FrontendFunction<FreeInvoker>)
         is BoundInvoker -> FunctionPrototype(f as FrontendFunction<BoundInvoker>)
     }

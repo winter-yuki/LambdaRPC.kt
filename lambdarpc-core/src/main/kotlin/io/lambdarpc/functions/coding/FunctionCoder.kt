@@ -28,11 +28,12 @@ internal class FunctionCodingContext(
 internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     override fun encode(function: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
         if (function is FrontendFunction<*>) {
-            when (function.invoker) {
+            when (val invoker = function.invoker) {
                 is ChannelInvoker -> {
                     val name = functionRegistry.register(function.toBackendFunction())
                     FunctionPrototype(name)
                 }
+                is NativeInvoker<*> -> FunctionPrototype(invoker.name)
                 is FreeInvoker, is BoundInvoker -> FunctionPrototype(function)
             }
         } else {
@@ -78,11 +79,18 @@ internal class FunctionCoder0<R>(
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend () -> R = context.functionContext.run {
-        FrontendFunction0<FreeInvoker, R>(
-            invoker = FreeInvokerImpl(
-                accessName = accessName.an,
-                serviceId = serviceId.toSid()
-            ),
+        val name = accessName.an
+        FrontendFunction0(
+            invoker = if (name in functionRegistry) {
+                val backend = functionRegistry.functions.getValue(name) as BackendFunction0<*>
+                @Suppress("UNCHECKED_CAST") val f = backend.f as suspend () -> R
+                NativeInvoker(name, f)
+            } else {
+                FreeInvokerImpl(
+                    accessName = name,
+                    serviceId = serviceId.toSid()
+                )
+            },
             rc = rc
         )
     }
@@ -123,11 +131,18 @@ internal class FunctionCoder1<A, R>(
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A) -> R = context.functionContext.run {
-        FrontendFunction1<FreeInvoker, A, R>(
-            invoker = FreeInvokerImpl(
-                accessName = accessName.an,
-                serviceId = serviceId.toSid()
-            ),
+        val name = accessName.an
+        FrontendFunction1(
+            invoker = if (name in functionRegistry) {
+                val backend = functionRegistry.functions.getValue(name) as BackendFunction1<*, *>
+                @Suppress("UNCHECKED_CAST") val f = backend.f as suspend (A) -> R
+                NativeInvoker(name, f)
+            } else {
+                FreeInvokerImpl(
+                    accessName = name,
+                    serviceId = serviceId.toSid()
+                )
+            },
             c1 = c1, rc = rc
         )
     }
@@ -169,11 +184,18 @@ internal class FunctionCoder2<A, B, R>(
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A, B) -> R = context.functionContext.run {
-        FrontendFunction2<FreeInvoker, A, B, R>(
-            invoker = FreeInvokerImpl(
-                accessName = accessName.an,
-                serviceId = serviceId.toSid(),
-            ),
+        val name = accessName.an
+        FrontendFunction2(
+            invoker = if (name in functionRegistry) {
+                val backend = functionRegistry.functions.getValue(name) as BackendFunction2<*, *, *>
+                @Suppress("UNCHECKED_CAST") val f = backend.f as suspend (A, B) -> R
+                NativeInvoker(name, f)
+            } else {
+                FreeInvokerImpl(
+                    accessName = name,
+                    serviceId = serviceId.toSid()
+                )
+            },
             c1 = c1, c2 = c2, rc = rc
         )
     }
@@ -216,11 +238,18 @@ internal class FunctionCoder3<A, B, C, R>(
     override fun FreeFunctionPrototype.toFreeFunction(
         context: CodingContext
     ): suspend (A, B, C) -> R = context.functionContext.run {
-        FrontendFunction3<FreeInvoker, A, B, C, R>(
-            invoker = FreeInvokerImpl(
-                accessName = accessName.an,
-                serviceId = serviceId.toSid(),
-            ),
+        val name = accessName.an
+        FrontendFunction3(
+            invoker = if (name in functionRegistry) {
+                val backend = functionRegistry.functions.getValue(name) as BackendFunction3<*, *, *, *>
+                @Suppress("UNCHECKED_CAST") val f = backend.f as suspend (A, B, C) -> R
+                NativeInvoker(name, f)
+            } else {
+                FreeInvokerImpl(
+                    accessName = name,
+                    serviceId = serviceId.toSid()
+                )
+            },
             c1 = c1, c2 = c2, c3 = c3, rc = rc
         )
     }
