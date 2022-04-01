@@ -7,10 +7,10 @@ import io.lambdarpc.functions.frontend.invokers.FreeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
-internal fun Entity(data: RawData): Entity =
+fun Entity(data: RawData): Entity =
     entity { this.data = data.encode() }
 
-internal fun Entity(f: FunctionPrototype): Entity =
+fun Entity(f: FunctionPrototype): Entity =
     entity { this.function = f }
 
 internal fun FunctionPrototype(name: AccessName): FunctionPrototype =

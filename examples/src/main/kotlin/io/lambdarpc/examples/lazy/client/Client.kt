@@ -1,11 +1,11 @@
 package io.lambdarpc.examples.lazy.client
 
-import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.examples.lazy.service.*
+import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.utils.Endpoint
-import kotlinx.coroutines.runBlocking
 
-fun main(args: Array<String>) = runBlocking(
+fun main(args: Array<String>) = blockingConnectionPool(
     ServiceDispatcher(serviceId to args.map {
         Endpoint("localhost", it.toInt())
     })

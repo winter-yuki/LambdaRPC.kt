@@ -15,17 +15,22 @@ formatting:
   # Does not agree with default formatting
   Indentation:
     excludes: [ '**/exceptions/Exceptions.kt' ]
+  MaximumLineLength:
+    excludes:
+      - '**/ToBound.kt'
 
 style:
   # IDEA automatically folds imports by default
   WildcardImport:
     active: false
-
   MagicNumber:
     excludes:
       # Checking arguments list size in boilerplate implementations
       - '**/BackendFunction.kt'
       - '**/test/**'
+  MaxLineLength:
+    excludes:
+      - '**/ToBound.kt'
 
 naming:
   # Does not always agree with IDEA default warnings

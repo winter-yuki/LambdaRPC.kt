@@ -1,7 +1,6 @@
 package io.lambdarpc.examples.ml.client
 
-import io.lambdarpc.dsl.ServiceDispatcher
-import io.lambdarpc.dsl.bf
+import io.lambdarpc.dsl.toBound
 import io.lambdarpc.examples.ml.dataEndpoint
 import io.lambdarpc.examples.ml.dataservice.facade.dataLoader
 import io.lambdarpc.examples.ml.dataservice.facade.dataServiceId
@@ -10,8 +9,9 @@ import io.lambdarpc.examples.ml.mlservice.Metric
 import io.lambdarpc.examples.ml.mlservice.Model
 import io.lambdarpc.examples.ml.mlservice.facade.fit
 import io.lambdarpc.examples.ml.mlservice.facade.mlServiceId
+import io.lambdarpc.functions.context.ServiceDispatcher
+import io.lambdarpc.functions.context.blockingConnectionPool
 import io.lambdarpc.transport.MapServiceRegistry
-import kotlinx.coroutines.runBlocking
 
 /**
  * Can be a simple map that service or client receives with command line options,
@@ -24,14 +24,14 @@ val serviceRegistry = MapServiceRegistry(
 
 val serviceDispatcher = ServiceDispatcher(serviceRegistry)
 
-fun main() = runBlocking(serviceDispatcher) {
+fun main() = blockingConnectionPool(serviceDispatcher) {
     // Keep track of the loss function values
     val history = mutableListOf<Metric>()
     var lastEpoch = 0
     val rawModel = Model()
     // Bind dataloader with dataEndpoint, so mlservice will communicate directly
     // with the dataservice on the dataEndpoint without client in the middle
-    val boundLoader = bf(dataLoader)
+    val boundLoader = dataLoader.toBound()
     val model = fit(rawModel, boundLoader) { epoch, metric ->
         // Lambda will be executed on the client site -- the λRPC magic
         println("Epoch = $epoch, metric = $metric")

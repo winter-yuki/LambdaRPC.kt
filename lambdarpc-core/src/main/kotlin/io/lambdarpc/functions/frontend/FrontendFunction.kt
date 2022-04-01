@@ -14,6 +14,7 @@ import io.lambdarpc.functions.frontend.invokers.FrontendInvoker
  */
 interface FrontendFunction<I : FrontendInvoker> {
     val invoker: I
+    fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction<I>
 }
 
 open class FrontendFunction0<I : FrontendInvoker, R> internal constructor(
@@ -23,6 +24,9 @@ open class FrontendFunction0<I : FrontendInvoker, R> internal constructor(
     override suspend operator fun invoke(): R = invoker {
         rc.decode(it())
     }
+
+    override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction0<I, R> =
+        FrontendFunction0(invoker, rc)
 }
 
 open class FrontendFunction1<I : FrontendInvoker, A, R> internal constructor(
@@ -33,6 +37,9 @@ open class FrontendFunction1<I : FrontendInvoker, A, R> internal constructor(
     override suspend operator fun invoke(a: A): R = invoker {
         rc.decode(it(c1.encode(a)))
     }
+
+    override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction1<I, A, R> =
+        FrontendFunction1(invoker, c1, rc)
 }
 
 open class FrontendFunction2<I : FrontendInvoker, A, B, R> internal constructor(
@@ -44,6 +51,9 @@ open class FrontendFunction2<I : FrontendInvoker, A, B, R> internal constructor(
     override suspend operator fun invoke(a: A, b: B): R = invoker {
         rc.decode(it(c1.encode(a), c2.encode(b)))
     }
+
+    override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction2<I, A, B, R> =
+        FrontendFunction2(invoker, c1, c2, rc)
 }
 
 open class FrontendFunction3<I : FrontendInvoker, A, B, C, R> internal constructor(
@@ -56,4 +66,7 @@ open class FrontendFunction3<I : FrontendInvoker, A, B, C, R> internal construct
     override suspend operator fun invoke(a: A, b: B, c: C): R = invoker {
         rc.decode(it(c1.encode(a), c2.encode(b), c3.encode(c)))
     }
+
+    override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction3<I, A, B, C, R> =
+        FrontendFunction3(invoker, c1, c2, c3, rc)
 }

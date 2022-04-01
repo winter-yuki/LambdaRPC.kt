@@ -12,6 +12,7 @@ import io.lambdarpc.functions.context.ServiceDispatcher
 import io.lambdarpc.functions.frontend.FrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl
+import io.lambdarpc.functions.frontend.invokers.FrontendInvoker
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.*
@@ -206,6 +207,10 @@ internal class LibServiceImpl(
                         serviceId = this@LibServiceImpl.serviceId,
                         endpoint = this@LibServiceImpl.endpoint
                     )
+
+                override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction<I> {
+                    TODO("Remove whole channelToBound")
+                }
             }
             Entity(FunctionPrototype(boundFunction))
         }
