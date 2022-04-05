@@ -31,14 +31,14 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
     private val functionRegistry = FunctionRegistry()
     private val channelRegistry = ChannelRegistry()
 
-    suspend operator fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R {
+    suspend operator fun <R> invoke(block: suspend CodingScope.(FrontendInvoker.Invokable) -> R): R {
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         return channelRegistry.useController(executeRequests) { controller ->
             val fc = FunctionCodingContext(functionRegistry, controller)
             val context = CodingContext(functionContext = fc)
             val scope = CodingScope(context)
             // TODO
-            val invokable = Invokable { args ->
+            val invokable = FrontendInvoker.Invokable { args ->
                 invoke(controller, executeRequests, context, args.asIterable())
             }
             scope.block(invokable)

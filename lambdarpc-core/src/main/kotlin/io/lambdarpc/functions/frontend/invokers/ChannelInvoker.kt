@@ -18,10 +18,10 @@ internal class ChannelInvokerImpl(
     private val context: CodingContext,
     private val executionChannel: ExecutionChannel
 ) : ChannelInvoker {
-    override suspend fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R {
+    override suspend fun <R> invoke(block: suspend CodingScope.(FrontendInvoker.Invokable) -> R): R {
         val scope = CodingScope(context)
         // TODO
-        val invokable = Invokable { args ->
+        val invokable = FrontendInvoker.Invokable { args ->
             executionChannel.execute(accessName, args.toList())
         }
         return scope.block(invokable)
