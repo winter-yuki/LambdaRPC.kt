@@ -12,8 +12,8 @@ sealed interface FrontendInvoker {
      * Coding scope lives only during one invocation.
      */
     suspend operator fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R
-}
 
-fun interface Invokable {
-    suspend operator fun invoke(vararg args: Entity): Entity
+    fun interface Invokable {
+        suspend operator fun invoke(vararg args: Entity): Entity
+    }
 }
