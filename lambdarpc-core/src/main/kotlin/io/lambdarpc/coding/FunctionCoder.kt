@@ -9,7 +9,6 @@ import io.lambdarpc.transport.grpc.FunctionPrototype
 interface FunctionEncoder<F> {
     /**
      * Creates the prototype of the function that can be serialized.
-     * Creates a backend part for the function [F] if [function] is not a frontend yet.
      */
     fun encode(function: F, context: CodingContext): FunctionPrototype
 }
