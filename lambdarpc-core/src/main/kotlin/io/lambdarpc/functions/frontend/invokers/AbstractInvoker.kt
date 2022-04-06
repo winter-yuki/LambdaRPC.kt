@@ -37,7 +37,7 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
     suspend operator fun <R> invoke(block: suspend CodingScope.(FrontendInvoker.Invokable) -> R): R {
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         return channelRegistry.useController(executeRequests) { controller ->
-            val fc = FunctionCodingContext(functionRegistry, controller)
+            val fc = FunctionCodingContext(functionRegistry, controller, localServiceId = null)
             val context = CodingContext(functionContext = fc)
             val scope = CodingScope(context)
             val invokable = FrontendInvoker.Invokable { args ->
@@ -69,7 +69,7 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
         )
         var result: ExecuteResponse? = null
         coroutineScope {
-            launch(Job()) { // TODO remove job or explain or move to utils
+            launch(NonCancellable) {
                 outMessages.collectApply {
                     when {
                         hasFinalResponse() -> {

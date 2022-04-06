@@ -1,6 +1,5 @@
 package io.lambdarpc
 
-import io.lambdarpc.Facade.add5
 import io.lambdarpc.Facade.eval5
 import io.lambdarpc.Facade.evalAndReturn
 import io.lambdarpc.Facade.normMap

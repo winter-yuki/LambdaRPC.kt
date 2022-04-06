@@ -70,7 +70,7 @@ internal class LibServiceImpl(
     }
 
     override fun execute(requests: Flow<InMessage>): Flow<OutMessage> {
-        val localFunctionRegistry = FunctionRegistry()
+        val localFunctionRegistry = FunctionRegistry(functionRegistry)
         val outMessages = MutableSharedFlow<OutMessage>(replay = 1)
         val executeRequests = MutableSharedFlow<ExecuteRequest>()
         val executeResponses = MutableSharedFlow<ExecuteResponse>()
@@ -78,7 +78,7 @@ internal class LibServiceImpl(
         val executeScope = CoroutineScope(Dispatchers.Default + connectionPool + serviceRegistry)
         executeScope.launch {
             channelRegistry.useController(executeRequests) { controller ->
-                val fc = FunctionCodingContext(localFunctionRegistry, controller)
+                val fc = FunctionCodingContext(localFunctionRegistry, controller, serviceId)
                 val codingContext = CodingContext(fc)
                 requests.collectApply {
                     when {

@@ -12,9 +12,7 @@ import io.lambdarpc.transport.grpc.FreeFunctionPrototype
 import io.lambdarpc.transport.grpc.FunctionPrototype
 import io.lambdarpc.transport.grpc.serialization.FunctionPrototype
 import io.lambdarpc.transport.grpc.serialization.UnknownMessageType
-import io.lambdarpc.utils.Endpoint
-import io.lambdarpc.utils.an
-import io.lambdarpc.utils.toSid
+import io.lambdarpc.utils.*
 
 /**
  * Contains information and state that is needed to encode and decode functions.
@@ -23,20 +21,25 @@ import io.lambdarpc.utils.toSid
 internal class FunctionCodingContext(
     val functionRegistry: FunctionRegistry,
     val executionChannelController: ChannelRegistry.ExecutionChannelController,
+    val localServiceId: ServiceId?
 )
 
 internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     override fun encode(function: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
-        if (function !is RemoteFrontendFunction<*>) {
-            val name = functionRegistry.register(function.toBackendFunction())
-            FunctionPrototype(name)
-        } else {
-            when (function.invoker) {
-                is ChannelInvoker -> {
-                    val name = functionRegistry.register(function.toBackendFunction())
-                    FunctionPrototype(name)
+        when (function) {
+            is RemoteFrontendFunction<*> -> {
+                when (function.invoker) {
+                    is ChannelInvoker -> {
+                        val name = functionRegistry.register(function.toBackendFunction())
+                        FunctionPrototype(name)
+                    }
+                    is FreeInvoker, is BoundInvoker -> FunctionPrototype(function)
                 }
-                is FreeInvoker, is BoundInvoker -> FunctionPrototype(function)
+            }
+            is NativeFrontendFunction -> function.prototype
+            else -> {
+                val name = functionRegistry.register(function.toBackendFunction())
+                FunctionPrototype(name)
             }
         }
     }
@@ -46,7 +49,12 @@ internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     override fun decode(prototype: FunctionPrototype, context: CodingContext): F = prototype.run {
         when {
             hasChannelFunction() -> channelFunction.toChannelFunction(context)
-            hasFreeFunction() -> freeFunction.toFreeFunction(context)
+            hasFreeFunction() -> {
+                val sameService = context.functionContext.localServiceId == freeFunction.serviceId.toSid()
+                val hasName = prototype.freeFunction.accessName.an in context.functionContext.functionRegistry
+                if (sameService && hasName) toNativeFunction(context)
+                else freeFunction.toFreeFunction(context)
+            }
             hasBoundFunction() -> boundFunction.toBoundFunction(context)
             else -> throw UnknownMessageType("function prototype")
         }
@@ -54,7 +62,11 @@ internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
 
     protected abstract fun ChannelFunctionPrototype.toChannelFunction(context: CodingContext): F
     protected abstract fun FreeFunctionPrototype.toFreeFunction(context: CodingContext): F
+    protected abstract fun FunctionPrototype.toNativeFunction(context: CodingContext): F
     protected abstract fun BoundFunctionPrototype.toBoundFunction(context: CodingContext): F
+
+    @Suppress("UNCHECKED_CAST")
+    protected operator fun CodingContext.get(name: AccessName): F = functionContext.functionRegistry[name] as F
 }
 
 internal class FunctionCoder0<R>(
@@ -86,6 +98,9 @@ internal class FunctionCoder0<R>(
             rc = rc
         )
     }
+
+    override fun FunctionPrototype.toNativeFunction(context: CodingContext): suspend () -> R =
+        NativeFrontendFunction0(this, context[freeFunction.accessName.an])
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
@@ -131,6 +146,9 @@ internal class FunctionCoder1<A, R>(
             c1 = c1, rc = rc
         )
     }
+
+    override fun FunctionPrototype.toNativeFunction(context: CodingContext): suspend (A) -> R =
+        NativeFrontendFunction1(this, context[freeFunction.accessName.an])
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
@@ -178,6 +196,9 @@ internal class FunctionCoder2<A, B, R>(
         )
     }
 
+    override fun FunctionPrototype.toNativeFunction(context: CodingContext): suspend (A, B) -> R =
+        NativeFrontendFunction2(this, context[freeFunction.accessName.an])
+
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
     ): suspend (A, B) -> R = context.functionContext.run {
@@ -224,6 +245,9 @@ internal class FunctionCoder3<A, B, C, R>(
             c1 = c1, c2 = c2, c3 = c3, rc = rc
         )
     }
+
+    override fun FunctionPrototype.toNativeFunction(context: CodingContext): suspend (A, B, C) -> R =
+        NativeFrontendFunction3(this, context[freeFunction.accessName.an])
 
     override fun BoundFunctionPrototype.toBoundFunction(
         context: CodingContext
