@@ -6,7 +6,12 @@ option java_package = "io.lambdarpc.transport.grpc";
 package io.lambdarpc.transport.grpc;
 
 import "Entity.proto";
-import "ExecuteError.proto";
+
+message ExecuteError {
+  string message = 1;
+  optional string typeIdentity = 2;
+  optional string stackTrace = 3;
+}
 
 message ExecuteResponse {
   string executionId = 1;

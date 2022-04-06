@@ -34,10 +34,15 @@ internal val ExecuteRequest.inMessage: InMessage
 internal val ExecuteRequest.outMessage: OutMessage
     get() = outMessage { executeRequest = this@outMessage }
 
-internal fun ExecuteError(type: ErrorType, msg: String): ExecuteError =
+internal fun ExecuteError(message: String, typeIdentity: String?, stackTrace: String?): ExecuteError =
     executeError {
-        this.type = type
-        this.message = msg
+        this.message = message
+        if (typeIdentity != null) {
+            this.typeIdentity = typeIdentity
+        }
+        if (stackTrace != null) {
+            this.stackTrace = stackTrace
+        }
     }
 
 internal fun ExecuteResponse(
