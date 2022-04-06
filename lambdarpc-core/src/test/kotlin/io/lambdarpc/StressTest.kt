@@ -1,5 +1,6 @@
 package io.lambdarpc
 
+import io.lambdarpc.Facade.add5
 import io.lambdarpc.Facade.eval5
 import io.lambdarpc.Facade.evalAndReturn
 import io.lambdarpc.Facade.normMap
@@ -50,12 +51,14 @@ class StressTest {
                 assertEquals(42, specializeAdd(5)(37))
             }
             launch {
-                assertEquals(10, eval5(specializeAdd(5)))
+                val add = specializeAdd(5)
+                assertEquals(10, eval5(add))
+                assertEquals(10, eval5(add)) // Call same
                 assertEquals(11, eval5(specializeAdd(6)))
             }
             launch {
-                // Test native invoker TODO
-//                assertEquals(10, eval5(add5))
+                // Test native invoker
+                assertEquals(10, eval5(add5))
             }
             launch {
                 assertEquals(42, evalAndReturn { it * 2 }(2))

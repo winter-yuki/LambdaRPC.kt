@@ -10,6 +10,8 @@ import io.lambdarpc.transport.grpc.Entity
  * Holds function and decodes arguments for it.
  */
 internal interface BackendFunction {
+    val f: Any
+
     suspend operator fun invoke(
         context: CodingContext,
         args: List<Entity>
@@ -17,7 +19,7 @@ internal interface BackendFunction {
 }
 
 internal class BackendFunction0<R>(
-    internal val f: suspend () -> R,
+    override val f: suspend () -> R,
     private val rs: Encoder<R>,
 ) : BackendFunction {
     override suspend fun invoke(
@@ -31,7 +33,7 @@ internal class BackendFunction0<R>(
 }
 
 internal class BackendFunction1<A, R>(
-    internal val f: suspend (A) -> R,
+    override val f: suspend (A) -> R,
     private val c1: Decoder<A>,
     private val rc: Encoder<R>,
 ) : BackendFunction {
@@ -47,7 +49,7 @@ internal class BackendFunction1<A, R>(
 }
 
 internal class BackendFunction2<A, B, R>(
-    internal val f: suspend (A, B) -> R,
+    override val f: suspend (A, B) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
     private val rc: Encoder<R>,
@@ -64,7 +66,7 @@ internal class BackendFunction2<A, B, R>(
 }
 
 internal class BackendFunction3<A, B, C, R>(
-    internal val f: suspend (A, B, C) -> R,
+    override val f: suspend (A, B, C) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
     private val c3: Decoder<C>,

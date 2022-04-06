@@ -29,7 +29,8 @@ internal class FunctionRegistry(val parent: FunctionRegistry? = null) {
     }
 }
 
-internal operator fun FunctionRegistry.contains(name: AccessName): Boolean = name in functions
+internal operator fun FunctionRegistry.contains(name: AccessName): Boolean =
+    name in functions || parent?.contains(name) ?: false
 
 internal operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name] ?: parent?.get(name)
 

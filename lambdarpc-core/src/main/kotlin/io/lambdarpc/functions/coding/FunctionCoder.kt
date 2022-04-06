@@ -52,8 +52,7 @@ internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
             hasFreeFunction() -> {
                 val sameService = context.functionContext.localServiceId == freeFunction.serviceId.toSid()
                 val hasName = prototype.freeFunction.accessName.an in context.functionContext.functionRegistry
-                if (sameService && hasName) toNativeFunction(context)
-                else freeFunction.toFreeFunction(context)
+                if (sameService && hasName) toNativeFunction(context) else freeFunction.toFreeFunction(context)
             }
             hasBoundFunction() -> boundFunction.toBoundFunction(context)
             else -> throw UnknownMessageType("function prototype")
@@ -66,7 +65,7 @@ internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     protected abstract fun BoundFunctionPrototype.toBoundFunction(context: CodingContext): F
 
     @Suppress("UNCHECKED_CAST")
-    protected operator fun CodingContext.get(name: AccessName): F = functionContext.functionRegistry[name] as F
+    protected operator fun CodingContext.get(name: AccessName): F = functionContext.functionRegistry[name]?.f as F
 }
 
 internal class FunctionCoder0<R>(
