@@ -28,7 +28,7 @@ suspend fun fit(
 ----
 
 To transform the code to service just add facade *declarations* and a `main` function.
-A declaration is a collection of *coding* for all function arguments and for the result.
+A declaration is a collection of *coders* for all function arguments and for the result.
 Coder itself is a generalization of data serializer and a specific way the λRPC works with functions as first-class objects (will be discussed later).
 
 [source,kotlin]
