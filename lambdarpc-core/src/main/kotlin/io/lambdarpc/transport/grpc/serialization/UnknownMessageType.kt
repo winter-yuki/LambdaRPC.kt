@@ -7,7 +7,9 @@ import io.lambdarpc.LambdaRpcException
  */
 class UnknownMessageType internal constructor(grpcMessageKind: String? = null) :
     LambdaRpcException(
-        "Unsupported message " +
-                if (grpcMessageKind == null) "kind"
-                else "of kind ${grpcMessageKind.lowercase()}"
+        buildString {
+            append("Unsupported message ")
+            if (grpcMessageKind == null) append("kind")
+            else append("of kind ${grpcMessageKind.lowercase()}")
+        }
     )

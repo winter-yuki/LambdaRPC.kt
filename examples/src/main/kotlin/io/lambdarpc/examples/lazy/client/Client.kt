@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.lazy.client
 
-import io.lambdarpc.context.ServiceDispatcher
-import io.lambdarpc.context.blockingConnectionPool
+import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.dsl.blockingConnectionPool
 import io.lambdarpc.examples.lazy.service.*
 import io.lambdarpc.utils.Endpoint
 

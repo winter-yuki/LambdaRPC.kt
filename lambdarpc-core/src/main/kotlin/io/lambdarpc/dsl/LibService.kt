@@ -10,7 +10,8 @@ import io.lambdarpc.transport.MapServiceRegistry
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.service.GrpcService
-import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.Address
+import io.lambdarpc.utils.Port
 import io.lambdarpc.utils.ServiceId
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -23,16 +24,17 @@ import kotlin.contracts.contract
 @Suppress("FunctionName")
 fun LibService(
     serviceId: ServiceId,
-    endpoint: Endpoint,
+    address: Address,
+    port: Port?,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
 ): Service {
     contract { callsInPlace(bindings, InvocationKind.EXACTLY_ONCE) }
     val libService = LibServiceImpl(
-        serviceId, endpoint.address,
+        serviceId, address,
         LibServiceDSL().apply(bindings).registry, serviceRegistry
     )
-    val service = GrpcService(endpoint.port, libService)
+    val service = GrpcService(port, libService)
     libService.initialize(service)
     return object : Service by service {
         override fun shutdown() {

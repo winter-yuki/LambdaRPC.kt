@@ -1,15 +1,18 @@
 package io.lambdarpc.functions.frontend.invokers
 
+import io.lambdarpc.ExecutionException
+import io.lambdarpc.FunctionNotFoundException
 import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.coding.CodingScope
-import io.lambdarpc.exceptions.OtherException
-import io.lambdarpc.exceptions.UnknownMessageType
 import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
 import io.lambdarpc.functions.coding.get
 import io.lambdarpc.transport.ConnectionProvider
-import io.lambdarpc.transport.grpc.*
+import io.lambdarpc.transport.grpc.Entity
+import io.lambdarpc.transport.grpc.ExecuteRequest
+import io.lambdarpc.transport.grpc.ExecuteResponse
+import io.lambdarpc.transport.grpc.InMessage
 import io.lambdarpc.transport.grpc.serialization.*
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.*
@@ -37,14 +40,10 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
             val fc = FunctionCodingContext(functionRegistry, controller)
             val context = CodingContext(functionContext = fc)
             val scope = CodingScope(context)
-            // TODO
             val invokable = FrontendInvoker.Invokable { args ->
                 invoke(controller, executeRequests, context, args.asIterable())
             }
             scope.block(invokable)
-//            scope.block { args ->
-//                invoke(controller, executeRequests, context, args.asIterable())
-//            }
         }
     }
 
@@ -92,7 +91,7 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
         result?.run {
             when {
                 hasResult() -> this.result
-                hasError() -> throw OtherException(error.message) // TODO error types
+                hasError() -> throw error.toException()
                 else -> throw UnknownMessageType("execute result")
             }
         } ?: error("No final response received for $accessName")
@@ -100,8 +99,8 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
 
     private fun initialRequest(entities: Iterable<Entity>): InMessage =
         InitialRequest(
-            serviceId,
-            ExecuteRequest(accessName, ExecutionId.random(), entities)
+            serviceId = serviceId,
+            request = ExecuteRequest(accessName, ExecutionId.random(), entities)
         ).inMessage
 
     private fun CoroutineScope.processExecuteRequest(
@@ -113,20 +112,12 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
         logger.info { "$accessName: execute request: name = ${request.accessName}, id = ${request.executionId}" }
         launch {
             val response = try {
-                val f = functionRegistry[request.accessName.an]
-                if (f != null) {
-                    val result = f(context, request.argsList)
-                    ExecuteResponse(request.executionId.toEid(), result)
-                } else {
-                    val error = ExecuteError(
-                        ErrorType.FUNCTION_NOT_FOUND_ERROR,
-                        "Function ${request.accessName} not found"
-                    )
-                    ExecuteResponse(request.executionId.toEid(), error)
-                }
+                val name = request.accessName.an
+                val f = functionRegistry[name] ?: throw FunctionNotFoundException(name)
+                val result = f(context, request.argsList)
+                ExecuteResponse(request.executionId.toEid(), result)
             } catch (e: Throwable) {
-                val error = ExecuteError(ErrorType.OTHER, e.message.orEmpty())
-                ExecuteResponse(request.executionId.toEid(), error)
+                ExecuteResponse(request.executionId.toEid(), e.toExecuteError())
             }
             executeResponses.emit(response)
         }
@@ -146,7 +137,11 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
                 logger.info { "Error response: id = ${response.executionId}" }
                 controller.completeExceptionally(
                     executionId.toEid(),
-                    OtherException(error.message) // TODO match error type
+                    ExecutionException(
+                        message = error.message,
+                        typeIdentity = error.typeIdentity,
+                        stackTrace = error.stackTrace
+                    )
                 )
             }
         }

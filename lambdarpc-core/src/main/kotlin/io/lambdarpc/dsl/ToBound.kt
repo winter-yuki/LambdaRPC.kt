@@ -1,6 +1,5 @@
 package io.lambdarpc.dsl
 
-import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.functions.frontend.*
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl
@@ -9,17 +8,17 @@ import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import kotlin.coroutines.coroutineContext
 
-suspend fun <R> FrontendFunction0<FreeInvoker, R>.toBound(): FrontendFunction0<BoundInvoker, R> =
-    ofInvoker(bound())
+suspend fun <R> RemoteFrontendFunction0<FreeInvoker, R>.toBound(): RemoteFrontendFunction0<BoundInvoker, R> =
+    RemoteFrontendFunction0(bound(), rc)
 
-suspend fun <A, R> FrontendFunction1<FreeInvoker, A, R>.toBound(): FrontendFunction1<BoundInvoker, A, R> =
-    ofInvoker(bound())
+suspend fun <A, R> RemoteFrontendFunction1<FreeInvoker, A, R>.toBound(): RemoteFrontendFunction1<BoundInvoker, A, R> =
+    RemoteFrontendFunction1(bound(), c1, rc)
 
-suspend fun <A, B, R> FrontendFunction2<FreeInvoker, A, B, R>.toBound(): FrontendFunction2<BoundInvoker, A, B, R> =
-    ofInvoker(bound())
+suspend fun <A, B, R> RemoteFrontendFunction2<FreeInvoker, A, B, R>.toBound(): RemoteFrontendFunction2<BoundInvoker, A, B, R> =
+    RemoteFrontendFunction2(bound(), c1, c2, rc)
 
-suspend fun <A, B, C, R> FrontendFunction3<FreeInvoker, A, B, C, R>.toBound(): FrontendFunction3<BoundInvoker, A, B, C, R> =
-    ofInvoker(bound())
+suspend fun <A, B, C, R> RemoteFrontendFunction3<FreeInvoker, A, B, C, R>.toBound(): RemoteFrontendFunction3<BoundInvoker, A, B, C, R> =
+    RemoteFrontendFunction3(bound(), c1, c2, c3, rc)
 
 private suspend fun getEndpoint(serviceId: ServiceId): Endpoint {
     val registry = coroutineContext[ServiceDispatcher]?.registry
@@ -28,5 +27,5 @@ private suspend fun getEndpoint(serviceId: ServiceId): Endpoint {
         ?: error("No such service in registry with id = $serviceId")
 }
 
-private suspend fun FrontendFunction<FreeInvoker>.bound(): BoundInvoker =
+private suspend fun RemoteFrontendFunction<FreeInvoker>.bound(): BoundInvoker =
     BoundInvokerImpl(invoker.accessName, invoker.serviceId, getEndpoint(invoker.serviceId))

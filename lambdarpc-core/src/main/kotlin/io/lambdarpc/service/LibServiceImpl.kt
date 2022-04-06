@@ -1,6 +1,6 @@
 package io.lambdarpc.service
 
-import io.lambdarpc.ExecutionException
+import io.lambdarpc.FunctionNotFoundException
 import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.dsl.ConnectionPool
@@ -9,10 +9,9 @@ import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
 import io.lambdarpc.functions.coding.get
-import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.functions.frontend.RemoteFrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl
-import io.lambdarpc.functions.frontend.invokers.FrontendInvoker
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.*
@@ -32,17 +31,10 @@ import mu.KLogger
 import java.io.Closeable
 
 class WrongServiceException internal constructor(expected: ServiceId, actual: ServiceId) :
-    LambdaRpcException(msgOf(expected, actual)) {
+    LambdaRpcException(messageOf(expected, actual)) {
     companion object {
-        internal fun msgOf(expected: ServiceId, actual: ServiceId) =
+        internal fun messageOf(expected: ServiceId, actual: ServiceId) =
             "Service with wrong id: expected = $expected, actual = $actual"
-    }
-}
-
-class FunctionNotFoundException internal constructor(name: AccessName) :
-    LambdaRpcException(msgOf(name)) {
-    companion object {
-        internal fun msgOf(name: AccessName) = "Function with name $name does not exist"
     }
 }
 
@@ -124,7 +116,7 @@ internal class LibServiceImpl(
             val response = if (initialRequest.serviceId.toSid() != serviceId) {
                 logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
                 val error = ExecuteError(
-                    message = WrongServiceException.msgOf(
+                    message = WrongServiceException.messageOf(
                         expected = initialRequest.serviceId.toSid(),
                         actual = serviceId
                     ),
@@ -169,11 +161,7 @@ internal class LibServiceImpl(
                 logger.info { "Complete exceptionally: id = $executionId" }
                 controller.completeExceptionally(
                     executionId.toEid(),
-                    ExecutionException(
-                        message = error.message,
-                        typeIdentity = error.typeIdentity,
-                        stackTrace = error.stackTrace
-                    )
+                    error.toException()
                 )
             }
             else -> throw UnknownMessageType("execute response")
@@ -189,30 +177,12 @@ internal class LibServiceImpl(
         codingContext: CodingContext,
         transformEntity: suspend (Entity) -> Entity = { it }
     ): ExecuteResponse = try {
-        val f = registry[request.accessName.an]
-        if (f != null) {
-            val result = f(codingContext, request.argsList)
-            ExecuteResponse(
-                request.executionId.toEid(),
-                transformEntity(result)
-            )
-        } else {
-            logger.info { "Function ${request.accessName} not found" }
-            val error = ExecuteError(
-                message = FunctionNotFoundException.msgOf(request.accessName.an),
-                typeIdentity = FunctionNotFoundException::class.java.canonicalName,
-                stackTrace = null
-            )
-            ExecuteResponse(request.executionId.toEid(), error)
-        }
+        val f = registry[request.accessName.an] ?: throw FunctionNotFoundException(request.accessName.an)
+        val result = f(codingContext, request.argsList)
+        ExecuteResponse(request.executionId.toEid(), transformEntity(result))
     } catch (e: Throwable) {
         logger.info { "Error caught: $e" }
-        val error = io.lambdarpc.transport.grpc.serialization.ExecuteError(
-            message = e.message.orEmpty(),
-            typeIdentity = e.javaClass.canonicalName,
-            stackTrace = e.stackTrace.joinToString("\n\t")
-        )
-        ExecuteResponse(request.executionId.toEid(), error)
+        ExecuteResponse(request.executionId.toEid(), e.toExecuteError())
     }
 
     /**
@@ -227,17 +197,13 @@ internal class LibServiceImpl(
             val oldName = function.channelFunction.accessName
             val f = localFunctionRegistry[oldName.an] ?: error("Function $oldName does not exist kek")
             val name = functionRegistry.register(f)
-            val boundFunction = object : FrontendFunction<BoundInvoker> {
+            val boundFunction = object : RemoteFrontendFunction<BoundInvoker> {
                 override val invoker: BoundInvoker
                     get() = BoundInvokerImpl(
                         accessName = name,
                         serviceId = this@LibServiceImpl.serviceId,
                         endpoint = this@LibServiceImpl.endpoint
                     )
-
-                override fun <I : FrontendInvoker> ofInvoker(invoker: I): FrontendFunction<I> {
-                    TODO("Remove whole channelToBound")
-                }
             }
             Entity(FunctionPrototype(boundFunction))
         }

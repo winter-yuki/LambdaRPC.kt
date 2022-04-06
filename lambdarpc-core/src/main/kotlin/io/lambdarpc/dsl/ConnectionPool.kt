@@ -1,4 +1,4 @@
-package io.lambdarpc.context
+package io.lambdarpc.dsl
 
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.MultipleUseConnectionProvider
@@ -18,7 +18,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 class ConnectionPool internal constructor() : AbstractCoroutineContextElement(Key), Closeable {
     companion object Key : CoroutineContext.Key<ConnectionPool>
 
-    private val _pool = MultipleUseConnectionProvider<Endpoint> { SimpleGrpcConnection(it) }
+    private val _pool = MultipleUseConnectionProvider<Endpoint> { SimpleGrpcConnection(it, usePlainText = true) }
     internal val endpointConnectionProvider: ConnectionProvider<Endpoint>
         get() = _pool
 

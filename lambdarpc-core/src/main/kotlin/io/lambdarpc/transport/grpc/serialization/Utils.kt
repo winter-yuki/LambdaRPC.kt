@@ -1,7 +1,8 @@
 package io.lambdarpc.transport.grpc.serialization
 
 import com.google.protobuf.ByteString
-import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.ExecutionException
+import io.lambdarpc.functions.frontend.RemoteFrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.functions.frontend.invokers.FreeInvoker
@@ -21,20 +22,36 @@ internal fun ExecutionId.encode() = toString()
 
 internal fun RawData.encode(): ByteString = bytes
 
-internal fun FrontendFunction<ChannelInvoker>.encode(): ChannelFunctionPrototype =
+internal fun RemoteFrontendFunction<ChannelInvoker>.encode(): ChannelFunctionPrototype =
     channelFunctionPrototype {
         accessName = this@encode.invoker.accessName.encode()
     }
 
-internal fun FrontendFunction<FreeInvoker>.encode(): FreeFunctionPrototype =
+internal fun RemoteFrontendFunction<FreeInvoker>.encode(): FreeFunctionPrototype =
     freeFunctionPrototype {
         accessName = this@encode.invoker.accessName.encode()
         serviceId = this@encode.invoker.serviceId.encode()
     }
 
-internal fun FrontendFunction<BoundInvoker>.encode(): BoundFunctionPrototype =
+internal fun RemoteFrontendFunction<BoundInvoker>.encode(): BoundFunctionPrototype =
     boundFunctionPrototype {
         accessName = this@encode.invoker.accessName.encode()
         serviceId = this@encode.invoker.serviceId.encode()
         endpoint = this@encode.invoker.endpoint.encode()
     }
+
+internal fun ExecuteError.toException() =
+    ExecutionException(
+        message = message,
+        typeIdentity = takeIf { hasTypeIdentity() }?.typeIdentity,
+        stackTrace = takeIf { hasStackTrace() }?.stackTrace
+    )
+
+internal fun Throwable.toExecuteError() =
+    ExecuteError(
+        message = message.orEmpty(),
+        typeIdentity = javaClass.canonicalName,
+        stackTrace = stackTrace.encode()
+    )
+
+internal fun Array<StackTraceElement>.encode() = joinToString("\n\t")

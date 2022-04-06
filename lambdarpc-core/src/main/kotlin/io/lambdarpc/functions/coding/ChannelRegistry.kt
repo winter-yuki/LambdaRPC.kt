@@ -1,6 +1,6 @@
 package io.lambdarpc.functions.coding
 
-import io.lambdarpc.exceptions.LambdaRpcException
+import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Is thrown when [ChannelInvoker] is called after its connection is already closed.
  */
-class CallDisconnectedChannelFunction :
+class CallDisconnectedChannelFunction internal constructor() :
     LambdaRpcException("Unable to call invalidated ChannelFunction.")
 
 /**

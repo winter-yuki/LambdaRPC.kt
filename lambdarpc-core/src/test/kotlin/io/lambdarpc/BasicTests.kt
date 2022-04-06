@@ -10,9 +10,9 @@ import io.lambdarpc.Facade.mapPoints
 import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.numpyAdd
 import io.lambdarpc.Facade.specializeAdd
-import io.lambdarpc.context.ServiceDispatcher
-import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.LibService
+import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.dsl.blockingConnectionPool
 import io.lambdarpc.transport.Service
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.addr
@@ -31,7 +31,7 @@ class BasicTests {
 
     @BeforeAll
     fun before() {
-        service = LibService(serviceId, Endpoint("localhost", 0)) {
+        service = LibService(serviceId, "localhost".addr, null) {
             bindings()
         }
         service.start()

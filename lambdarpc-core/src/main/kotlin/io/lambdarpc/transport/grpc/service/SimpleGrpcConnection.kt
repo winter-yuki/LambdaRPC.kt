@@ -23,9 +23,9 @@ internal class SimpleGrpcConnection(
     }
 }
 
-internal fun SimpleGrpcConnection(endpoint: Endpoint): SimpleGrpcConnection {
-    val builder = ManagedChannelBuilder
-        .forAddress(endpoint.address.a, endpoint.port.p)
-        .usePlaintext() // TODO remove
+internal fun SimpleGrpcConnection(endpoint: Endpoint, usePlainText: Boolean = false): SimpleGrpcConnection {
+    val builder = ManagedChannelBuilder.forAddress(endpoint.address.a, endpoint.port.p).apply {
+        if (usePlainText) usePlaintext()
+    }
     return SimpleGrpcConnection(builder.build())
 }

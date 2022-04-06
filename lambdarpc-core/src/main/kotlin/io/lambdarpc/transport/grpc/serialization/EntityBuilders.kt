@@ -1,10 +1,9 @@
 package io.lambdarpc.transport.grpc.serialization
 
-import io.lambdarpc.functions.frontend.FrontendFunction
+import io.lambdarpc.functions.frontend.RemoteFrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.functions.frontend.invokers.FreeInvoker
-import io.lambdarpc.functions.frontend.invokers.NativeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
@@ -22,22 +21,21 @@ internal fun FunctionPrototype(name: AccessName): FunctionPrototype =
     }
 
 @JvmName("ChannelFunctionPrototype")
-internal fun FunctionPrototype(f: FrontendFunction<ChannelInvoker>): FunctionPrototype =
+internal fun FunctionPrototype(f: RemoteFrontendFunction<ChannelInvoker>): FunctionPrototype =
     functionPrototype { channelFunction = f.encode() }
 
 @JvmName("FreeFunctionPrototype")
-internal fun FunctionPrototype(f: FrontendFunction<FreeInvoker>): FunctionPrototype =
+internal fun FunctionPrototype(f: RemoteFrontendFunction<FreeInvoker>): FunctionPrototype =
     functionPrototype { freeFunction = f.encode() }
 
 @JvmName("BoundFunctionPrototype")
-internal fun FunctionPrototype(f: FrontendFunction<BoundInvoker>): FunctionPrototype =
+internal fun FunctionPrototype(f: RemoteFrontendFunction<BoundInvoker>): FunctionPrototype =
     functionPrototype { boundFunction = f.encode() }
 
 @Suppress("UNCHECKED_CAST")
-internal fun FunctionPrototype(f: FrontendFunction<*>): FunctionPrototype =
-    when (val invoker = f.invoker) {
-        is ChannelInvoker -> FunctionPrototype(f as FrontendFunction<ChannelInvoker>)
-        is NativeInvoker<*> -> FunctionPrototype(invoker.name)
-        is FreeInvoker -> FunctionPrototype(f as FrontendFunction<FreeInvoker>)
-        is BoundInvoker -> FunctionPrototype(f as FrontendFunction<BoundInvoker>)
+internal fun FunctionPrototype(f: RemoteFrontendFunction<*>): FunctionPrototype =
+    when (f.invoker) {
+        is ChannelInvoker -> FunctionPrototype(f as RemoteFrontendFunction<ChannelInvoker>)
+        is FreeInvoker -> FunctionPrototype(f as RemoteFrontendFunction<FreeInvoker>)
+        is BoundInvoker -> FunctionPrototype(f as RemoteFrontendFunction<BoundInvoker>)
     }

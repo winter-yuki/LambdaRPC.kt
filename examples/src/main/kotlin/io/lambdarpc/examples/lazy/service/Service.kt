@@ -6,7 +6,8 @@ import io.lambdarpc.dsl.j
 import io.lambdarpc.examples.lazy.Promise
 import io.lambdarpc.examples.lazy.lazify
 import io.lambdarpc.examples.lazy.p
-import io.lambdarpc.utils.Endpoint
+import io.lambdarpc.utils.addr
+import io.lambdarpc.utils.port
 import io.lambdarpc.utils.toSid
 
 val serviceId = "d5ec2813-4468-4deb-b156-aeba87b91bd6".toSid()
@@ -29,7 +30,7 @@ private object Lib {
 
 fun main(args: Array<String>) {
     val (port) = args
-    val service = LibService(serviceId, Endpoint("localhost", port.toInt())) {
+    val service = LibService(serviceId, "localhost".addr, port.toInt().port) {
         s of lazify(Lib::s)
         a of lazify(Lib::a)
         b of lazify(Lib::b)

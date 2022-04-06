@@ -2,6 +2,10 @@ complexity:
   # Functions boilerplate for multiple args
   LongParameterList:
     excludes: [ '**/functions/frontend/**' ]
+  TooManyFunctions:
+    excludes:
+      - '**/Utils.kt'
+      - '**/test**'
 
 exceptions:
   # Temporal, proper error handling should be implemented

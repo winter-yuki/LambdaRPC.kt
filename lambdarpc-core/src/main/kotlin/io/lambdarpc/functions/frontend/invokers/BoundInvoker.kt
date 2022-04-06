@@ -1,6 +1,6 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint

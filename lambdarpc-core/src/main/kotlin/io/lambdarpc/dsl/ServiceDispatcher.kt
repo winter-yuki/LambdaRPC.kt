@@ -1,6 +1,6 @@
-package io.lambdarpc.context
+package io.lambdarpc.dsl
 
-import io.lambdarpc.exceptions.ServiceNotFound
+import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.transport.*
 import io.lambdarpc.transport.grpc.service.SimpleGrpcConnection
 import io.lambdarpc.utils.Endpoint
@@ -67,3 +67,5 @@ fun ServiceDispatcher(vararg endpoints: Pair<UUID, List<String>>): ServiceDispat
     val registry = MapServiceRegistry(map)
     return ServiceDispatcher(registry)
 }
+
+class ServiceNotFound internal constructor(id: ServiceId) : LambdaRpcException("Service not found: id = $id")

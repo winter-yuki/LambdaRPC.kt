@@ -7,7 +7,7 @@ import io.lambdarpc.examples.ml.mlservice.facade.mlServiceId
 
 fun main() {
     // Such service that looks like a library is called libservice
-    val service = LibService(mlServiceId, mlEndpoint) {
+    val service = LibService(mlServiceId, mlEndpoint.address, mlEndpoint.port) {
         fit of ::fit // Bind declaration and implementation
     }
     service.start()
