@@ -1,10 +1,10 @@
 package io.lambdarpc.service
 
+import io.lambdarpc.ExecutionException
+import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.coding.CodingContext
-import io.lambdarpc.context.ConnectionPool
-import io.lambdarpc.context.ServiceDispatcher
-import io.lambdarpc.exceptions.OtherException
-import io.lambdarpc.exceptions.UnknownMessageType
+import io.lambdarpc.dsl.ConnectionPool
+import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
@@ -30,6 +30,21 @@ import kotlinx.coroutines.launch
 import mu.KLoggable
 import mu.KLogger
 import java.io.Closeable
+
+class WrongServiceException internal constructor(expected: ServiceId, actual: ServiceId) :
+    LambdaRpcException(msgOf(expected, actual)) {
+    companion object {
+        internal fun msgOf(expected: ServiceId, actual: ServiceId) =
+            "Service with wrong id: expected = $expected, actual = $actual"
+    }
+}
+
+class FunctionNotFoundException internal constructor(name: AccessName) :
+    LambdaRpcException(msgOf(name)) {
+    companion object {
+        internal fun msgOf(name: AccessName) = "Function with name $name does not exist"
+    }
+}
 
 /**
  * Implementation of the libservice.
@@ -109,8 +124,12 @@ internal class LibServiceImpl(
             val response = if (initialRequest.serviceId.toSid() != serviceId) {
                 logger.info { "Initial request with wrong serviceId received: ${initialRequest.serviceId}" }
                 val error = ExecuteError(
-                    ErrorType.WRONG_SERVICE_ERROR,
-                    "Request for service ${initialRequest.serviceId} received at $serviceId"
+                    message = WrongServiceException.msgOf(
+                        expected = initialRequest.serviceId.toSid(),
+                        actual = serviceId
+                    ),
+                    typeIdentity = WrongServiceException::class.java.canonicalName,
+                    stackTrace = null // Nothing interesting here
                 )
                 ExecuteResponse(request.executionId.toEid(), error)
             } else {
@@ -150,7 +169,11 @@ internal class LibServiceImpl(
                 logger.info { "Complete exceptionally: id = $executionId" }
                 controller.completeExceptionally(
                     executionId.toEid(),
-                    OtherException(error.message) // TODO match errors
+                    ExecutionException(
+                        message = error.message,
+                        typeIdentity = error.typeIdentity,
+                        stackTrace = error.stackTrace
+                    )
                 )
             }
             else -> throw UnknownMessageType("execute response")
@@ -176,16 +199,20 @@ internal class LibServiceImpl(
         } else {
             logger.info { "Function ${request.accessName} not found" }
             val error = ExecuteError(
-                ErrorType.FUNCTION_NOT_FOUND_ERROR,
-                "Function ${request.accessName} not found"
+                message = FunctionNotFoundException.msgOf(request.accessName.an),
+                typeIdentity = FunctionNotFoundException::class.java.canonicalName,
+                stackTrace = null
             )
             ExecuteResponse(request.executionId.toEid(), error)
         }
     } catch (e: Throwable) {
         logger.info { "Error caught: $e" }
-        val message = e.message.orEmpty() + '\n' + e.stackTrace.joinToString("\n")
-        val error = ExecuteError(ErrorType.OTHER, message)
-        ExecuteResponse(request.executionId.toEid(), error) // TODO match errors
+        val error = io.lambdarpc.transport.grpc.serialization.ExecuteError(
+            message = e.message.orEmpty(),
+            typeIdentity = e.javaClass.canonicalName,
+            stackTrace = e.stackTrace.joinToString("\n\t")
+        )
+        ExecuteResponse(request.executionId.toEid(), error)
     }
 
     /**
