@@ -10,9 +10,7 @@ import io.lambdarpc.transport.MapServiceRegistry
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.service.GrpcService
-import io.lambdarpc.utils.Address
-import io.lambdarpc.utils.Port
-import io.lambdarpc.utils.ServiceId
+import io.lambdarpc.utils.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -20,12 +18,38 @@ import kotlin.contracts.contract
 /**
  * DSL function that creates libservice instance.
  */
+@Suppress("FunctionName")
+@OptIn(ExperimentalContracts::class)
+fun LibService(
+    serviceId: ServiceId, address: String, port: Int?,
+    serviceRegistry: ServiceRegistry = MapServiceRegistry(),
+    bindings: LibServiceDSL.() -> Unit
+): Service {
+    contract { callsInPlace(bindings, InvocationKind.EXACTLY_ONCE) }
+    return LibService(serviceId, address.addr, port?.port, serviceRegistry, bindings)
+}
+
+/**
+ * DSL function that creates libservice instance.
+ */
+@Suppress("FunctionName")
+@OptIn(ExperimentalContracts::class)
+fun LibService(
+    serviceId: ServiceId, endpoint: Endpoint,
+    serviceRegistry: ServiceRegistry = MapServiceRegistry(),
+    bindings: LibServiceDSL.() -> Unit
+): Service {
+    contract { callsInPlace(bindings, InvocationKind.EXACTLY_ONCE) }
+    return LibService(serviceId, endpoint.address, endpoint.port, serviceRegistry, bindings)
+}
+
+/**
+ * DSL function that creates libservice instance.
+ */
 @OptIn(ExperimentalContracts::class)
 @Suppress("FunctionName")
 fun LibService(
-    serviceId: ServiceId,
-    address: Address,
-    port: Port?,
+    serviceId: ServiceId, address: Address, port: Port?,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
 ): Service {

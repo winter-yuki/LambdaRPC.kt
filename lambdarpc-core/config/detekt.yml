@@ -22,6 +22,8 @@ formatting:
   MaximumLineLength:
     excludes:
       - '**/ToBound.kt'
+  ParameterListWrapping:
+    active: false
 
 style:
   # IDEA automatically folds imports by default

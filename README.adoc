@@ -142,7 +142,7 @@ Then λRPC provides efficient communication with the corresponding backend part.
 .Build and run fast tests and checks
 [source,bash]
 ----
-$ ./gradlew :lambdarpc-core:build
+$ ./gradlew build
 ----
 
 .Run stress tests
