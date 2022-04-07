@@ -1,8 +1,8 @@
-package io.lambdarpc.examples.lazy.client
+package io.lambdarpc.examples.promise_pipeline.client
 
 import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.dsl.blockingConnectionPool
-import io.lambdarpc.examples.lazy.service.*
+import io.lambdarpc.examples.promise_pipeline.service.*
 import io.lambdarpc.utils.Endpoint
 
 fun main(args: Array<String>) = blockingConnectionPool(

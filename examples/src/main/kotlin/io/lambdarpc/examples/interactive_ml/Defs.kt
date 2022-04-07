@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.ml
+package io.lambdarpc.examples.interactive_ml
 
 import io.lambdarpc.utils.Endpoint
 

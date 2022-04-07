@@ -161,7 +161,7 @@ $ cd ./lambdarpc-core/build/dokka/html
 === Repository organization
 
 .examples
-* `ml` -- readme example.
+* `interactive_ml` -- readme example.
 
 [sources,bash]
 ----
@@ -171,15 +171,15 @@ $ ./gradlew :examples:ml.mlservice
 $ ./gradlew :examples:ml.client
 ----
 
-* `lazy` -- an interesting example that shows the possibility to build lazy data processing pipelines using common λRPC functionality.
+* `promise_pipeline` -- an interesting example that shows the possibility to build lazy data processing pipelines using common λRPC functionality.
 
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
-$ ./gradlew :examples:lazy.service --args=8090
-$ ./gradlew :examples:lazy.service --args=8091
+$ ./gradlew :examples:promise.service --args=8090
+$ ./gradlew :examples:promise.service --args=8091
 # Any number of services on different ports
-$ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
+$ ./gradlew :examples:promise.client --args='8090 8091' # Ports of all services
 ----
 
 .lambdarpc

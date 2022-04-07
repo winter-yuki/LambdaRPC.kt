@@ -23,21 +23,21 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
 }
 
-val lazy = "io.lambdarpc.examples.lazy"
+val lazy = "io.lambdarpc.examples.promise_pipeline"
 
-tasks.register<JavaExec>("lazy.service") {
+tasks.register<JavaExec>("promise.service") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.service.ServiceKt")
 }
 
-tasks.register<JavaExec>("lazy.client") {
+tasks.register<JavaExec>("promise.client") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.client.ClientKt")
 }
 
-val ml = "io.lambdarpc.examples.ml"
+val ml = "io.lambdarpc.examples.interactive_ml"
 
 tasks.register<JavaExec>("ml.dataservice") {
     dependsOn("classes")

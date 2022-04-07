@@ -1,11 +1,11 @@
-package io.lambdarpc.examples.lazy.service
+package io.lambdarpc.examples.promise_pipeline.service
 
 import io.lambdarpc.dsl.LibService
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.j
-import io.lambdarpc.examples.lazy.Promise
-import io.lambdarpc.examples.lazy.lazify
-import io.lambdarpc.examples.lazy.p
+import io.lambdarpc.examples.promise_pipeline.Promise
+import io.lambdarpc.examples.promise_pipeline.lazify
+import io.lambdarpc.examples.promise_pipeline.p
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.toSid
 

@@ -1,16 +1,16 @@
-package io.lambdarpc.examples.ml.client
+package io.lambdarpc.examples.interactive_ml.client
 
 import io.lambdarpc.dsl.ServiceDispatcher
 import io.lambdarpc.dsl.blockingConnectionPool
 import io.lambdarpc.dsl.toBound
-import io.lambdarpc.examples.ml.dataEndpoint
-import io.lambdarpc.examples.ml.dataservice.facade.dataLoader
-import io.lambdarpc.examples.ml.dataservice.facade.dataServiceId
-import io.lambdarpc.examples.ml.mlEndpoint
-import io.lambdarpc.examples.ml.mlservice.Metric
-import io.lambdarpc.examples.ml.mlservice.Model
-import io.lambdarpc.examples.ml.mlservice.facade.fit
-import io.lambdarpc.examples.ml.mlservice.facade.mlServiceId
+import io.lambdarpc.examples.interactive_ml.dataEndpoint
+import io.lambdarpc.examples.interactive_ml.dataservice.facade.dataLoader
+import io.lambdarpc.examples.interactive_ml.dataservice.facade.dataServiceId
+import io.lambdarpc.examples.interactive_ml.mlEndpoint
+import io.lambdarpc.examples.interactive_ml.mlservice.Metric
+import io.lambdarpc.examples.interactive_ml.mlservice.Model
+import io.lambdarpc.examples.interactive_ml.mlservice.facade.fit
+import io.lambdarpc.examples.interactive_ml.mlservice.facade.mlServiceId
 import io.lambdarpc.transport.MapServiceRegistry
 
 /**

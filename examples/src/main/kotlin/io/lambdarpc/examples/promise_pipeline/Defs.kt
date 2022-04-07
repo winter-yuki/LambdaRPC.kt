@@ -1,6 +1,6 @@
 @file:Suppress("SpellCheckingInspection")
 
-package io.lambdarpc.examples.lazy
+package io.lambdarpc.examples.promise_pipeline
 
 import io.lambdarpc.coding.Coder
 import io.lambdarpc.dsl.f

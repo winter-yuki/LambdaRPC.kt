@@ -1,4 +1,4 @@
-package io.lambdarpc.examples.ml.mlservice
+package io.lambdarpc.examples.interactive_ml.mlservice
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking

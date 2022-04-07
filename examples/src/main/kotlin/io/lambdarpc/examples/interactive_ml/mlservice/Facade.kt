@@ -1,16 +1,16 @@
 @file:Suppress("PackageDirectoryMismatch")
 
-package io.lambdarpc.examples.ml.mlservice.facade
+package io.lambdarpc.examples.interactive_ml.mlservice.facade
 
 import io.lambdarpc.coding.Coder
 import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.dsl.def
 import io.lambdarpc.dsl.f
 import io.lambdarpc.dsl.j
-import io.lambdarpc.examples.ml.mlservice.Data
-import io.lambdarpc.examples.ml.mlservice.Epoch
-import io.lambdarpc.examples.ml.mlservice.Metric
-import io.lambdarpc.examples.ml.mlservice.Model
+import io.lambdarpc.examples.interactive_ml.mlservice.Data
+import io.lambdarpc.examples.interactive_ml.mlservice.Epoch
+import io.lambdarpc.examples.interactive_ml.mlservice.Metric
+import io.lambdarpc.examples.interactive_ml.mlservice.Model
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.serialization.Entity
 import io.lambdarpc.transport.serialization.RawData
