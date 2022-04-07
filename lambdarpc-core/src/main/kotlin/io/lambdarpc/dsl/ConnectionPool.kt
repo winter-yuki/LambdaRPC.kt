@@ -2,7 +2,7 @@ package io.lambdarpc.dsl
 
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.MultipleUseConnectionProvider
-import io.lambdarpc.transport.grpc.service.SimpleGrpcConnection
+import io.lambdarpc.transport.grpc.SimpleGrpcConnection
 import io.lambdarpc.utils.Endpoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking

@@ -1,9 +1,8 @@
-package io.lambdarpc.transport.grpc.service
+package io.lambdarpc.transport.grpc
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
 import io.lambdarpc.transport.Service
-import io.lambdarpc.transport.grpc.LibServiceGrpcKt
 import io.lambdarpc.utils.Port
 import io.lambdarpc.utils.port
 

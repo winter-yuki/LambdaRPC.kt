@@ -15,8 +15,7 @@ import io.lambdarpc.functions.frontend.invokers.BoundInvokerImpl
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
 import io.lambdarpc.transport.grpc.*
-import io.lambdarpc.transport.grpc.serialization.*
-import io.lambdarpc.transport.grpc.service.AbstractLibService
+import io.lambdarpc.transport.serialization.*
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

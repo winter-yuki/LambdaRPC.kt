@@ -1,7 +1,7 @@
 package io.lambdarpc.coding
 
 import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.transport.grpc.serialization.Entity
+import io.lambdarpc.transport.serialization.Entity
 
 class FunctionCoderAdapter<F>(private val coder: FunctionCoder<F>) : Coder<F> {
     override fun encode(value: F, context: CodingContext): Entity = Entity(coder.encode(value, context))

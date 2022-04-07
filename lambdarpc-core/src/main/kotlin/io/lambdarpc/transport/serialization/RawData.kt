@@ -1,4 +1,4 @@
-package io.lambdarpc.transport.grpc.serialization
+package io.lambdarpc.transport.serialization
 
 import com.google.protobuf.ByteString
 import java.nio.charset.Charset

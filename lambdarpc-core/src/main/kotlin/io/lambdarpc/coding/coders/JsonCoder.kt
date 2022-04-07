@@ -3,8 +3,8 @@ package io.lambdarpc.coding.coders
 import io.lambdarpc.coding.Coder
 import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.transport.grpc.serialization.Entity
-import io.lambdarpc.transport.grpc.serialization.RawData
+import io.lambdarpc.transport.serialization.Entity
+import io.lambdarpc.transport.serialization.RawData
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer

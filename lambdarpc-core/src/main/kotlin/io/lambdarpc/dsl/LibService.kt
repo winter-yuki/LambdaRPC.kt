@@ -9,7 +9,7 @@ import io.lambdarpc.service.LibServiceImpl
 import io.lambdarpc.transport.MapServiceRegistry
 import io.lambdarpc.transport.Service
 import io.lambdarpc.transport.ServiceRegistry
-import io.lambdarpc.transport.grpc.service.GrpcService
+import io.lambdarpc.transport.grpc.GrpcService
 import io.lambdarpc.utils.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind

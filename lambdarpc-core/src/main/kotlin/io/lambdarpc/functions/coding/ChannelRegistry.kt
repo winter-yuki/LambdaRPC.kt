@@ -4,7 +4,7 @@ import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
 import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
-import io.lambdarpc.transport.grpc.serialization.ExecuteRequest
+import io.lambdarpc.transport.serialization.ExecuteRequest
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ExecutionId
 import kotlinx.coroutines.CompletableDeferred

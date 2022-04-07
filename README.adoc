@@ -184,8 +184,6 @@ $ ./gradlew :examples:lazy.client --args='8090 8091' # Ports of all services
 
 .lambdarpc
 * `dsl` -- domain-specific language for λRPC library users.
-* `exceptions` -- base λRPC exception classes.
-* `context` -- coroutine context elements that are needed to invoke frontend functions.
 * `functions` -- λRPC functions: backend and frontend parts.
 * `coding` -- contains `Coder` definition, it is a thing that can serialize data and work with functions.
 ** λRPC provides some default data coders based on `kotlinx.serialization`, but users can also implement their own.

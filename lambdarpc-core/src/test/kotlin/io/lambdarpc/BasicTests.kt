@@ -91,7 +91,7 @@ class BasicTests {
     }
 
     @Test
-    fun `native invoker`() = blockingConnectionPool(serviceDispatcher) {
+    fun `native frontend`() = blockingConnectionPool(serviceDispatcher) {
         assertEquals(10, eval5(add5))
     }
 

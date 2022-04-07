@@ -1,6 +1,4 @@
-package io.lambdarpc.transport.grpc.service
-
-import io.lambdarpc.transport.grpc.LibServiceGrpcKt
+package io.lambdarpc.transport.grpc
 
 /**
  * gRPC libservice abstract implementation.

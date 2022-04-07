@@ -57,7 +57,7 @@ class StressTest {
                 assertEquals(11, eval5(specializeAdd(6)))
             }
             launch {
-                // Test native invoker
+                // Test native frontend
                 assertEquals(10, eval5(add5))
             }
             launch {

@@ -12,8 +12,8 @@ import io.lambdarpc.examples.ml.mlservice.Epoch
 import io.lambdarpc.examples.ml.mlservice.Metric
 import io.lambdarpc.examples.ml.mlservice.Model
 import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.transport.grpc.serialization.Entity
-import io.lambdarpc.transport.grpc.serialization.RawData
+import io.lambdarpc.transport.serialization.Entity
+import io.lambdarpc.transport.serialization.RawData
 import io.lambdarpc.utils.toSid
 
 val mlServiceId = "1a897419-0fd2-4e84-976f-0a2211a48898".toSid()

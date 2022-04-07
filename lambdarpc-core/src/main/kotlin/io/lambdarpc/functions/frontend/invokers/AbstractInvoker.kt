@@ -13,7 +13,7 @@ import io.lambdarpc.transport.grpc.Entity
 import io.lambdarpc.transport.grpc.ExecuteRequest
 import io.lambdarpc.transport.grpc.ExecuteResponse
 import io.lambdarpc.transport.grpc.InMessage
-import io.lambdarpc.transport.grpc.serialization.*
+import io.lambdarpc.transport.serialization.*
 import io.lambdarpc.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -34,4 +34,6 @@ internal operator fun FunctionRegistry.contains(name: AccessName): Boolean =
 
 internal operator fun FunctionRegistry.get(name: AccessName): BackendFunction? = functions[name] ?: parent?.get(name)
 
-internal fun FunctionRegistry.getValue(name: AccessName): BackendFunction = functions.getValue(name)
+internal fun FunctionRegistry.getValue(name: AccessName): BackendFunction =
+    if (parent == null) functions.getValue(name)
+    else functions[name] ?: parent.getValue(name)

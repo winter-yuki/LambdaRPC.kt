@@ -1,7 +1,6 @@
-package io.lambdarpc.transport.grpc.service
+package io.lambdarpc.transport.grpc
 
 import io.grpc.ManagedChannel
-import io.lambdarpc.transport.grpc.LibServiceGrpcKt
 
 internal typealias Stub = LibServiceGrpcKt.LibServiceCoroutineStub
 

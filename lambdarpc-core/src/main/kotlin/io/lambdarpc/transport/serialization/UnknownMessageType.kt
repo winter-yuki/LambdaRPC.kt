@@ -1,4 +1,4 @@
-package io.lambdarpc.transport.grpc.serialization
+package io.lambdarpc.transport.serialization
 
 import io.lambdarpc.LambdaRpcException
 

@@ -2,7 +2,7 @@ package io.lambdarpc.dsl
 
 import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.transport.*
-import io.lambdarpc.transport.grpc.service.SimpleGrpcConnection
+import io.lambdarpc.transport.grpc.SimpleGrpcConnection
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId
 import io.lambdarpc.utils.associateRepeatable

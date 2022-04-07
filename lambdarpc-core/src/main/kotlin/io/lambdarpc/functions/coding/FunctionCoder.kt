@@ -10,8 +10,8 @@ import io.lambdarpc.transport.grpc.BoundFunctionPrototype
 import io.lambdarpc.transport.grpc.ChannelFunctionPrototype
 import io.lambdarpc.transport.grpc.FreeFunctionPrototype
 import io.lambdarpc.transport.grpc.FunctionPrototype
-import io.lambdarpc.transport.grpc.serialization.FunctionPrototype
-import io.lambdarpc.transport.grpc.serialization.UnknownMessageType
+import io.lambdarpc.transport.serialization.FunctionPrototype
+import io.lambdarpc.transport.serialization.UnknownMessageType
 import io.lambdarpc.utils.*
 
 /**

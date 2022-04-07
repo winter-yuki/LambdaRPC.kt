@@ -19,8 +19,8 @@ import io.lambdarpc.dsl.f
 import io.lambdarpc.dsl.j
 import io.lambdarpc.functions.coding.CallDisconnectedChannelFunction
 import io.lambdarpc.transport.grpc.Entity
-import io.lambdarpc.transport.grpc.serialization.Entity
-import io.lambdarpc.transport.grpc.serialization.rd
+import io.lambdarpc.transport.serialization.Entity
+import io.lambdarpc.transport.serialization.rd
 import io.lambdarpc.utils.toSid
 import kotlinx.serialization.Serializable
 import kotlin.math.sqrt
