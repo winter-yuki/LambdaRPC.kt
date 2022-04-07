@@ -182,7 +182,7 @@ $ ./gradlew :examples:promise.service --args=8091
 $ ./gradlew :examples:promise.client --args='8090 8091' # Ports of all services
 ----
 
-.lambdarpc
+.lambdarpc-core
 * `dsl` -- domain-specific language for λRPC library users.
 * `functions` -- λRPC functions: backend and frontend parts.
 * `coding` -- contains `Coder` definition, it is a thing that can serialize data and work with functions.

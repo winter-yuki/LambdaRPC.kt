@@ -16,7 +16,6 @@ tasks.withType<KotlinCompile>().all {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":lambdarpc-core"))
-    implementation(project(":lambdarpc-coders"))
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.slf4j:slf4j-simple:1.7.36")
