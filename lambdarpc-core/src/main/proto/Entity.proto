@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "io.lambdarpc.transport.grpc";
+package io.lambdarpc.transport.grpc;
+
+import "FunctionPrototype.proto";
+
+// "Any" abject.
+// Function prototype exists to reduce serializations
+message Entity {
+  oneof content {
+    bytes data = 1;
+    FunctionPrototype function = 2;
+  }
+}

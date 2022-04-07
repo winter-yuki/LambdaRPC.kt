@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "io.lambdarpc.transport.grpc";
+package io.lambdarpc.transport.grpc;
+
+import "Entity.proto";
+
+message ExecuteError {
+  string message = 1;
+  optional string typeIdentity = 2;
+  optional string stackTrace = 3;
+}
+
+message ExecuteResponse {
+  string executionId = 1;
+  oneof content {
+    Entity result = 2;
+    ExecuteError error = 3;
+  }
+}
