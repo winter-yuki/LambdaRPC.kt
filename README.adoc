@@ -166,9 +166,9 @@ $ cd ./lambdarpc-core/build/dokka/html
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
-$ ./gradlew :examples:ml.dataservice
-$ ./gradlew :examples:ml.mlservice
-$ ./gradlew :examples:ml.client
+$ ./gradlew :examples:interactive-ml:dataservice
+$ ./gradlew :examples:interactive-ml:mlservice
+$ ./gradlew :examples:interactive-ml:client
 ----
 
 * `promise_pipeline` -- an interesting example that shows the possibility to build lazy data processing pipelines using common λRPC functionality.
@@ -176,10 +176,10 @@ $ ./gradlew :examples:ml.client
 [sources,bash]
 ----
 $ cd LambdaRPC.kt
-$ ./gradlew :examples:promise.service --args=8090
-$ ./gradlew :examples:promise.service --args=8091
+$ ./gradlew :examples:promise-pipeline:service --args=8090
+$ ./gradlew :examples:promise-pipeline:service --args=8091
 # Any number of services on different ports
-$ ./gradlew :examples:promise.client --args='8090 8091' # Ports of all services
+$ ./gradlew :examples:promise-pipeline:client --args='8090 8091' # Ports of all services
 ----
 
 .lambdarpc-core

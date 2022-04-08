@@ -27,9 +27,9 @@ dependencies {
     api("com.google.protobuf:protobuf-java-util:3.19.4")
     api("com.google.protobuf:protobuf-kotlin:3.19.4")
     api("io.grpc:grpc-kotlin-stub:1.2.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-    implementation("org.slf4j:slf4j-simple:1.7.36")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    api("org.slf4j:slf4j-simple:1.7.36")
+    api("io.github.microutils:kotlin-logging-jvm:2.1.21")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
 
     testImplementation(kotlin("test"))

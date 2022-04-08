@@ -24,34 +24,14 @@ dependencies {
 
 val lazy = "io.lambdarpc.examples.promise_pipeline"
 
-tasks.register<JavaExec>("promise.service") {
+tasks.register<JavaExec>("service") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.service.ServiceKt")
 }
 
-tasks.register<JavaExec>("promise.client") {
+tasks.register<JavaExec>("client") {
     dependsOn("classes")
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("$lazy.client.ClientKt")
-}
-
-val ml = "io.lambdarpc.examples.interactive_ml"
-
-tasks.register<JavaExec>("ml.dataservice") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$ml.dataservice.ServiceKt")
-}
-
-tasks.register<JavaExec>("ml.mlservice") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$ml.mlservice.ServiceKt")
-}
-
-tasks.register<JavaExec>("ml.client") {
-    dependsOn("classes")
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("$ml.client.ClientKt")
 }
