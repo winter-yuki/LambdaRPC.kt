@@ -190,8 +190,8 @@ $ ./gradlew :examples:promise-pipeline:client --args='8090 8091' # Ports of all 
 ** Function encoding saves language closure as backend function to the registry with some `access name`.
 Function decoding creates a frontend function that communicates with the corresponding backend function.
 * `service` -- libservice implementation.
-* `transport` -- service and connection interfaces, extensions and implementations related to the gRPC backend.
-* `utils` -- some useful utils.
+* `transport` -- service and connection interfaces, internal protobuf serialization for λRPC protocol needs,
+extensions and implementations related to the gRPC backend.
 
 == Links
 
