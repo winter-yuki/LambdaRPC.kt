@@ -33,7 +33,7 @@ class ServiceDispatcher(internal val registry: ServiceRegistry) : AbstractCorout
         val provider = coroutineContext[ConnectionPool]?.endpointConnectionProvider
         if (provider != null) return provider
         logger.warn { "Connection pool is not used" }
-        return SingleUseConnectionProvider { SimpleGrpcConnection(it) }
+        return SingleUseConnectionProvider { SimpleGrpcConnection(it, usePlainText = true) }
     }
 
     companion object Key : CoroutineContext.Key<ServiceDispatcher>
