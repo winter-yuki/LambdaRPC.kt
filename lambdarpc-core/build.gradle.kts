@@ -14,23 +14,23 @@ plugins {
 
 tasks.withType<KotlinCompile>().all {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
+        freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn", "-Xexplicit-api=warning")
         jvmTarget = "11"
     }
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    runtimeOnly("io.grpc:grpc-netty-shaded:1.44.0")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    api("io.grpc:grpc-protobuf:1.44.0")
-    api("com.google.protobuf:protobuf-java-util:3.19.4")
-    api("com.google.protobuf:protobuf-kotlin:3.19.4")
+    runtimeOnly("io.grpc:grpc-netty-shaded:1.46.0")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    api("io.grpc:grpc-protobuf:1.46.0")
+    api("com.google.protobuf:protobuf-java-util:3.20.1")
+    api("com.google.protobuf:protobuf-kotlin:3.20.1")
     api("io.grpc:grpc-kotlin-stub:1.2.1")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    api("org.slf4j:slf4j-api:1.7.36")
     api("org.slf4j:slf4j-simple:1.7.36")
     api("io.github.microutils:kotlin-logging-jvm:2.1.21")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
 
     testImplementation(kotlin("test"))
     testImplementation(platform("org.junit:junit-bom:5.8.2"))

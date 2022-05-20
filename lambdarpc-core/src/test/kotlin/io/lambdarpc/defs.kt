@@ -25,27 +25,27 @@ import io.lambdarpc.utils.toSid
 import kotlinx.serialization.Serializable
 import kotlin.math.sqrt
 
-val serviceId = "cddc248f-5271-4091-aeeb-f5f374e92e8e".toSid()
+internal val serviceId = "cddc248f-5271-4091-aeeb-f5f374e92e8e".toSid()
 
 @Serializable
-data class Point(val x: Double, val y: Double)
+internal data class Point(val x: Double, val y: Double)
 
 /**
  * Some struct with complex internal structure.
  */
-data class NumpyArray<T>(val x: T)
+internal data class NumpyArray<T>(val x: T)
 
-object NumpyArrayIntCoder : Coder<NumpyArray<Int>> {
-    override fun encode(value: NumpyArray<Int>, context: CodingContext): Entity =
+internal object NumpyArrayIntCoder : Coder<NumpyArray<Int>> {
+    override suspend fun encode(value: NumpyArray<Int>, context: CodingContext): Entity =
         Entity(ByteString.copyFrom(byteArrayOf(value.x.toByte())).rd)
 
-    override fun decode(entity: Entity, context: CodingContext): NumpyArray<Int> =
+    override suspend fun decode(entity: Entity, context: CodingContext): NumpyArray<Int> =
         NumpyArray(entity.data.toByteArray().first().toInt())
 }
 
 private typealias Norm = suspend (Point) -> Double
 
-object Lib {
+internal object Lib {
     fun add5(x: Int) = x + 5
     fun add(x: Int, y: Int) = x + y
 
@@ -81,7 +81,7 @@ object Lib {
     fun numpyAdd(x: Int, arr: NumpyArray<Int>) = NumpyArray(x + arr.x)
 }
 
-object Facade {
+internal object Facade {
     val add5 by serviceId.def(j<Int>(), j<Int>())
     val add by serviceId.def(j<Int>(), j<Int>(), j<Int>())
 
@@ -105,7 +105,7 @@ object Facade {
     val numpyAdd by serviceId.def(j<Int>(), NumpyArrayIntCoder, NumpyArrayIntCoder)
 }
 
-fun LibServiceDSL.bindings() {
+internal fun LibServiceDSL.bindings() {
     add5 of Lib::add5
     add of Lib::add
 

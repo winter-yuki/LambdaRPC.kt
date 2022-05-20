@@ -8,11 +8,11 @@ import io.lambdarpc.functions.frontend.RemoteFrontendFunction3
 import io.lambdarpc.functions.frontend.invokers.FreeInvoker
 import io.lambdarpc.utils.AccessName
 
-interface Declaration {
-    val name: AccessName
+public interface Declaration {
+    public val name: AccessName
 }
 
-class Declaration0<R>(
+public class Declaration0<R>(
     invoker: FreeInvoker,
     override val rc: Coder<R>
 ) : RemoteFrontendFunction0<FreeInvoker, R>(invoker, rc), Declaration {
@@ -20,7 +20,7 @@ class Declaration0<R>(
         get() = invoker.accessName
 }
 
-class Declaration1<A, R>(
+public class Declaration1<A, R>(
     invoker: FreeInvoker,
     override val c1: Coder<A>,
     override val rc: Coder<R>
@@ -29,7 +29,7 @@ class Declaration1<A, R>(
         get() = invoker.accessName
 }
 
-class Declaration2<A, B, R>(
+public class Declaration2<A, B, R>(
     invoker: FreeInvoker,
     override val c1: Coder<A>,
     override val c2: Coder<B>,
@@ -39,7 +39,7 @@ class Declaration2<A, B, R>(
         get() = invoker.accessName
 }
 
-class Declaration3<A, B, C, R>(
+public class Declaration3<A, B, C, R>(
     invoker: FreeInvoker,
     override val c1: Coder<A>,
     override val c2: Coder<B>,

@@ -7,10 +7,10 @@ import io.lambdarpc.functions.frontend.invokers.FreeInvoker
 import io.lambdarpc.transport.grpc.*
 import io.lambdarpc.utils.AccessName
 
-fun Entity(data: RawData): Entity =
+public fun Entity(data: RawData): Entity =
     entity { this.data = data.encode() }
 
-fun Entity(f: FunctionPrototype): Entity =
+public fun Entity(f: FunctionPrototype): Entity =
     entity { this.function = f }
 
 internal fun FunctionPrototype(name: AccessName): FunctionPrototype =
@@ -38,4 +38,5 @@ internal fun FunctionPrototype(f: RemoteFrontendFunction<*>): FunctionPrototype 
         is ChannelInvoker -> FunctionPrototype(f as RemoteFrontendFunction<ChannelInvoker>)
         is FreeInvoker -> FunctionPrototype(f as RemoteFrontendFunction<FreeInvoker>)
         is BoundInvoker -> FunctionPrototype(f as RemoteFrontendFunction<BoundInvoker>)
+        else -> TODO()
     }

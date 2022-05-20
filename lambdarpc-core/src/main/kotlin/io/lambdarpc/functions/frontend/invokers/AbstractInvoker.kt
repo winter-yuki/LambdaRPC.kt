@@ -1,7 +1,6 @@
 package io.lambdarpc.functions.frontend.invokers
 
 import io.lambdarpc.ExecutionException
-import io.lambdarpc.FunctionNotFoundException
 import io.lambdarpc.coding.CodingContext
 import io.lambdarpc.coding.CodingScope
 import io.lambdarpc.functions.coding.ChannelRegistry
@@ -113,7 +112,7 @@ internal abstract class AbstractInvoker<I : Any>(private val connectionId: I) : 
         launch {
             val response = try {
                 val name = request.accessName.an
-                val f = functionRegistry[name] ?: throw FunctionNotFoundException(name)
+                val f = functionRegistry[name] ?: error("Function $name not found")
                 val result = f(context, request.argsList)
                 ExecuteResponse(request.executionId.toEid(), result)
             } catch (e: Throwable) {

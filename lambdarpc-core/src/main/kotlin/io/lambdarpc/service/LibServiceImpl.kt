@@ -3,8 +3,8 @@ package io.lambdarpc.service
 import io.lambdarpc.FunctionNotFoundException
 import io.lambdarpc.LambdaRpcException
 import io.lambdarpc.coding.CodingContext
-import io.lambdarpc.dsl.ConnectionPool
-import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.context.ConnectionPool
+import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.functions.coding.ChannelRegistry
 import io.lambdarpc.functions.coding.FunctionCodingContext
 import io.lambdarpc.functions.coding.FunctionRegistry
@@ -29,9 +29,9 @@ import mu.KLoggable
 import mu.KLogger
 import java.io.Closeable
 
-class WrongServiceException internal constructor(expected: ServiceId, actual: ServiceId) :
+public class WrongServiceException internal constructor(expected: ServiceId, actual: ServiceId) :
     LambdaRpcException(messageOf(expected, actual)) {
-    companion object {
+    internal companion object {
         internal fun messageOf(expected: ServiceId, actual: ServiceId) =
             "Service with wrong id: expected = $expected, actual = $actual"
     }

@@ -1,4 +1,4 @@
-package io.lambdarpc.dsl
+package io.lambdarpc.context
 
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.transport.MultipleUseConnectionProvider
@@ -15,8 +15,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 /**
  * Holds a pool of opened connections.
  */
-class ConnectionPool internal constructor() : AbstractCoroutineContextElement(Key), Closeable {
-    companion object Key : CoroutineContext.Key<ConnectionPool>
+public class ConnectionPool : AbstractCoroutineContextElement(Key), Closeable {
+    public companion object Key : CoroutineContext.Key<ConnectionPool>
 
     private val _pool = MultipleUseConnectionProvider<Endpoint> { SimpleGrpcConnection(it, usePlainText = true) }
     internal val endpointConnectionProvider: ConnectionProvider<Endpoint>
@@ -27,14 +27,14 @@ class ConnectionPool internal constructor() : AbstractCoroutineContextElement(Ke
     }
 }
 
-suspend fun <R> useConnectionPool(
+public suspend fun <R> useConnectionPool(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> R
 ): R = ConnectionPool().use {
     withContext(context + it) { block() }
 }
 
-fun <R> blockingConnectionPool(
+public fun <R> blockingConnectionPool(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> R
 ): R = runBlocking {

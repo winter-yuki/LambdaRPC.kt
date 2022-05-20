@@ -1,6 +1,6 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.ServiceId
@@ -10,9 +10,9 @@ import kotlin.coroutines.coroutineContext
  * [FrontendInvoker] that knows only [serviceId] of its backend part
  * and dynamically receives via the [ConnectionProvider] needed endpoint.
  */
-interface FreeInvoker : FrontendInvoker {
-    val accessName: AccessName
-    val serviceId: ServiceId
+public interface FreeInvoker : FrontendInvoker {
+    public val accessName: AccessName
+    public val serviceId: ServiceId
 }
 
 internal class FreeInvokerImpl(

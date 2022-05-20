@@ -7,13 +7,13 @@ import io.lambdarpc.transport.grpc.Entity
 /**
  * Invokes a specific [FrontendFunction] kind.
  */
-sealed interface FrontendInvoker {
+public sealed interface FrontendInvoker {
     /**
      * Coding scope lives only during one invocation.
      */
-    suspend operator fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R
+    public suspend operator fun <R> invoke(block: suspend CodingScope.(Invokable) -> R): R
 
-    fun interface Invokable {
-        suspend operator fun invoke(vararg args: Entity): Entity
+    public fun interface Invokable {
+        public suspend operator fun invoke(vararg args: Entity): Entity
     }
 }

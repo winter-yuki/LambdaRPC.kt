@@ -28,12 +28,14 @@ internal abstract class AbstractFunctionCoder<F> : FunctionCoder<F> {
     override fun encode(function: F, context: CodingContext): FunctionPrototype = context.functionContext.run {
         when (function) {
             is RemoteFrontendFunction<*> -> {
+                @Suppress("REDUNDANT_ELSE_IN_WHEN") // Compiler fails to check exhaustiveness at 1.6.21
                 when (function.invoker) {
                     is ChannelInvoker -> {
                         val name = functionRegistry.register(function.toBackendFunction())
                         FunctionPrototype(name)
                     }
                     is FreeInvoker, is BoundInvoker -> FunctionPrototype(function)
+                    else -> error("Unreachable code")
                 }
             }
             is NativeFrontendFunction -> function.prototype

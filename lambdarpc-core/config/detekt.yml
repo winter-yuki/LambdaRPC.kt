@@ -4,7 +4,7 @@ complexity:
     excludes: [ '**/functions/frontend/**' ]
   TooManyFunctions:
     excludes:
-      - '**/Utils.kt'
+      - '**/utils.kt'
       - '**/test**'
 
 exceptions:
@@ -21,7 +21,7 @@ formatting:
     excludes: [ '**/exceptions/Exceptions.kt' ]
   MaximumLineLength:
     excludes:
-      - '**/ToBound.kt'
+      - '**/toBoundConverters.kt'
   ParameterListWrapping:
     active: false
 
@@ -36,7 +36,7 @@ style:
       - '**/test/**'
   MaxLineLength:
     excludes:
-      - '**/ToBound.kt'
+      - '**/toBoundConverters.kt'
 
 naming:
   # Does not always agree with IDEA default warnings

@@ -20,7 +20,7 @@ import kotlin.contracts.contract
  */
 @Suppress("FunctionName")
 @OptIn(ExperimentalContracts::class)
-fun LibService(
+public fun LibService(
     serviceId: ServiceId, address: String, port: Int?,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
@@ -34,7 +34,7 @@ fun LibService(
  */
 @Suppress("FunctionName")
 @OptIn(ExperimentalContracts::class)
-fun LibService(
+public fun LibService(
     serviceId: ServiceId, endpoint: Endpoint,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
@@ -48,7 +48,7 @@ fun LibService(
  */
 @OptIn(ExperimentalContracts::class)
 @Suppress("FunctionName")
-fun LibService(
+public fun LibService(
     serviceId: ServiceId, address: Address, port: Port?,
     serviceRegistry: ServiceRegistry = MapServiceRegistry(),
     bindings: LibServiceDSL.() -> Unit
@@ -69,18 +69,22 @@ fun LibService(
 }
 
 @Suppress("UNCHECKED_CAST")
-class LibServiceDSL internal constructor() {
+public class LibServiceDSL internal constructor() {
     internal val registry = FunctionRegistry()
 
-    infix fun <R> Declaration0<R>.of(f: suspend () -> R) =
+    public infix fun <R> Declaration0<R>.of(f: suspend () -> R) {
         registry.register(name, BackendFunction0(f, rc))
+    }
 
-    infix fun <A, R> Declaration1<A, R>.of(f: suspend (A) -> R) =
+    public infix fun <A, R> Declaration1<A, R>.of(f: suspend (A) -> R) {
         registry.register(name, BackendFunction1(f, c1, rc))
+    }
 
-    infix fun <A, B, R> Declaration2<A, B, R>.of(f: suspend (A, B) -> R) =
+    public infix fun <A, B, R> Declaration2<A, B, R>.of(f: suspend (A, B) -> R) {
         registry.register(name, BackendFunction2(f, c1, c2, rc))
+    }
 
-    infix fun <A, B, C, R> Declaration3<A, B, C, R>.of(f: suspend (A, B, C) -> R) =
+    public infix fun <A, B, C, R> Declaration3<A, B, C, R>.of(f: suspend (A, B, C) -> R) {
         registry.register(name, BackendFunction3(f, c1, c2, c3, rc))
+    }
 }

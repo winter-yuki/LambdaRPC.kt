@@ -7,18 +7,18 @@ import io.lambdarpc.utils.associateRepeatable
 /**
  * Represents registry that maps [ServiceId] to [Endpoint].
  */
-interface ServiceRegistry {
-    suspend fun get(id: ServiceId): Endpoint?
+public interface ServiceRegistry {
+    public suspend fun get(id: ServiceId): Endpoint?
 }
 
-class MapServiceRegistry(private val endpoints: Map<ServiceId, List<Endpoint>>) : ServiceRegistry {
+public class MapServiceRegistry(private val endpoints: Map<ServiceId, List<Endpoint>>) : ServiceRegistry {
     override suspend fun get(id: ServiceId): Endpoint? = endpoints[id]?.run {
         if (isEmpty()) null else random()
     }
 }
 
-fun MapServiceRegistry(vararg endpoints: Pair<ServiceId, Endpoint>) =
+public fun MapServiceRegistry(vararg endpoints: Pair<ServiceId, Endpoint>): MapServiceRegistry =
     MapServiceRegistry(endpoints.associateRepeatable { it })
 
-fun MapServiceRegistry(endpoints: Iterable<Pair<ServiceId, Endpoint>>) =
+public fun MapServiceRegistry(endpoints: Iterable<Pair<ServiceId, Endpoint>>): MapServiceRegistry =
     MapServiceRegistry(endpoints.associateRepeatable { it })

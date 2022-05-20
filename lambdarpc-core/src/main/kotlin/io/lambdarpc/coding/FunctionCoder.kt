@@ -6,22 +6,22 @@ import io.lambdarpc.transport.grpc.FunctionPrototype
 /**
  * Encodes functions.
  */
-interface FunctionEncoder<F> {
+public interface FunctionEncoder<in F> {
     /**
      * Creates the prototype of the function that can be serialized.
      */
-    fun encode(function: F, context: CodingContext): FunctionPrototype
+    public fun encode(function: F, context: CodingContext): FunctionPrototype
 }
 
 /**
  * Decodes functions.
  */
-interface FunctionDecoder<F> {
+public interface FunctionDecoder<out F> {
     /**
      * Creates a callable proxy object [FrontendFunction] with interface [F]
      * that communicates with the backend part.
      */
-    fun decode(prototype: FunctionPrototype, context: CodingContext): F
+    public fun decode(prototype: FunctionPrototype, context: CodingContext): F
 }
 
-interface FunctionCoder<F> : FunctionEncoder<F>, FunctionDecoder<F>
+public interface FunctionCoder<F> : FunctionEncoder<F>, FunctionDecoder<F>

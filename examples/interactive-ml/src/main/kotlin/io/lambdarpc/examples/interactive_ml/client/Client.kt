@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.interactive_ml.client
 
-import io.lambdarpc.dsl.ServiceDispatcher
-import io.lambdarpc.dsl.blockingConnectionPool
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.toBound
 import io.lambdarpc.examples.interactive_ml.dataEndpoint
 import io.lambdarpc.examples.interactive_ml.dataservice.facade.dataLoader

@@ -4,10 +4,10 @@ import com.google.protobuf.ByteString
 import java.nio.charset.Charset
 
 @JvmInline
-value class RawData internal constructor(internal val bytes: ByteString) {
-    companion object {
-        fun copyFrom(bytes: ByteArray) = RawData(ByteString.copyFrom(bytes))
-        fun copyFrom(string: String, charset: Charset) =
+public value class RawData internal constructor(internal val bytes: ByteString) {
+    public companion object {
+        public fun copyFrom(bytes: ByteArray): RawData = RawData(ByteString.copyFrom(bytes))
+        public fun copyFrom(string: String, charset: Charset): RawData =
             RawData(ByteString.copyFrom(string, charset))
     }
 }
@@ -15,5 +15,5 @@ value class RawData internal constructor(internal val bytes: ByteString) {
 internal val ByteString.rd: RawData
     get() = RawData(this)
 
-fun RawData.toByteArray(): ByteArray = bytes.toByteArray()
-fun RawData.toString(charset: Charset): String = bytes.toString(charset)
+public fun RawData.toByteArray(): ByteArray = bytes.toByteArray()
+public fun RawData.toString(charset: Charset): String = bytes.toString(charset)

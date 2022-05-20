@@ -4,38 +4,39 @@ package io.lambdarpc.utils
  * Represents network address.
  */
 @JvmInline
-value class Address(val a: String) {
+public value class Address(public val a: String) {
     init {
         require(a.isNotBlank())
     }
 }
 
-val String.addr: Address
+internal val String.addr: Address
     get() = Address(this)
 
 /**
  * Represents network port.
  */
 @JvmInline
-value class Port(val p: Int) {
+public value class Port(public val p: Int) {
     init {
         require(p > 0)
     }
 }
 
-val Int.port: Port
+internal val Int.port: Port
     get() = Port(this)
 
 /**
  * Represents network endpoint.
  */
-data class Endpoint(val address: Address, val port: Port) {
+public data class Endpoint(val address: Address, val port: Port) {
     override fun toString(): String = "${address.a}:${port.p}"
 }
 
-fun Endpoint(address: String, port: Int) = Endpoint(address.addr, port.port)
+public fun Endpoint(address: String, port: Int): Endpoint =
+    Endpoint(address.addr, port.port)
 
-fun Endpoint(endpoint: String) =
+public fun Endpoint(endpoint: String): Endpoint =
     endpoint.split(':').let { (address, port) ->
         Endpoint(address.addr, port.toInt().port)
     }

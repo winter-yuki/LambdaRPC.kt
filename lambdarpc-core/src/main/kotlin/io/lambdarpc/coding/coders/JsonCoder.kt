@@ -13,17 +13,18 @@ import java.nio.charset.Charset
 /**
  * [JsonCoder] uses `kotlinx.serialization` to serialize data to JSON.
  */
-class JsonCoder<T>(private val serializer: KSerializer<T>) : Coder<T> {
-    override fun encode(value: T, context: CodingContext): Entity {
+public class JsonCoder<T>(private val serializer: KSerializer<T>) : Coder<T> {
+    override suspend fun encode(value: T, context: CodingContext): Entity {
         val string = Json.encodeToString(serializer, value)
         return Entity(RawData.copyFrom(string, Charset.defaultCharset()))
     }
 
-    override fun decode(entity: Entity, context: CodingContext): T {
+    override suspend fun decode(entity: Entity, context: CodingContext): T {
         require(entity.hasData()) { "Entity should contain data" }
         val string = entity.data.toString(Charset.defaultCharset())
         return Json.decodeFromString(serializer, string)
     }
 }
 
-inline fun <reified T> JsonCoder() = JsonCoder<T>(serializer())
+@Suppress("FunctionName")
+public inline fun <reified T> JsonCoder(): JsonCoder<T> = JsonCoder(serializer())

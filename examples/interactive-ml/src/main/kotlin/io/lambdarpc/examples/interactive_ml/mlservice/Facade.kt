@@ -29,9 +29,9 @@ val fit by mlServiceId.def( // Define declaration for suspend (Epoch, Metric) ->
 )
 
 private object ModelCoder : Coder<Model> {
-    override fun encode(value: Model, context: CodingContext): Entity =
+    override suspend fun encode(value: Model, context: CodingContext): Entity =
         Entity(RawData.copyFrom(byteArrayOf(value.weight.toByte())))
 
-    override fun decode(entity: Entity, context: CodingContext): Model =
+    override suspend fun decode(entity: Entity, context: CodingContext): Model =
         Model(entity.data.toByteArray().first().toInt())
 }

@@ -5,7 +5,7 @@ import io.lambdarpc.LambdaRpcException
 /**
  * Lambda rpc message with internal meta information is not recognized.
  */
-class UnknownMessageType internal constructor(grpcMessageKind: String? = null) :
+public class UnknownMessageType internal constructor(grpcMessageKind: String? = null) :
     LambdaRpcException(
         buildString {
             append("Unsupported message ")

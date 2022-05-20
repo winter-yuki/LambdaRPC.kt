@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.10" apply false
+    kotlin("jvm") version "1.6.21" apply false
 }
 
 allprojects {
@@ -9,5 +9,5 @@ allprojects {
     }
 
     group = "io.lambdarpc"
-    version = "0.0.1"
+    version = "0.0.1-SNAPSHOT"
 }

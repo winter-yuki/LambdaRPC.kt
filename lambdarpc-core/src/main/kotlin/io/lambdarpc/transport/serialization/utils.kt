@@ -2,6 +2,7 @@ package io.lambdarpc.transport.serialization
 
 import com.google.protobuf.ByteString
 import io.lambdarpc.ExecutionException
+import io.lambdarpc.LambdaRPCExperimentalAPI
 import io.lambdarpc.functions.frontend.RemoteFrontendFunction
 import io.lambdarpc.functions.frontend.invokers.BoundInvoker
 import io.lambdarpc.functions.frontend.invokers.ChannelInvoker
@@ -40,6 +41,7 @@ internal fun RemoteFrontendFunction<BoundInvoker>.encode(): BoundFunctionPrototy
         endpoint = this@encode.invoker.endpoint.encode()
     }
 
+@OptIn(LambdaRPCExperimentalAPI::class)
 internal fun ExecuteError.toException() =
     ExecutionException(
         message = message,

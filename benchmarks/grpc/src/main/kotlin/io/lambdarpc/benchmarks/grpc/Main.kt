@@ -1,5 +1,7 @@
 package io.lambdarpc.benchmarks.grpc
 
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.*
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.ServiceId

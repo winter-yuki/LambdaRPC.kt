@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * Is thrown when [ChannelInvoker] is called after its connection is already closed.
  */
-class CallDisconnectedChannelFunction internal constructor() :
-    LambdaRpcException("Unable to call invalidated ChannelFunction.")
+public class CallDisconnectedChannelFunction internal constructor() :
+    LambdaRpcException("Unable to call invalidated ChannelFunction")
 
 /**
  * Allows [ChannelInvoker] to communicate with its backend function.

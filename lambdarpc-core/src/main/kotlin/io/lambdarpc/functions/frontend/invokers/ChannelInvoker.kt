@@ -9,8 +9,8 @@ import io.lambdarpc.utils.AccessName
  * [ChannelInvoker] is a [FrontendInvoker] that uses existing bidirectional
  * connection to communicate with the backend part.
  */
-interface ChannelInvoker : FrontendInvoker {
-    val accessName: AccessName
+public interface ChannelInvoker : FrontendInvoker {
+    public val accessName: AccessName
 }
 
 internal class ChannelInvokerImpl(

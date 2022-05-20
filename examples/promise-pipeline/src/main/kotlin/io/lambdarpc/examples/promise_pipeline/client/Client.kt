@@ -1,7 +1,7 @@
 package io.lambdarpc.examples.promise_pipeline.client
 
-import io.lambdarpc.dsl.ServiceDispatcher
-import io.lambdarpc.dsl.blockingConnectionPool
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.examples.promise_pipeline.service.*
 import io.lambdarpc.utils.Endpoint
 

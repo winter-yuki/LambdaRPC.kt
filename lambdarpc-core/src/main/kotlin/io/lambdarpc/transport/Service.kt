@@ -5,15 +5,15 @@ import io.lambdarpc.utils.Port
 /**
  * Represents service.
  */
-interface Service {
+public interface Service {
     /**
      * Port is available only after service start.
      */
-    val port: Port
+    public val port: Port
 
-    fun start()
+    public fun start()
 
-    fun awaitTermination()
+    public fun awaitTermination()
 
-    fun shutdown()
+    public fun shutdown()
 }

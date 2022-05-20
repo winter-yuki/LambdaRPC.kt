@@ -10,9 +10,9 @@ import io.lambdarpc.Facade.mapPoints
 import io.lambdarpc.Facade.normMap
 import io.lambdarpc.Facade.numpyAdd
 import io.lambdarpc.Facade.specializeAdd
+import io.lambdarpc.context.ServiceDispatcher
+import io.lambdarpc.context.blockingConnectionPool
 import io.lambdarpc.dsl.LibService
-import io.lambdarpc.dsl.ServiceDispatcher
-import io.lambdarpc.dsl.blockingConnectionPool
 import io.lambdarpc.transport.Service
 import io.lambdarpc.utils.Endpoint
 import io.lambdarpc.utils.addr
@@ -24,7 +24,7 @@ import kotlin.math.sqrt
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BasicTests {
+internal class BasicTests {
 
     private lateinit var service: Service
     private lateinit var serviceDispatcher: ServiceDispatcher

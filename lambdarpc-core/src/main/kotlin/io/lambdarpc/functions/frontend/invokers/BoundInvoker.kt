@@ -1,6 +1,6 @@
 package io.lambdarpc.functions.frontend.invokers
 
-import io.lambdarpc.dsl.ServiceDispatcher
+import io.lambdarpc.context.ServiceDispatcher
 import io.lambdarpc.transport.ConnectionProvider
 import io.lambdarpc.utils.AccessName
 import io.lambdarpc.utils.Endpoint
@@ -10,10 +10,10 @@ import kotlin.coroutines.coroutineContext
 /**
  * [FrontendInvoker] that is bound to the specific endpoint.
  */
-interface BoundInvoker : FrontendInvoker {
-    val accessName: AccessName
-    val serviceId: ServiceId
-    val endpoint: Endpoint
+public interface BoundInvoker : FrontendInvoker {
+    public val accessName: AccessName
+    public val serviceId: ServiceId
+    public val endpoint: Endpoint
 }
 
 internal class BoundInvokerImpl(

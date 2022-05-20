@@ -18,7 +18,7 @@ internal interface BackendFunction {
     ): Entity
 }
 
-internal class BackendFunction0<R>(
+internal class BackendFunction0<out R>(
     override val f: suspend () -> R,
     private val rs: Encoder<R>,
 ) : BackendFunction {
@@ -32,7 +32,7 @@ internal class BackendFunction0<R>(
     }
 }
 
-internal class BackendFunction1<A, R>(
+internal class BackendFunction1<in A, out R>(
     override val f: suspend (A) -> R,
     private val c1: Decoder<A>,
     private val rc: Encoder<R>,
@@ -48,7 +48,7 @@ internal class BackendFunction1<A, R>(
     }
 }
 
-internal class BackendFunction2<A, B, R>(
+internal class BackendFunction2<in A, in B, out R>(
     override val f: suspend (A, B) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,
@@ -65,7 +65,7 @@ internal class BackendFunction2<A, B, R>(
     }
 }
 
-internal class BackendFunction3<A, B, C, R>(
+internal class BackendFunction3<in A, in B, in C, out R>(
     override val f: suspend (A, B, C) -> R,
     private val c1: Decoder<A>,
     private val c2: Decoder<B>,

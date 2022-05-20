@@ -69,7 +69,7 @@ fun main() = runBlocking(serviceDispatcher) {
     // Keep track of the loss function values
     val history = mutableListOf<Metric>()
     var lastEpoch = 0
-    val rawModel = Model(...)
+    val rawModel = Model(layers=1050)
     // Bind dataloader with dataEndpoint, so mlservice will communicate directly
     // with the dataservice on the dataEndpoint without client in the middle
     val boundLoader = dataloader.toBound()
